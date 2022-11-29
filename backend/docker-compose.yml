@@ -1,0 +1,13 @@
+version: '3'
+services:
+  db:
+    image: postgres:14.2-alpine
+    restart: always
+    volumes:
+      - ./create-dev-db.sh:/docker-entrypoint-initdb.d/create-dev-db.sh
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_MULTIPLE_DATABASES: hopon_dev,hopon_test
+      POSTGRES_USER: hopon
+      POSTGRES_PASSWORD: hopon

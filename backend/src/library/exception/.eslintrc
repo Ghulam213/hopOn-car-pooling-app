@@ -1,0 +1,9 @@
+{
+  "rules": {
+    "@roq/name-of-class-and-function-rule": "off",
+    "@roq/filename-suffix-mismatch": "off",
+    "@roq/no-invalid-filename-chars": "off",
+    "no-template-curly-in-string": "off",
+    "@typescript-eslint/no-explicit-any": "off"
+  }
+}
