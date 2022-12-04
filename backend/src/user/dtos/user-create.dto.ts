@@ -1,17 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { CurrentModeEnum, GenderEnum, Prisma } from '@prisma/client';
 import {
-  // IsBoolean,
-  // IsDate,
+  IsBoolean,
+  IsDateString,
   IsDefined,
   IsEmail,
+  IsEnum,
   IsNotEmpty,
-  // IsOptional,
+  IsOptional,
   IsString,
   MaxLength,
 } from 'class-validator';
 import { Trim } from 'src/library/decorators';
 
-export class UserCreateDto {
+export class UserCreateDto implements Prisma.UserCreateInput {
   @ApiProperty()
   @Trim()
   @IsNotEmpty()
@@ -21,53 +23,92 @@ export class UserCreateDto {
   @IsDefined()
   email: string;
 
-  // @MaxLength(255)
-  // @IsString()
-  // @IsDefined()
-  // password: string;
+  @ApiProperty()
+  @MaxLength(255)
+  @IsString()
+  @IsDefined()
+  password: string;
 
-  // @IsNotEmpty()
-  // @MaxLength(255)
-  // @IsString()
-  // @IsOptional()
-  // phone?: string;
+  @ApiProperty()
+  @IsString()
+  @Trim()
+  @IsNotEmpty()
+  @MaxLength(255)
+  @IsDefined()
+  firstName: string;
 
-  // @MaxLength(255)
-  // @IsString()
-  // @Trim()
-  // @IsOptional()
-  // firstName?: string;
+  @ApiProperty()
+  @IsString()
+  @Trim()
+  @IsNotEmpty()
+  @MaxLength(255)
+  @IsDefined()
+  lastName: string;
 
-  // @MaxLength(255)
-  // @IsString()
-  // @Trim()
-  // @IsOptional()
-  // lastName?: string;
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(255)
+  @IsDefined()
+  phone: string;
 
-  // @MaxLength(255)
-  // @IsString()
-  // @IsOptional()
-  // locale?: string;
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(255)
+  @IsOptional()
+  locale?: string;
 
-  // @MaxLength(255)
-  // @IsString()
-  // @IsOptional()
-  // timezone?: string;
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(255)
+  @IsOptional()
+  timezone?: string;
 
-  // @MaxLength(255)
-  // @IsString()
-  // @IsDefined()
-  // roqIdentifier: string;
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(255)
+  @IsDefined()
+  currentCity: string;
 
-  // @IsDate()
-  // @IsOptional()
-  // optedInAt?: Date;
+  @ApiProperty({ enum: GenderEnum })
+  @IsEnum(GenderEnum)
+  @IsNotEmpty()
+  @IsDefined()
+  gender: GenderEnum;
 
-  // @IsBoolean()
-  // @IsOptional()
-  // active?: boolean;
+  @ApiProperty()
+  @IsDateString()
+  @IsNotEmpty()
+  @IsDefined()
+  birthDate: Date;
 
-  // @IsBoolean()
-  // @IsOptional()
-  // sync?: boolean;
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  profilePic?: string;
+
+  @ApiProperty({ required: false })
+  @IsBoolean()
+  @IsOptional()
+  optedInAt?: boolean;
+
+  @ApiProperty({ required: false })
+  @IsBoolean()
+  @IsOptional()
+  active?: boolean;
+
+  @ApiProperty({ required: false })
+  @IsBoolean()
+  @IsOptional()
+  verified?: boolean;
+
+  @ApiProperty({ enum: CurrentModeEnum })
+  @IsEnum(CurrentModeEnum)
+  @IsNotEmpty()
+  @IsDefined()
+  currentMode: CurrentModeEnum;
 }

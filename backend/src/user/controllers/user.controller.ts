@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserService } from 'src/user/services';
 import { User } from '@prisma/client';
@@ -17,56 +8,47 @@ import { UserCreateDto, UserUpdateDto } from 'src/user/dtos';
 import { UserEntity } from 'src/user/entities';
 import { ParseUUIDStringPipe } from 'src/library/pipes';
 
-@Controller('/user')
+@Controller()
 @ApiTags('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get('/:id')
+  @Get('/user/:id')
   @ApiOkResponse({ type: UserEntity })
-  async getUserById(
-    @Param('id', ParseUUIDStringPipe) id: string,
-  ): Promise<User> {
-    return this.userService.findOne({ id });
+  async getUserById(@Param('id', ParseUUIDStringPipe) id: string): Promise<UserEntity> {
+    return this.userService.findUser({ id });
   }
 
-  @Get('/:email')
+  @Get('user')
   @ApiOkResponse({ type: UserEntity })
-  async getUserByEmail(@Param('email') email: string): Promise<User> {
-    return this.userService.findOne({ email });
+  async getUserByEmail(@Query('email') email: string): Promise<UserEntity> {
+    return this.userService.findUser({ email });
   }
 
-  @Get()
+  @Get('/users')
   @ApiOkResponse({ type: UserPageModel })
-  async getUsers(
-    @Query() pageOptionsDto: EntityPageOptionsDto,
-  ): Promise<UserPageModel> {
-    return this.userService.findMany({ ...pageOptionsDto });
+  async getUsers(@Query() pageOptionsDto: EntityPageOptionsDto): Promise<UserPageModel> {
+    return this.userService.findUsers({ ...pageOptionsDto });
   }
 
-  @Post()
+  @Post('/user')
   @ApiCreatedResponse({ type: UserEntity })
   async createUser(@Body() userData: UserCreateDto): Promise<User> {
     return this.userService.createUser(userData);
   }
 
-  @Put('/:id')
+  @Put('user/:id')
   @ApiOkResponse({ type: UserEntity })
-  async publishPost(
-    @Param('id', ParseUUIDStringPipe) id: string,
-    @Body() userData: UserUpdateDto,
-  ): Promise<User> {
+  async publishPost(@Param('id', ParseUUIDStringPipe) id: string, @Body() userData: UserUpdateDto): Promise<User> {
     return this.userService.updateUser({
       where: { id },
       data: userData,
     });
   }
 
-  @Delete('/:id')
+  @Delete('user/:id')
   @ApiOkResponse({ type: UserEntity })
-  async deletePost(
-    @Param('id', ParseUUIDStringPipe) id: string,
-  ): Promise<User> {
+  async deletePost(@Param('id', ParseUUIDStringPipe) id: string): Promise<User> {
     return this.userService.deleteUser({ id });
   }
 }

@@ -3,7 +3,7 @@ import { ErrorCodeEnum } from 'src/library/enums';
 import { prepareError } from 'src/library/exception/utils';
 
 interface VariablesInterface {
-  details: string;
+  email: string;
 }
 
 interface UserEmailAlreadyExistsExceptionInterface {
@@ -11,7 +11,7 @@ interface UserEmailAlreadyExistsExceptionInterface {
   variables?: VariablesInterface;
 }
 
-const defaultMessage = 'The user with current email exists';
+const defaultMessage = 'The user with given email {{email}} already exists';
 
 export class UserEmailAlreadyExistsException extends BadRequestException {
   constructor(error?: UserEmailAlreadyExistsExceptionInterface, description?: string) {

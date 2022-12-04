@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { User, Prisma } from '@prisma/client';
+import { UserNotFoundException } from 'src/library/exception';
 import { PrismaService } from 'src/prisma.service';
 import { UserPageModel } from 'src/user/models';
 
@@ -7,15 +8,19 @@ import { UserPageModel } from 'src/user/models';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async findOne(
-    userWhereUniqueInput: Prisma.UserWhereUniqueInput,
-  ): Promise<User | null> {
-    return this.prisma.user.findUnique({
+  async findUser(userWhereUniqueInput: Prisma.UserWhereUniqueInput): Promise<User | null> {
+    const user = await this.prisma.user.findUnique({
       where: userWhereUniqueInput,
     });
+
+    if (!user) {
+      throw new UserNotFoundException({ variables: { id: userWhereUniqueInput.id } });
+    }
+    delete user.password;
+    return user;
   }
 
-  async findMany(params: {
+  async findUsers(params: {
     limit?: number;
     offset?: number;
     where?: Prisma.UserWhereInput;
@@ -33,7 +38,10 @@ export class UserService {
     ]);
     return {
       totalCount,
-      data,
+      data: data.map((u) => {
+        delete u.password;
+        return { ...u };
+      }),
     };
   }
 
@@ -43,11 +51,15 @@ export class UserService {
     });
   }
 
-  async updateUser(params: {
-    where: Prisma.UserWhereUniqueInput;
-    data: Prisma.UserUpdateInput;
-  }): Promise<User> {
+  async updateUser(params: { where: Prisma.UserWhereUniqueInput; data: Prisma.UserUpdateInput }): Promise<User> {
     const { where, data } = params;
+
+    const user = await this.prisma.user.findUnique({ where });
+
+    if (!user) {
+      throw new UserNotFoundException({ variables: { id: where.id } });
+    }
+
     return this.prisma.user.update({
       data,
       where,
@@ -55,6 +67,12 @@ export class UserService {
   }
 
   async deleteUser(where: Prisma.UserWhereUniqueInput): Promise<User> {
+    const user = await this.prisma.user.findUnique({ where });
+
+    if (!user) {
+      throw new UserNotFoundException({ variables: { id: where.id } });
+    }
+
     return this.prisma.user.delete({
       where,
     });

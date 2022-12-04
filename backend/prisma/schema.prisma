@@ -10,9 +10,33 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id    String     @id @default(uuid())
-  email String  @unique
-  name  String?
+enum CurrentModeEnum {
+  DRIVER
+  PASSENGER
 }
 
+enum GenderEnum {
+  MALE
+  FEMALE
+}
+
+model User {
+  id          String          @id @default(uuid())
+  email       String          @unique
+  firstName   String
+  lastName    String
+  password    String
+  phone       String          @unique
+  locale      String?         @default("en")
+  timezone    String?
+  currentCity String
+  gender      GenderEnum
+  birthDate   DateTime
+  profilePic  String?
+  optedInAt   Boolean         @default(false)
+  active      Boolean         @default(false)
+  verified    Boolean         @default(false)
+  currentMode CurrentModeEnum
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
