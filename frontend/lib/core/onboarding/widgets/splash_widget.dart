@@ -1,5 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:hop_on/Utils/colors.dart';
+import 'package:flutter_svg/svg.dart';
 import '../../../config/sizeconfig/size_config.dart';
 
 class SplashWidget extends StatefulWidget {
@@ -31,10 +33,17 @@ class _SplashWidgetState extends State<SplashWidget> {
                 child: SizedBox(
                   width: SizeConfig.screenWidthDp! - 120,
                   height: SizeConfig().sh(100).toDouble(),
-                  child: Center(child: Text('Welcome')),
+                  child: Center(
+                    child: SvgPicture.asset(
+                      "assets/images/logo.svg",
+                      width: SizeConfig.screenWidthDp! - 120,
+                      height: SizeConfig().sh(100).toDouble(),
+                    ),
+                  ),
                 ),
               ),
             ),
+
             Positioned(
                 right: 0,
                 left: 0,
@@ -44,25 +53,25 @@ class _SplashWidgetState extends State<SplashWidget> {
                   height: SizeConfig().sh(100).toDouble(),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Text(
-                        "By",
-                        style: TextStyle(
+                        context.locale.toString() == 'en' ? "en" : "ur",
+                        style: const TextStyle(
                             color: AppColors.LM_FONT_SECONDARY_GREY8,
                             fontSize: 15),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 10,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 2,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 10,
                       ),
                       Text(
-                        "By",
-                        style: TextStyle(
+                        context.locale.toString() == 'en' ? "en" : "ur",
+                        style: const TextStyle(
                             color: AppColors.LM_FONT_SECONDARY_GREY8,
                             fontSize: 15),
                       ),

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:android_sms_retriever/android_sms_retriever.dart';
+import 'package:numeric_keyboard/numeric_keyboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -17,11 +18,12 @@ class OtpPage extends StatefulWidget {
   static const routeName = '/otp';
   // passed from previous screen
   final String? phoneNumber;
-  final String? email;
-  final String otpmode;
   // constructor
   const OtpPage(
-      {Key? key, this.phoneNumber = '', this.email = '', required this.otpmode})
+      {
+    Key? key,
+    this.phoneNumber = '',
+  })
       : super(key: key);
 
   @override
@@ -180,16 +182,8 @@ class _OtpPageState extends State<OtpPage> {
                               (MediaQuery.of(context).viewInsets.bottom > 0.0)
                                   ? (_config.uiHeightPx * 0.10).toDouble()
                                   : (_config.uiHeightPx * 0.31).toDouble()),
-                      Card(
-                        color: AppColors.LM_BACKGROUND_GREY3,
-                        child: SizedBox(
-                          width: SizeConfig.screenWidthDp,
-                          child: Column(
-                            children: [
-                              const SizedBox(
-                                height: 11,
-                              ),
-                              SizedBox(
+                     
+                      SizedBox(
                                 child: Align(
                                   alignment: context.locale.toString() == 'en'
                                       ? Alignment.centerLeft
@@ -221,21 +215,14 @@ class _OtpPageState extends State<OtpPage> {
                                     _codeJoined = code.join();
                                     _phoneOTP['verification_code'] =
                                         _codeJoined;
-                                    if (widget.otpmode == 'phone') {
+                              
                                       loginStore.validateOtpAndLogin(
                                           context,
                                           pin,
 
                                           // _emailOTP['phone'] =
-                                          widget.phoneNumber!);
-                                    } else if (widget.otpmode == 'email') {
-                                      loginStore.validateEmailAndLogin(
-                                          context,
-                                          pin,
-
-                                          //_emailOTP['email'] =
-                                          widget.email!);
-                                    }
+                                widget.phoneNumber!);
+                                  
                                     if (loginStore.isOtpDone == true) {
                                       _pinPutFocusNode.unfocus();
                                     }
@@ -291,6 +278,16 @@ class _OtpPageState extends State<OtpPage> {
                                   controller: _pinPutController,
                                 ),
                               )),
+                      Card(
+                        color: AppColors.LM_BACKGROUND_GREY3,
+                        child: SizedBox(
+                          width: SizeConfig.screenWidthDp,
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                height: 11,
+                              ),
+                             
                               SizedBox(
                                   height: (MediaQuery.of(context)
                                               .viewInsets
@@ -298,51 +295,49 @@ class _OtpPageState extends State<OtpPage> {
                                           0.0)
                                       ? (_config.uiHeightPx * 0.02).toDouble()
                                       : (_config.uiHeightPx * 0.05).toDouble()),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10.0),
-                                child: LoginButton(
-                                  text: ez.tr("Verify"),
-                                  isLoading: loginStore.isOtpLoading ||
-                                      loginStore.isUserInfoLoading,
-                                  onPress: () {
-                                    setState(() {
-                                      _codeJoined = code.join();
-
-                                      if (_codeJoined.length < 6) {
-                                        _phoneOTP['verification_code'] =
-                                            _codeJoined;
-
-                                        if (widget.otpmode == 'phone') {
-                                          loginStore.validateOtpAndLogin(
-                                              context,
-                                              _codeJoined,
-                                              // _emailOTP['phone'] =
-                                              widget.phoneNumber!);
-                                        } else if (widget.otpmode == 'email') {
-                                          loginStore.validateEmailAndLogin(
-                                              context,
-                                              _codeJoined,
-                                              //_emailOTP['email'] =
-                                              widget.email!);
-                                        }
-                                        // clearing focus from all fields
-                                        Future.delayed(
-                                          const Duration(seconds: 1),
-                                          () {
-                                            _pin1.clear();
-                                            _pin2.clear();
-                                            _pin3.clear();
-                                            _pin4.clear();
-                                            _pin5.clear();
-                                            _pin6.clear();
-                                          },
-                                        );
-                                      }
-                                    });
-                                  },
+                              NumericKeyboard(
+                                onKeyboardTap: _onKeyboardTap,
+                                textColor: Colors.black,
+                                rightIcon: Icon(
+                                  Icons.backspace,
+                                  color: Colors.black,
                                 ),
+                                rightButtonFn: () {
+                                  setState(() {
+                                    text = text.substring(0, text.length - 1);
+                                  });
+                                },
                               ),
+
+                              // onPress: () {
+                              //         setState(() {
+                              //           _codeJoined = code.join();
+
+                              //           if (_codeJoined.length < 6) {
+                              //             _phoneOTP['verification_code'] =
+                              //                 _codeJoined;
+
+                              //               loginStore.validateOtpAndLogin(
+                              //                   context,
+                              //                   _codeJoined,
+                              //                   // _emailOTP['phone'] =
+                              //                   widget.phoneNumber!);
+
+                              //             // clearing focus from all fields
+                              //             Future.delayed(
+                              //               const Duration(seconds: 1),
+                              //               () {
+                              //                 _pin1.clear();
+                              //                 _pin2.clear();
+                              //                 _pin3.clear();
+                              //                 _pin4.clear();
+                              //                 _pin5.clear();
+                              //                 _pin6.clear();
+                              //               },
+                              //             );
+                              //           }
+                              //         });
+                              //       },
                               SizedBox(
                                   height: (MediaQuery.of(context)
                                               .viewInsets

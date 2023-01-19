@@ -38,9 +38,14 @@ Future<void> main() async {
   //                 child: const App())),
   //           )
   //         });
-  EasyLocalization.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
   NetworkConfig().initNetworkConfig();
-  runApp(const App());
+  runApp(EasyLocalization(
+      supportedLocales: const [Locale('en', ''), Locale('de', '')],
+      path:
+          'assets/translations', // <-- change the path of the translation files
+      fallbackLocale: const Locale('en', ''),
+      child: const App()));
 }
 
 class App extends StatefulWidget {
@@ -58,8 +63,6 @@ class _AppState extends State<App> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    // Amplitude.getInstance().logEvent('App Started');
-
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.light,
@@ -75,8 +78,9 @@ class _AppState extends State<App> with WidgetsBindingObserver {
         child: Consumer<LoginStore>(
           builder: (ctx, auth, _) => MaterialApp(
             supportedLocales: const [
-              Locale('en', ''),
+              Locale('en', ''), Locale('de', '')
             ],
+
             key: GlobalVariable.scaffoldKey,
             onGenerateRoute: RouteGenerator.generateRoute,
             title: 'hopOn',

@@ -18,11 +18,15 @@ class LoginButton extends StatelessWidget {
         onPress?.call();
       },
       child: Card(
+        color: Colors.black,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(16)),
+        ),
         child: Container(
           width: SizeConfig.screenWidthDp,
           height: SizeConfig().sh(40).toDouble(),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(16),
             gradient: const LinearGradient(
               colors: AppColors.GRADIENTS_MAIN_900,
               stops: [

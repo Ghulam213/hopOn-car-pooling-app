@@ -13,7 +13,7 @@ mixin RouteGenerator {
         );
       case OtpPage.routeName:
         return MaterialPageRoute(
-          builder: (_) => const OtpPage(otpmode: ''),
+          builder: (_) => const OtpPage(),
         );
 
       default:

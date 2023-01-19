@@ -47,77 +47,9 @@ abstract class LoginStoreBase with Store {
   @observable
   late String authToken = '';
 
-  // bool get isAuth {
-  //   // getting token to see if user logged in or not
-  //   return authToken != '';
-  // }
-
-  // EMAIL AUTTH
-  @action
-  Future<void> emailLogin(BuildContext context, String email) async {
-    final body = {"email": email.trim(), "tfa": "false"};
-
-    try {
-      isEmailLoading = true;
-      final Response response = await dio.post('auth/login',
-          data: jsonEncode(body),
-          options: Options(headers: {
-            HttpHeaders.contentTypeHeader: "application/json",
-          }));
-
-      final responseData = response.data as Map<String, dynamic>;
-
-      isEmailLoading = false;
-      if (response.statusCode == 200) {
-        isEmailDone = true;
-
-        Future.delayed(const Duration(milliseconds: 1), () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => OtpPage(email: email, otpmode: 'email'),
-            ),
-          );
-        });
-      } else {
-        log("emailLogin. ${response.data}");
-
-        log('${response.statusCode}');
-        final String errorMsg = responseData["message"] as String;
-
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          duration: const Duration(seconds: 3),
-          behavior: SnackBarBehavior.fixed,
-          backgroundColor: Colors.white,
-          content: Text(errorMsg,
-              style: const TextStyle(color: Colors.red, fontSize: 15.0)),
-        ));
-        throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
-      }
-    } on DioError catch (e) {
-      isEmailLoading = false;
-      log('${e.error}');
-      log("emailLogin. $e");
-      if (e.response!.statusCode == 404) {
-        final String errorMsg1 = tr(
-            "Sorry, no e-mail is registered with your account. Please ask Mrsool Admin to update your e-mail");
-
-        _showSnackBar(context, errorMsg1);
-
-        throw AppErrors.processErrorJson(
-            e.response!.data as Map<String, dynamic>);
-      }
-
-      if (e.response != null) {
-        _showSnackBar(context, '${e.response!.data["message"]?.toString()}');
-        log(e.response!.data.toString());
-        throw AppErrors.processErrorJson(
-            e.response!.data as Map<String, dynamic>);
-      } else {
-        // Something happened in setting up or sending the request that triggered an Error
-
-        log(e.message);
-      }
-    }
+  bool get isAuth {
+    // getting token to see if user logged in or not
+    return authToken != '';
   }
 
   // PHONE AUTH
@@ -147,7 +79,7 @@ abstract class LoginStoreBase with Store {
             Navigator.of(context).push(
               MaterialPageRoute(
                   builder: (_) =>
-                      OtpPage(phoneNumber: phone, otpmode: 'phone')),
+                      OtpPage(phoneNumber: phone)),
             );
           });
         } else {

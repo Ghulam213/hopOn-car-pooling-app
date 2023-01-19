@@ -153,14 +153,6 @@ mixin _$LoginStore on LoginStoreBase, Store {
     });
   }
 
-  late final _$emailLoginAsyncAction =
-      AsyncAction('LoginStoreBase.emailLogin', context: context);
-
-  @override
-  Future<void> emailLogin(BuildContext context, String email) {
-    return _$emailLoginAsyncAction.run(() => super.emailLogin(context, email));
-  }
-
   late final _$phoneLoginAsyncAction =
       AsyncAction('LoginStoreBase.phoneLogin', context: context);
 

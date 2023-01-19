@@ -35,7 +35,7 @@ class _SplashScreenState extends State<SplashScreen> {
     final SharedPreferences preferences = await SharedPreferences.getInstance();
     final String? token = preferences.getString("authToken");
 
-    // context.setLocale(Locale(context.locale.toString(), ''));
+    context.setLocale(Locale(context.locale.toString(), ''));
 
     // if (token == null) {
     Navigator.of(context).pushReplacement(
