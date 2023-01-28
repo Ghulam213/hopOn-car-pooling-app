@@ -66,7 +66,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.light,
-      statusBarColor: AppColors.ERROR_MAIN_50,
+      statusBarColor: AppColors.RED,
     ));
 
     return MultiProvider(

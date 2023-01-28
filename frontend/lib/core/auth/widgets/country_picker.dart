@@ -51,11 +51,9 @@ class _ContactInputFieldState extends State<ContactInputField> {
                       }
                     },
                     keyboardType: TextInputType.number,
-                    cursorColor: AppColors.LM_BUTTON_NORMAL_BLUE6,
-                    style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                        fontSize: 15,
-                        height: 1.0,
-                        color: AppColors.LM_FONT_PRIMARY_GREY10),
+                    cursorColor: AppColors.PRIMARY_500,
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        fontSize: 15, height: 1.0, color: AppColors.grey1),
                     textAlignVertical: TextAlignVertical.top,
                     maxLength: codeString == '+92' ? 9 : 10,
                     decoration: InputDecoration(
@@ -67,19 +65,19 @@ class _ContactInputFieldState extends State<ContactInputField> {
                         fillColor: Colors.white,
                         filled: true,
                         hintStyle: const TextStyle(
-                          color: AppColors.LM_FONT_BLOCKTEXT_GREY7,
+                          color: AppColors.grey1,
                           fontSize: 14,
                         ),
                         hintText: "",
                         border: OutlineInputBorder(
                           borderSide: const BorderSide(
-                            color: AppColors.LM_FONT_BLOCKTEXT_GREY7,
+                            color: AppColors.grey1,
                           ),
                           borderRadius: BorderRadius.circular(5),
                         ),
                         errorBorder: OutlineInputBorder(
                           borderSide: const BorderSide(
-                            color: AppColors.rejectedColor,
+                            color: AppColors.red1,
                           ),
                           borderRadius: BorderRadius.circular(5),
                         ),
@@ -96,19 +94,18 @@ class _ContactInputFieldState extends State<ContactInputField> {
                           borderRadius: BorderRadius.circular(5),
                         ),
                         focusedErrorBorder: OutlineInputBorder(
-                          borderSide:
-                              const BorderSide(color: AppColors.rejectedColor),
+                          borderSide: const BorderSide(color: AppColors.red1),
                           borderRadius: BorderRadius.circular(5),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderSide: const BorderSide(
-                            color: AppColors.pinCodeBgColor,
+                            color: AppColors.BLUE,
                           ),
                           borderRadius: BorderRadius.circular(5),
                         )))),
           ),
           SizedBox(
-            width: 150,
+            width: 160,
             height: 50,
             child: Row(
               children: [
@@ -120,14 +117,15 @@ class _ContactInputFieldState extends State<ContactInputField> {
                             color: AppColors.LM_BACKGROUND_GREY1),
                         onPressed: () => Navigator.of(context).pop(),
                       ),
-                      backgroundColor: AppColors.LM_BUTTON_NORMAL_BLUE6,
+                      backgroundColor: AppColors.BLUE,
                       title: Text(
                         'Pick your country',
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                             fontSize: 14, color: AppColors.LM_BACKGROUND_GREY1),
                       ),
                     ),
+                   
                     pickerBuilder: (context, CountryCode? countryCode) {
                       return SizedBox(
                         child: Row(
@@ -150,7 +148,7 @@ class _ContactInputFieldState extends State<ContactInputField> {
                               textAlign: TextAlign.center,
                               style: Theme.of(context)
                                   .textTheme
-                                  .bodyText2!
+                                  .bodyMedium!
                                   .copyWith(
                                       fontSize: 15,
                                       height: 1.0,
@@ -177,9 +175,9 @@ class _ContactInputFieldState extends State<ContactInputField> {
                       );
                     },
                     theme: CountryTheme(
-                      labelColor: Colors.black,
-                      alphabetTextColor: Colors.black,
-                      alphabetSelectedBackgroundColor: Colors.black,
+                      labelColor: AppColors.BLACK,
+                      alphabetTextColor: AppColors.BLACK,
+                      alphabetSelectedBackgroundColor: AppColors.BLUE,
                       isShowFlag: true,
                       isShowTitle: false,
                       isShowCode: true,

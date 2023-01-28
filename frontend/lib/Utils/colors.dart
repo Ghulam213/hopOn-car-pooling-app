@@ -1,81 +1,54 @@
+// ignore_for_file: constant_identifier_names
 import 'package:flutter/material.dart';
 
 mixin AppColors {
-  static const Color pendingColor = Color.fromRGBO(250, 184, 76, 1);
-  static const Color acceptedColor = Color.fromRGBO(61, 199, 159, 1);
-  static const Color readyColor = Color.fromRGBO(0, 190, 214, 1);
-  static const Color pickedUpColor = Color.fromRGBO(59, 137, 236, 1);
-  static const Color notPickedUpColor = Colors.black;
-  static const Color rejectedColor = Color.fromRGBO(239, 103, 107, 1);
-  static const Color pinCodeBgColor = Color.fromRGBO(114, 204, 217, 1);
-  static const Color pinCodeBottomSheet = Color.fromRGBO(59, 137, 236, 1);
-  static const Color creditOrderBG = Color.fromRGBO(61, 199, 159, 1);
 
-  static const Color SUCCESS_MAIN_900 = Color.fromRGBO(31, 148, 114, 1);
-  static const Color SUCCESS_MAIN_700 = Color.fromRGBO(61, 199, 159, 1);
-  static const Color SUCCESS_MAIN_500 = Color.fromRGBO(114, 224, 193, 1);
-  static const Color SUCCESS_MAIN_300 = Color.fromRGBO(137, 224, 199, 1);
-  static const Color SUCCESS_MAIN_50 = Color.fromRGBO(159, 224, 206, 1);
+  static const Color BLACK = Colors.black;
+  static const Color RED = Color.fromRGBO(233, 40, 56, 1);
+  static const Color YELLOW = Color.fromRGBO(250, 184, 76, 1);
+  static const Color BLUE = Color.fromRGBO(54, 118, 236, 1);
+  static const Color GREEN = Color.fromRGBO(61, 199, 159, 1);
 
-  static const Color PRIMARY_MAIN_700 = Color.fromRGBO(114, 204, 217, 1);
-  static const Color PRIMARY_MAIN_500 = Color.fromRGBO(137, 207, 217, 1);
-  static const Color PRIMARY_MAIN_50 = Color.fromRGBO(180, 212, 217, 1);
-  static const Color PRIMARY_MAIN_300 = Color.fromRGBO(158, 210, 217, 1);
-  static const Color PRIMARY_MAIN_900 = Color.fromRGBO(87, 156, 116, 1);
 
-  static const Color SECONDARY_MAIN_700 = Color.fromRGBO(72, 217, 205, 1);
-  static const Color SECONDARY_MAIN_500 = Color.fromRGBO(105, 242, 231, 1);
-  static const Color SECONDARY_MAIN_50 = Color.fromRGBO(201, 242, 239, 1);
-  static const Color SECONDARY_MAIN_300 = Color.fromRGBO(153, 242, 235, 1);
-  static const Color SECONDARY_MAIN_900 = Color.fromRGBO(46, 140, 132, 1);
+  static const Color PRIMARY_700 = Color.fromRGBO(43, 74, 157, 1);
+  static const Color PRIMARY_500 = Color.fromRGBO(54, 118, 236, 1);
+  static const Color PRIMARY_300 = Color.fromRGBO(204, 225, 255, 1);
 
-  static const Color NATURAL_MAIN_800 = Color.fromRGBO(114, 114, 115, 1);
-  static const Color NATURAL_MAIN_700 = Color.fromRGBO(114, 114, 115, 1);
-  static const Color NATURAL_MAIN_600 = Color.fromRGBO(215, 215, 217, 1);
-  static const Color NATURAL_MAIN_900 = Color.fromRGBO(64, 64, 65, 1);
-  static const Color NATURAL_MAIN_50 = Color.fromRGBO(252, 252, 255, 1);
-  static const Color NATURAL_MAIN_300 = Color.fromRGBO(215, 215, 217, 1);
-  static const Color NATURAL_MAIN_500 = Color.fromRGBO(164, 164, 166, 1);
+  static const Color FONT_GRAY = Color.fromRGBO(68, 68, 68, 1);
 
-  static const Color INFORMATION_MAIN_900 = Color.fromRGBO(27, 93, 178, 1);
-  static const Color INFORMATION_MAIN_700 = Color.fromRGBO(59, 137, 238, 1);
-  static const Color INFORMATION_MAIN_500 = Color.fromRGBO(115, 176, 255, 1);
-  static const Color INFORMATION_MAIN_300 = Color.fromRGBO(140, 191, 255, 1);
-  static const Color INFORMATION_MAIN_50 = Color.fromRGBO(166, 205, 255, 1);
+  // static const Color SECONDARY_MAIN_700 = Color.fromRGBO(72, 217, 205, 1);
 
-  static const Color WARNING_MAIN_50 = Color.fromRGBO(255, 216, 153, 1);
-  static const Color WARNING_MAIN_300 = Color.fromRGBO(255, 216, 153, 1);
-  static const Color WARNING_MAIN_500 = Color.fromRGBO(255, 207, 128, 1);
-  static const Color WARNING_MAIN_700 = Color.fromRGBO(250, 184, 76, 1);
-  static const Color WARNING_MAIN_900 = Color.fromRGBO(204, 150, 62, 1);
+  // static const Color SECONDARY_MAIN_50 = Color.fromRGBO(201, 242, 239, 1);
 
-  static const Color ERROR_MAIN_50 = Color.fromRGBO(255, 212, 213, 1);
-  static const Color ERROR_MAIN_300 = Color.fromRGBO(255, 186, 188, 1);
-  static const Color ERROR_MAIN_500 = Color.fromRGBO(255, 161, 164, 1);
-  static const Color ERROR_MAIN_700 = Color.fromRGBO(239, 103, 107, 1);
-  static const Color ERROR_MAIN_900 = Color.fromRGBO(163, 54, 58, 1);
+  // static const Color SECONDARY_MAIN_900 = Color.fromRGBO(46, 140, 132, 1);
 
-  static const Color SHADES_MAIN_50 = Color.fromRGBO(255, 255, 255, 1);
-  static const Color SHADES_MAIN_700 = Color.fromRGBO(74, 132, 140, 1);
-  static const Color SHADES_MAIN_900 = Color.fromRGBO(0, 0, 0, 1);
+  // static const Color NATURAL_MAIN_800 = Color.fromRGBO(114, 114, 115, 1);
+  // static const Color NATURAL_MAIN_600 = Color.fromRGBO(215, 215, 217, 1);
+  // static const Color NATURAL_MAIN_900 = Color.fromRGBO(64, 64, 65, 1);
+  // static const Color NATURAL_MAIN_50 = Color.fromRGBO(252, 252, 255, 1);
+  // static const Color NATURAL_MAIN_500 = Color.fromRGBO(164, 164, 166, 1);
 
-  static const Color BACKGROUND_50 = Color.fromRGBO(255, 255, 255, 1);
-  static const Color BACKGROUND_300 = Color.fromRGBO(249, 249, 249, 1);
+  // static const Color INFORMATION_MAIN_900 = Color.fromRGBO(27, 93, 178, 1);
+  // static const Color INFORMATION_MAIN_700 = Color.fromRGBO(59, 137, 238, 1);
+  // static const Color INFORMATION_MAIN_500 = Color.fromRGBO(115, 176, 255, 1);
+  // static const Color INFORMATION_MAIN_300 = Color.fromRGBO(140, 191, 255, 1);
+  // static const Color INFORMATION_MAIN_50 = Color.fromRGBO(166, 205, 255, 1);
+
 
   //Blues
-  static const Color blue1 = Color.fromRGBO(229, 247, 251, 1);
-  static const Color blue2 = Color.fromRGBO(191, 239, 245, 1);
-  static const Color blue3 = Color.fromRGBO(153, 229, 239, 1);
-  static const Color blue4 = Color.fromRGBO(102, 216, 230, 1);
-  static const Color blue5 = Color.fromRGBO(51, 203, 222, 1);
-  static const Color blue6 = Color.fromRGBO(0, 190, 214, 1);
-  static const Color blue7 = Color.fromRGBO(0, 152, 171, 1);
-  static const Color blue8 = Color.fromRGBO(0, 114, 128, 1);
-  static const Color blue9 = Color.fromRGBO(0, 76, 86, 1);
-  static const Color blue10 = Color.fromRGBO(0, 48, 54, 1);
-
+  static const Color infoBlue1 = Color.fromRGBO(226, 237, 252, 1);
+  static const Color infoBlue2 = Color.fromRGBO(196, 220, 249, 1);
+  static const Color infoBlue3 = Color.fromRGBO(157, 196, 245, 1);
+  static const Color infoBlue4 = Color.fromRGBO(118, 172, 242, 1);
+  static const Color infoBlue5 = Color.fromRGBO(88, 154, 239, 1);
+  static const Color infoBlue6 = Color.fromRGBO(59, 137, 236, 1);
+  static const Color infoBlue7 = Color.fromRGBO(47, 110, 189, 1);
+  static const Color infoBlue8 = Color.fromRGBO(35, 82, 142, 1);
+  static const Color infoBlue9 = Color.fromRGBO(24, 55, 94, 1);
+  static const Color infoBlue10 = Color.fromRGBO(15, 34, 59, 1);
+  
   //Reds
-  static const Color red1 = Color.fromRGBO(253, 240, 240, 1);
+  static const Color red1 = Color.fromRGBO(233, 40, 56, 1);
   static const Color red2 = Color.fromRGBO(251, 217, 218, 1);
   static const Color red3 = Color.fromRGBO(249, 194, 196, 1);
   static const Color red4 = Color.fromRGBO(245, 164, 166, 1);
@@ -110,20 +83,8 @@ mixin AppColors {
   static const Color yellow9 = Color.fromRGBO(100, 74, 30, 1);
   static const Color yellow10 = Color.fromRGBO(100, 74, 30, 1);
 
-  //InfoBlue
-  static const Color infoBlue1 = Color.fromRGBO(226, 237, 252, 1);
-  static const Color infoBlue2 = Color.fromRGBO(196, 220, 249, 1);
-  static const Color infoBlue3 = Color.fromRGBO(157, 196, 245, 1);
-  static const Color infoBlue4 = Color.fromRGBO(118, 172, 242, 1);
-  static const Color infoBlue5 = Color.fromRGBO(88, 154, 239, 1);
-  static const Color infoBlue6 = Color.fromRGBO(59, 137, 236, 1);
-  static const Color infoBlue7 = Color.fromRGBO(47, 110, 189, 1);
-  static const Color infoBlue8 = Color.fromRGBO(35, 82, 142, 1);
-  static const Color infoBlue9 = Color.fromRGBO(24, 55, 94, 1);
-  static const Color infoBlue10 = Color.fromRGBO(15, 34, 59, 1);
-
   //Greys
-  static const Color grey1 = Color.fromRGBO(255, 255, 255, 1);
+  static const Color grey1 = Color.fromRGBO(68, 68, 68, 1);
   static const Color grey2 = Color.fromRGBO(249, 249, 249, 1);
   static const Color grey3 = Color.fromRGBO(240, 240, 240, 1);
   static const Color grey4 = Color.fromRGBO(233, 233, 233, 1);
@@ -223,12 +184,9 @@ mixin AppColors {
   static const Color UI_GREY = Color.fromRGBO(150, 159, 164, 1);
 
   //GRADIENT
-  static const List<Color> GRADIENTS_MAIN_900 = [
-    Color.fromRGBO(114, 204, 217, 1),
-    Color.fromRGBO(72, 217, 205, 1),
+  static const List<Color> GRADIENTS = [
+    Color.fromRGBO(54, 118, 236, 1),
+    Color.fromRGBO(100, 146, 237, 1),
   ];
-  static const List<Color> GRADIENTS_MAIN_900_WITH_OPACITY = [
-    Color.fromRGBO(114, 204, 217, 0.4),
-    Color.fromRGBO(72, 217, 205, 0.4),
-  ];
+
 }

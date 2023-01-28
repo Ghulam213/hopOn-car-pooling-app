@@ -1,9 +1,13 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:developer';
 import 'dart:io';
 
 import 'package:android_sms_retriever/android_sms_retriever.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:hop_on/Utils/colors.dart';
 
 import 'package:hop_on/config/sizeconfig/size_config.dart';
@@ -11,9 +15,11 @@ import 'package:hop_on/core/auth/provider/login_store.dart';
 import 'package:hop_on/core/auth/widgets/country_picker.dart';
 import 'package:hop_on/core/auth/widgets/login_button.dart';
 import 'package:easy_localization/easy_localization.dart' as ez;
+import 'package:lottie/lottie.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:provider/provider.dart';
 
+import '../widgets/loader.dart';
 import 'otp_screen.dart';
 
 class PhoneAuthScreen extends StatefulWidget {
@@ -61,8 +67,6 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
     }
   }
 
-  bool isSuccess = false;
-  bool isFailure = false;
   final TextEditingController controller = TextEditingController();
 
   Future _performAction(String contact, String code) async {
@@ -75,7 +79,7 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
   }
 
   Future _endAction() async {}
-
+  
   void _clearField() {
     FocusScope.of(context).unfocus();
     _phoneController.clear();
@@ -88,45 +92,77 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
       currentFocus.unfocus();
     }
   }
-
-  @override
+  
+@override
   Widget build(BuildContext context) {
-    return Consumer<LoginStore>(builder: (context, loginStore, _) {
-      return
-          //  Observer(
-          //   builder: (_) =>
-          Scaffold(
+    return Consumer<LoginStore>(
+      builder: (_, loginStore, __) {
+        return Observer(
+          builder: (_) => LoaderHUD(
+            inAsyncCall: false,
+            child: Scaffold(
               key: _scaffoldKey,
-              body: Form(
-                key: _formKey,
-                child: Stack(
-                  children: <Widget>[
-                    Positioned(
-                      left: 0,
-                      bottom: 0,
-                      right: 0,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          // SizedBox(
-                          //     height:
-                          //         (MediaQuery.of(context).viewInsets.bottom >
-                          //                 0.0)
-                          //             ? (_config.uiHeightPx * 0.10).toDouble()
-                          //             : (_config.uiHeightPx * 0.25).toDouble()),
-
-                          Text(
-                            'Enter your mobile number',
-                            style: const TextStyle(
-                                color: AppColors.LM_FONT_SECONDARY_GREY8,
-                                fontSize: 15),
-                          ),
+              backgroundColor: Colors.white,
+              body: SafeArea(
+                child: SingleChildScrollView(
+                  child: Form(
+                    key: _formKey,
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height,
                       
-                          Text(
-                            'We will send you a confirmation code ',
-                            style: const TextStyle(
-                                color: AppColors.LM_FONT_SECONDARY_GREY8,
-                                fontSize: 12),
+                      child: Column(
+                        children: <Widget>[
+                        
+                          SizedBox(
+                              height:
+                                  (MediaQuery.of(context).viewInsets.bottom >
+                                          0.0)
+                                      ? (_config.uiHeightPx * 0.10).toDouble()
+                                      : (_config.uiHeightPx * 0.25).toDouble()),
+                          Lottie.asset(
+                            "assets/animations/waiting.json",
+                            // height: 300.0,
+                            // width: 250.0,
+                          ),
+                             
+                        
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Container(
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: Text('Lets Hop On',
+                                  style: TextStyle(
+                                      color: AppColors.PRIMARY_500,
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.w800)))
+                          ,
+                          SizedBox(height: 20),
+                          Container(
+                              constraints: const BoxConstraints(maxWidth: 500),
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: RichText(
+                                textAlign: TextAlign.center,
+                                text: TextSpan(children: <TextSpan>[
+                                  TextSpan(
+                                    text:
+                                        'We will send you a code on this mobile number',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(
+                                          color: AppColors.PRIMARY_500,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                  ),
+                            
+                                ]),
+                              )),
+                          const SizedBox(
+                            height: 20,
                           ),
                           SizedBox(
                             height: _config.sh(80).toDouble(),
@@ -144,39 +180,47 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
                                   controller),
                             ),
                           ),
-                          SizedBox(
-                            width: SizeConfig.screenWidthDp! * 0.84,
-                            child: LoginButton(
-                              text: ez.tr('Next'),
-                              isLoading: loginStore.isPhoneLoading,
-                              onPress: () {
-                                loginStore.phoneLogin(
-                                    context, fullCode, _applicationSignature);
-                                if (loginStore.isPhoneDone == true) {
-                                  _clearField();
-                                }
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                      builder: (_) =>
-                                          OtpPage(phoneNumber: fullCode)),
-                                );
-                              },
-                            ),
+                          LoginButton(
+                            text: ez.tr('Log In'),
+                            isLoading: loginStore.isPhoneLoading,
+                            onPress: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                    builder: (_) =>
+                                        OtpPage(phoneNumber: '336055566')),
+                              );
+                              // loginStore.phoneLogin(
+                              //     context, fullCode, _applicationSignature);
+                              // if (loginStore.isPhoneDone == true) {
+                              //   _clearField();
+                              // }
+                            },
                           ),
+                                  
                           SizedBox(
-                              height:
-                                  (MediaQuery.of(context).viewInsets.bottom >
-                                          0.0)
-                                      ? (_config.uiHeightPx * 0.2).toDouble()
-                                      : (_config.uiHeightPx * 0.6).toDouble()),
+                              height: (MediaQuery.of(context)
+                                          .viewInsets
+                                          .bottom >
+                                      0.0)
+                                  ? (_config.uiHeightPx * 0.0375).toDouble()
+                                  : (_config.uiHeightPx * 0.085).toDouble()),
                         ],
-                      ),
+                            
+                        ),
+                     
+                            
+                       
+                   
+                   
                     ),
-                  ],
+                   
+                  ),
                 ),
-              )
-              // ),
-              );
-    });
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 }
