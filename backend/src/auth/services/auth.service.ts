@@ -18,8 +18,6 @@ import { UserEntity } from 'src/user/entities';
 import { uuid } from 'uuidv4';
 import { PrismaService } from 'src/prisma/services';
 
-var a = 2;
-
 @Injectable()
 export class AuthService {
   constructor(
