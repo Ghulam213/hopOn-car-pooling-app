@@ -1,7 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, SwaggerDocumentOptions, DocumentBuilder } from '@nestjs/swagger';
 import { NestFactory } from '@nestjs/core';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from 'src/prisma/services/prisma.service';
 import { AppModule } from 'src/app.module';
 
 async function bootstrap() {

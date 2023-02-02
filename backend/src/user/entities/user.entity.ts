@@ -6,6 +6,9 @@ export class UserEntity implements Omit<User, 'password'> {
   id: string;
 
   @ApiProperty()
+  coginitoId: string;
+
+  @ApiProperty()
   email: string;
 
   @ApiProperty()
@@ -24,13 +27,13 @@ export class UserEntity implements Omit<User, 'password'> {
   timezone: string | null;
 
   @ApiProperty()
-  currentCity: string;
+  currentCity: string | null;
 
   @ApiProperty({ enum: GenderEnum })
-  gender: GenderEnum;
+  gender: GenderEnum | null;
 
   @ApiProperty()
-  birthDate: Date;
+  birthDate: Date | null;
 
   @ApiProperty()
   profilePic: string;

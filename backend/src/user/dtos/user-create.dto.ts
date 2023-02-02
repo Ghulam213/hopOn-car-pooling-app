@@ -9,11 +9,19 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUUID,
   MaxLength,
 } from 'class-validator';
 import { Trim } from 'src/library/decorators';
 
 export class UserCreateDto implements Prisma.UserCreateInput {
+  @ApiProperty()
+  @Trim()
+  @IsNotEmpty()
+  @IsUUID()
+  @IsDefined()
+  coginitoId: string;
+
   @ApiProperty()
   @Trim()
   @IsNotEmpty()

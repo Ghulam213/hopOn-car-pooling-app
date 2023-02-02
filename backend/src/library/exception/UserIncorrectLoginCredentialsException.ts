@@ -11,10 +11,10 @@ interface UserIncorrectEmailPasswordExceptionInterface {
   variables?: VariablesInterface;
 }
 
-const defaultMessage = 'The email/password you entered are not correct';
+const defaultMessage = 'The phone number or password you entered are not correct';
 
-export class UserIncorrectEmailPasswordException extends BadRequestException {
+export class UserIncorrectLoginCredentialsException extends BadRequestException {
   constructor(error?: UserIncorrectEmailPasswordExceptionInterface, description?: string) {
-    super(prepareError(defaultMessage, ErrorCodeEnum.USER_INCORRECT_EMAIL_PASSWORD, error), description);
+    super(prepareError(defaultMessage, ErrorCodeEnum.USER_INCORRECT_LOGIN_CREDENTIALS, error), description);
   }
 }

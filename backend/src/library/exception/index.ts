@@ -1,9 +1,6 @@
 export { InvalidUUIDInputException } from './InvalidUUIDInputException';
 export { UnauthorizedException } from './UnauthorizedException';
-export { UserEmailAlreadyExistsException } from './UserEmailAlreadyExistsException';
-export { UserEmailNotProvidedException } from './UserEmailNotProvidedException';
-export { UserInvalidCurrentPasswordException } from './UserInvalidCurrentPasswordException';
-export { UserInvalidTokenException } from './UserInvalidTokenException';
+export { UserAlreadyExistsException } from './UserAlreadyExistsException';
 export { UserNotFoundException } from './UserNotFoundException';
 export { UserActivationException } from './UserActivationException';
-export { UserIncorrectEmailPasswordException } from './UserIncorrectEmailPasswordException';
+export { UserIncorrectLoginCredentialsException } from './UserIncorrectLoginCredentialsException';
