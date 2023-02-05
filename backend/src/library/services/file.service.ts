@@ -1,8 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ConfigService, ConfigType } from '@nestjs/config';
+import { ConfigType } from '@nestjs/config';
 import { S3 } from 'aws-sdk';
 import { applicationConfig } from 'src/config';
-import { tryCatchWrapper } from 'src/library/utils/tryCatchWrapper';
 
 @Injectable()
 export class FileService {
