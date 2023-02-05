@@ -8,6 +8,7 @@ import { applicationConfig, validationSchema } from 'src/config';
 import { LibraryModule } from 'src/library';
 import { PrismaModule } from 'src/prisma';
 import { UserModule } from 'src/user';
+import { DriverModule } from 'src/driver';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { UserModule } from 'src/user';
     UserModule,
     AuthModule,
     LibraryModule,
+    DriverModule,
   ],
   controllers: [AppController],
   providers: [],
