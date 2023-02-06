@@ -1,13 +1,10 @@
 // ignore_for_file: prefer_const_constructors
-
 import 'dart:developer';
 import 'dart:io';
 
 import 'package:android_sms_retriever/android_sms_retriever.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:hop_on/Utils/colors.dart';
 
 import 'package:hop_on/config/sizeconfig/size_config.dart';
@@ -15,34 +12,32 @@ import 'package:hop_on/core/auth/provider/login_store.dart';
 import 'package:hop_on/core/auth/widgets/country_picker.dart';
 import 'package:hop_on/core/auth/widgets/login_button.dart';
 import 'package:easy_localization/easy_localization.dart' as ez;
-import 'package:lottie/lottie.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/loader.dart';
 import 'otp_screen.dart';
 
-class PhoneAuthScreen extends StatefulWidget {
+class LoginScreen extends StatefulWidget {
   static const routeName = '/phoneAuth';
 
-  // constructor
-  const PhoneAuthScreen({Key? key}) : super(key: key);
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  _PhoneAuthScreenState createState() => _PhoneAuthScreenState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final SizeConfig _config = SizeConfig();
   final _formKey = GlobalKey<FormState>();
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  final _phoneController = TextEditingController();
 
   String countryCode = '';
   String number = '';
   String fullCode = '';
   String? _applicationSignature;
+
   @override
   void initState() {
     super.initState();
@@ -50,10 +45,8 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
       try {
         getSignature();
       } catch (e) {
-        Sentry.captureMessage("PhoneAuthScreen:initState() ${e.toString()}");
-        log("Error getting app signature");
-
-        log(e.toString());
+        Sentry.captureMessage('PhoneAuthScreen:initState() ${e.toString()}');
+        log("Error getting app signature${e.toString()}");
       }
     }
   }
@@ -79,11 +72,6 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
   }
 
   Future _endAction() async {}
-  
-  void _clearField() {
-    FocusScope.of(context).unfocus();
-    _phoneController.clear();
-  }
 
   void dismissFocus() {
     final FocusScopeNode currentFocus = FocusScope.of(context);
@@ -92,14 +80,14 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
       currentFocus.unfocus();
     }
   }
-  
-@override
+
+  @override
   Widget build(BuildContext context) {
     return Consumer<LoginStore>(
       builder: (_, loginStore, __) {
         return Observer(
           builder: (_) => LoaderHUD(
-            inAsyncCall: false,
+            inAsyncCall: false, // TODO: add loading state
             child: Scaffold(
               key: _scaffoldKey,
               backgroundColor: Colors.white,
@@ -109,40 +97,26 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
                     key: _formKey,
                     child: SizedBox(
                       height: MediaQuery.of(context).size.height,
-                      
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
-                        
                           SizedBox(
                               height:
                                   (MediaQuery.of(context).viewInsets.bottom >
                                           0.0)
                                       ? (_config.uiHeightPx * 0.10).toDouble()
                                       : (_config.uiHeightPx * 0.25).toDouble()),
-                          Lottie.asset(
-                            "assets/animations/waiting.json",
-                            // height: 300.0,
-                            // width: 250.0,
-                          ),
-                             
-                        
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Container(
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              child: Text('Lets Hop On',
-                                  style: TextStyle(
-                                      color: AppColors.PRIMARY_500,
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.w800)))
-                          ,
-                          SizedBox(height: 20),
-                          Container(
-                              constraints: const BoxConstraints(maxWidth: 500),
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 10),
+                          Text('Welcome back',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
+                                    color: AppColors.PRIMARY_500,
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w400,
+                                  )),
+                          Padding(
+                              padding: EdgeInsets.only(bottom: 10),
                               child: RichText(
                                 textAlign: TextAlign.center,
                                 text: TextSpan(children: <TextSpan>[
@@ -158,12 +132,8 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
                                           fontWeight: FontWeight.w400,
                                         ),
                                   ),
-                            
                                 ]),
                               )),
-                          const SizedBox(
-                            height: 20,
-                          ),
                           SizedBox(
                             height: _config.sh(80).toDouble(),
                             width: SizeConfig.screenWidthDp! * 0.94,
@@ -180,23 +150,40 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
                                   controller),
                             ),
                           ),
+                          Container(
+                              width: SizeConfig.screenWidthDp! * 0.94,
+                              padding:
+                                  const EdgeInsets.only(top: 20, bottom: 10),
+                              child: RichText(
+                                textAlign: TextAlign.center,
+                                text: TextSpan(children: <TextSpan>[
+                                  TextSpan(
+                                    text: 'enter password',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(
+                                          color: AppColors.PRIMARY_500,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                  ),
+                                ]),
+                              )),
+                          PasswordInput(config: _config),
                           LoginButton(
                             text: ez.tr('Log In'),
                             isLoading: loginStore.isPhoneLoading,
                             onPress: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                    builder: (_) =>
-                                        OtpPage(phoneNumber: '336055566')),
+                                    builder: (_) => OtpPage(
+                                          phoneNumber: '336055566',
+                                          otpmode: 'login',
+                                        )),
                               );
-                              // loginStore.phoneLogin(
-                              //     context, fullCode, _applicationSignature);
-                              // if (loginStore.isPhoneDone == true) {
-                              //   _clearField();
-                              // }
                             },
                           ),
-                                  
                           SizedBox(
                               height: (MediaQuery.of(context)
                                           .viewInsets
@@ -205,15 +192,8 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
                                   ? (_config.uiHeightPx * 0.0375).toDouble()
                                   : (_config.uiHeightPx * 0.085).toDouble()),
                         ],
-                            
-                        ),
-                     
-                            
-                       
-                   
-                   
+                      ),
                     ),
-                   
                   ),
                 ),
               ),
@@ -221,6 +201,79 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
           ),
         );
       },
+    );
+  }
+}
+
+class PasswordInput extends StatelessWidget {
+  const PasswordInput({
+    super.key,
+    required SizeConfig config,
+  }) : _config = config;
+
+  final SizeConfig _config;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: _config.sh(80).toDouble(),
+      width: SizeConfig.screenWidthDp! * 0.94,
+      child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: TextField(
+              keyboardType: TextInputType.number,
+              cursorColor: AppColors.PRIMARY_500,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium!
+                  .copyWith(fontSize: 15, height: 1.0, color: AppColors.grey1),
+              textAlignVertical: TextAlignVertical.top,
+              decoration: InputDecoration(
+                  counterText: "",
+                  contentPadding: const EdgeInsets.all(10),
+                  fillColor: Colors.white,
+                  filled: true,
+                  hintStyle: const TextStyle(
+                    color: AppColors.grey1,
+                    fontSize: 14,
+                  ),
+                  hintText: "",
+                  border: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: AppColors.grey1,
+                    ),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: AppColors.red1,
+                    ),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  disabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color:
+                            AppColors.LM_FONT_BLOCKTEXT_GREY7.withOpacity(0.5)),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: AppColors.LM_FONT_BLOCKTEXT_GREY7,
+                    ),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: AppColors.red1),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: AppColors.BLUE,
+                    ),
+                    borderRadius: BorderRadius.circular(5),
+                  )))),
     );
   }
 }

@@ -12,9 +12,14 @@ import 'package:hop_on/config/sizeconfig/size_config.dart';
 import 'package:hop_on/core/auth/provider/login_store.dart';
 import 'package:hop_on/core/onboarding/screens/splash_screen.dart';
 import 'package:hop_on/utils/colors.dart';
+import 'package:location/location.dart';
+import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Utils/styles.dart';
+
+late SharedPreferences sharedPreferences;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,12 +45,38 @@ Future<void> main() async {
   //         });
   await EasyLocalization.ensureInitialized();
   NetworkConfig().initNetworkConfig();
+  await initializeLocationAndSave();
   runApp(EasyLocalization(
       supportedLocales: const [Locale('en', ''), Locale('de', '')],
       path:
           'assets/translations', // <-- change the path of the translation files
       fallbackLocale: const Locale('en', ''),
       child: const App()));
+}
+
+initializeLocationAndSave() async {
+  sharedPreferences = await SharedPreferences.getInstance();
+  Location _location = Location();
+  bool? _serviceEnabled;
+  PermissionStatus? _permissionGranted;
+
+  _serviceEnabled = await _location.serviceEnabled();
+  if (!_serviceEnabled) {
+    _serviceEnabled = await _location.requestService();
+  }
+
+  _permissionGranted = await _location.hasPermission();
+  if (_permissionGranted == PermissionStatus.denied) {
+    _permissionGranted = await _location.requestPermission();
+  }
+
+// Get capture the current user location
+  LocationData _locationData = await _location.getLocation();
+  LatLng currentLatLng =
+      LatLng(_locationData.latitude!, _locationData.longitude!);
+
+// Store the user location in sharedPreferences
+  setSharedPrefs('currentLatLong', currentLatLng.toString());
 }
 
 class App extends StatefulWidget {
@@ -77,12 +108,10 @@ class _AppState extends State<App> with WidgetsBindingObserver {
         ],
         child: Consumer<LoginStore>(
           builder: (ctx, auth, _) => MaterialApp(
-            supportedLocales: const [
-              Locale('en', ''), Locale('de', '')
-            ],
+            supportedLocales: const [Locale('en', ''), Locale('de', '')],
 
             key: GlobalVariable.scaffoldKey,
-            onGenerateRoute: RouteGenerator.generateRoute,
+            // onGenerateRoute: RouteGenerator.generateRoute,
             title: 'hopOn',
             navigatorKey: Get.key,
             debugShowCheckedModeBanner: false,

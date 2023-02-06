@@ -100,7 +100,7 @@ mixin AppColors {
   //Background
   static const Color LM_BACKGROUND_GREY1 = Color.fromRGBO(255, 255, 255, 1);
   static const Color LM_BACKGROUND_GREY2 = Color.fromRGBO(249, 249, 249, 1);
-  static const Color LM_BACKGROUND_BASIC = Color.fromRGBO(249, 249, 249, 1);
+  static const Color LM_BACKGROUND_BASIC = Color.fromRGBO(255, 255, 255, 1);
   static const Color LM_BACKGROUND_GREY3 = Color.fromRGBO(240, 240, 240, 1);
   static const Color LM_BACKGROUND_GREY4 = Color.fromRGBO(233, 233, 233, 1);
 
