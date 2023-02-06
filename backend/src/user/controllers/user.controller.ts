@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Put, Query, UseGuards } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiHeader, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserService } from 'src/user/services';
 import { User } from '@prisma/client';
 import { UserPageModel } from 'src/user/models';
@@ -11,6 +11,10 @@ import { AccessTokenGuard } from 'src/auth/guards';
 
 @Controller()
 @ApiTags('user')
+@ApiHeader({
+  name: 'Authorization',
+  description: 'Bearer <access_token>',
+})
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -35,16 +39,10 @@ export class UserController {
     return this.userService.findUsers({ ...pageOptionsDto });
   }
 
-  // @Post('/user')
-  // @ApiCreatedResponse({ type: UserEntity })
-  // async createUser(@Body() userData: UserCreateDto): Promise<User> {
-  //   return this.userService.createUser(userData);
-  // }
-
   @UseGuards(AccessTokenGuard)
   @Put('user/:id')
   @ApiOkResponse({ type: UserEntity })
-  async updateUser(@Param('id', ParseUUIDStringPipe) id: string, @Body() userData: UserUpdateDto): Promise<User> {
+  async updateUser(@Param('id', ParseUUIDStringPipe) id: string, @Body() userData: UserUpdateDto): Promise<UserEntity> {
     return this.userService.updateUser({
       where: { id },
       data: userData,
@@ -54,7 +52,9 @@ export class UserController {
   @UseGuards(AccessTokenGuard)
   @Delete('user/:id')
   @ApiOkResponse({ type: UserEntity })
-  async deleteUser(@Param('id', ParseUUIDStringPipe) id: string): Promise<User> {
+  async deleteUser(@Param('id', ParseUUIDStringPipe) id: string): Promise<UserEntity> {
     return this.userService.deleteUser({ id });
+
+    // TODO: Also delete user's cognitoId.
   }
 }

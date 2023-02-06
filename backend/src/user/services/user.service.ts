@@ -67,10 +67,14 @@ export class UserService {
       throw new UserNotFoundException({ variables: { id: where.id } });
     }
 
-    return this.prisma.user.update({
+    const updatedUser = await this.prisma.user.update({
       data,
       where,
     });
+
+    delete updatedUser.password;
+
+    return updatedUser;
   }
 
   async deleteUser(where: Prisma.UserWhereUniqueInput): Promise<User> {
@@ -80,8 +84,12 @@ export class UserService {
       throw new UserNotFoundException({ variables: { id: where.id } });
     }
 
-    return this.prisma.user.delete({
+    const deletedUser = await this.prisma.user.delete({
       where,
     });
+
+    delete deletedUser.password;
+
+    return deletedUser;
   }
 }
