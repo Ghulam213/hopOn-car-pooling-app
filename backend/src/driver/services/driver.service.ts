@@ -9,13 +9,14 @@ export class DriverService {
   constructor(private prisma: PrismaService, private readonly userService: UserService) {}
 
   async createDriver(driveCreateDto: DriverCreateDto) {
-    const { userId } = driveCreateDto;
+    const { userId, vehicle, ...restOfData } = driveCreateDto;
 
     await this.userService.findUser({ id: userId });
 
     return this.prisma.driver.create({
       data: {
-        ...driveCreateDto,
+        ...restOfData,
+        userId,
         vehicles: {
           createMany: {
             data: driveCreateDto.vehicle,

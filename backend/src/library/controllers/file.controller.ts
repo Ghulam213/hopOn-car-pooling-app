@@ -1,21 +1,27 @@
-import { Controller, Post, UseGuards } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiHeader, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AccessTokenGuard } from 'src/auth/guards';
-import { FileCreateDto } from 'src/library/dtos';
+import { FileCreateModel } from 'src/library/models';
 import { FileService } from 'src/library/services';
+import { uuid } from 'uuidv4';
 
 @Controller()
 @ApiTags('file')
+@ApiHeader({
+  name: 'Authorization',
+  description: 'Bearer token',
+})
 export class FileController {
   constructor(private readonly fileService: FileService) {}
 
   @UseGuards(AccessTokenGuard)
-  @Post('file/getSignedUrl')
-  @ApiOkResponse({ type: () => ({ signedUrl: '' }) })
-  async updateUser(fileCreateDto: FileCreateDto): Promise<{ signedUrl: string }> {
-    const signedUrl = await this.fileService.getS3SignedUrl(fileCreateDto.key, fileCreateDto.contentType);
-    return {
-      signedUrl,
-    };
+  @ApiOkResponse({ type: FileCreateModel })
+  @Post('file')
+  @UseInterceptors(FileInterceptor('file'))
+  async createFile(@UploadedFile() file: Express.Multer.File): Promise<FileCreateModel> {
+    const uniqueFileName = `${uuid()}-${file.originalname}`;
+    return this.fileService.uploadFile(uniqueFileName, file.buffer);
   }
 }

@@ -2,6 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { S3 } from 'aws-sdk';
 import { applicationConfig } from 'src/config';
+import { FileCreateModel } from 'src/library/models';
+import { uuid } from 'uuidv4';
 
 @Injectable()
 export class FileService {
@@ -18,7 +20,7 @@ export class FileService {
     });
   }
 
-  async uploadFile(key: string, file: Buffer): Promise<{ key: string; url: string }> {
+  async uploadFile(key: string, file: Buffer): Promise<FileCreateModel> {
     const params = {
       Bucket: this.appConfig.imageUploadBucket,
       Key: key,
@@ -26,9 +28,10 @@ export class FileService {
     };
 
     const uploadedFile = await this.s3.upload(params).promise();
+
     return {
       key: uploadedFile.Key,
-      url: uploadedFile.Location,
+      fileUrl: uploadedFile.Location,
     };
   }
 
