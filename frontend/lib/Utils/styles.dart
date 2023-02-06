@@ -4,7 +4,7 @@ import 'package:hop_on/utils/colors.dart';
 mixin Styles {
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,
-    primaryColor: AppColors.BLUE,
+    primaryColor: AppColors.PRIMARY_500,
     iconTheme: const IconThemeData(color: Colors.black, size: 15),
     textTheme: const TextTheme(
         bodyLarge: TextStyle(
@@ -37,10 +37,10 @@ mixin Styles {
       onError: AppColors.RED,
       onPrimary: AppColors.BLUE,
       onSecondary: AppColors.PRIMARY_700,
-      onSurface: AppColors.PRIMARY_300,
+      onSurface: AppColors.PRIMARY_500,
       primary: AppColors.BLUE,
       secondary: AppColors.PRIMARY_700,
-      surface: AppColors.PRIMARY_300,
+      surface: AppColors.PRIMARY_500,
     ),
   );
 

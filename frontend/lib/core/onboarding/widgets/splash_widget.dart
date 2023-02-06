@@ -38,6 +38,7 @@ class _SplashWidgetState extends State<SplashWidget> {
                       "assets/images/logo.svg",
                       width: SizeConfig.screenWidthDp! - 120,
                       height: SizeConfig().sh(100).toDouble(),
+                        color: AppColors.PRIMARY_500
                     ),
                   ),
                 ),
@@ -54,27 +55,13 @@ class _SplashWidgetState extends State<SplashWidget> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        context.locale.toString() == 'en' ? "en" : "ur",
-                        style: const TextStyle(
-                            color: AppColors.LM_FONT_SECONDARY_GREY8,
-                            fontSize: 15),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      const SizedBox(
-                        width: 2,
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        context.locale.toString() == 'en' ? "en" : "ur",
-                        style: const TextStyle(
-                            color: AppColors.LM_FONT_SECONDARY_GREY8,
-                            fontSize: 15),
-                      ),
+                    
+                      // Text(
+                      //   context.locale.toString() == 'en' ? "en" : "ur",
+                      //   style: const TextStyle(
+                      //       color: AppColors.LM_FONT_SECONDARY_GREY8,
+                      //       fontSize: 15),
+                      // ),
                     ],
                   ),
                 ))
