@@ -9,6 +9,7 @@ export const applicationConfig = registerAs('application', () => ({
   awsSessionToken: process.env.AWS_SESSION_TOKEN,
   cognitoClientId: process.env.COGNITO_CLIENT_ID,
   cognitoUserPoolId: process.env.COGNITO_USER_POOL_ID,
+  imageUploadBucket: process.env.IMAGE_UPLOAD_BUCKET,
   jwt: {
     access: {
       secret: process.env.JWT_SECRET,

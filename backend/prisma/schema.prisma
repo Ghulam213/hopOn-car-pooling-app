@@ -20,6 +20,11 @@ enum GenderEnum {
   FEMALE
 }
 
+enum VehicleTypeEnum {
+  CAR
+  BIKE
+}
+
 model User {
   id          String          @id @default(uuid())
   coginitoId  String          @unique
@@ -40,4 +45,28 @@ model User {
   currentMode CurrentModeEnum
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
+  driver      Driver?
+}
+model Driver {
+  id            String          @id @default(uuid())
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  cnicFront     String
+  cnicBack      String
+  licenseFront  String
+  licenseBack   String
+  user          User            @relation(fields: [userId], references: [id])
+  userId        String          @unique
+  vehicles       Vehicle[]
+}
+model Vehicle {
+  id              String          @id @default(uuid())
+  vehicleType     VehicleTypeEnum
+  vehicleBrand    String
+  vehicleModel    String
+  vehicleColor    String
+  vehiclePhoto    String
+  vehicleRegImage String
+  driver          Driver          @relation(fields: [driverId], references: [id])
+  driverId        String
 }

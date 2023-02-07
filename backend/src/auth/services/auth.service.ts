@@ -179,11 +179,10 @@ export class AuthService {
    *
    * Sign them using a private secret.
    */
-  public generateUserApiKey(userId: string): string {
+  public generateUserApiKey(): string {
     const secret = this.appConfig.apiKey.secret;
     const payload = {
-      userId,
-      random: uuid(),
+      uuid: uuid(),
     };
     return this.jwtService.sign(payload, { secret });
   }
@@ -196,7 +195,7 @@ export class AuthService {
     const secret = this.appConfig.apiKey.secret;
     try {
       const payload = this.jwtService.verify(apiKey, { secret });
-      return payload.userId;
+      return payload.uuid;
     } catch (error) {
       throw new UnauthorizedException({ variables: { message: 'This action is unauthorized' } });
     }

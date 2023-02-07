@@ -26,7 +26,10 @@ export class AuthController {
   @UseGuards(RefreshTokenGuard)
   @Post('/refresh-token')
   @ApiOkResponse({ type: SessionModel })
-  @ApiHeader({ name: 'authorization' })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer <refresh_token>',
+  })
   async refreshToken(@Body() refreshTokenData: RefreshTokenDto): Promise<SessionModel> {
     return this.authService.rotateRefreshToken(refreshTokenData.refreshToken);
   }
