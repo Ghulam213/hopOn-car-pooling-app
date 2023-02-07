@@ -1,5 +1,7 @@
-import { Driver } from '@prisma/client';
+import { Driver, Vehicle } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
+import { VehicleEntity } from 'src/driver/entities/vehicle.entity';
+import { UserEntity } from 'src/user/entities';
 
 export class DriverEntity implements Driver {
   @ApiProperty()
@@ -19,6 +21,18 @@ export class DriverEntity implements Driver {
 
   @ApiProperty()
   userId: string;
+
+  @ApiProperty({ isArray: true, type: () => VehicleEntity })
+  vehicles?: Vehicle[];
+
+  @ApiProperty({ type: UserEntity })
+  user?: UserEntity;
+
+  @ApiProperty()
+  verified: boolean;
+
+  @ApiProperty()
+  active: boolean;
 
   @ApiProperty()
   createdAt: Date;

@@ -8,9 +8,13 @@ import { UserPageModel } from 'src/user/models';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async findUser(userWhereUniqueInput: Prisma.UserWhereUniqueInput): Promise<User | null> {
+  async findUser(
+    userWhereUniqueInput: Prisma.UserWhereUniqueInput,
+    include?: Prisma.UserInclude,
+  ): Promise<User | null> {
     const user = await this.prisma.user.findUnique({
       where: userWhereUniqueInput,
+      include,
     });
 
     if (!user) {
