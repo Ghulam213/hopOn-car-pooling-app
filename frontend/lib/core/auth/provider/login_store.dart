@@ -79,7 +79,10 @@ abstract class LoginStoreBase with Store {
             Navigator.of(context).push(
               MaterialPageRoute(
                   builder: (_) =>
-                      OtpPage(phoneNumber: phone)),
+                      OtpPage(
+                        phoneNumber: phone,
+                        otpmode: 'login',
+                      )),
             );
           });
         } else {

@@ -2,9 +2,10 @@ import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:hop_on/core/auth/screens/auth_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../auth/screens/phone_login.dart';
+import '../../auth/screens/login_screen.dart';
 import '../widgets/splash_widget.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -39,7 +40,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // if (token == null) {
     Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => PhoneAuthScreen()));
+        MaterialPageRoute(builder: (context) => AuthScreen()));
     // }
     // else {
     //  // navigate to home screen

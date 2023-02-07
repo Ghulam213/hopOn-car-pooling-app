@@ -1,0 +1,3 @@
+machine api.mapbox.com
+  login mapbox
+  password pk.eyJ1IjoiaG9wb25hcHAiLCJhIjoiY2xkbHl0Ynp5MDRjMzNua2J6ZTVxYTdoayJ9.aszB3q-5-dPp3fYIn05O6g

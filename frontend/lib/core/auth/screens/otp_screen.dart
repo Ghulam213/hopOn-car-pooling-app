@@ -2,28 +2,29 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:android_sms_retriever/android_sms_retriever.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:hop_on/core/auth/screens/register_info_screen.dart';
+import 'package:hop_on/core/map/screens/home.dart';
+import 'package:hop_on/core/profile/screens/profile_screen.dart';
 import 'package:lottie/lottie.dart';
 import 'package:numeric_keyboard/numeric_keyboard.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:hop_on/config/sizeconfig/size_config.dart';
 import 'package:hop_on/core/auth/provider/login_store.dart';
 import 'package:easy_localization/easy_localization.dart' as ez;
-import 'package:hop_on/core/auth/widgets/login_button.dart';
 import 'package:hop_on/utils/colors.dart';
-import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 
 class OtpPage extends StatefulWidget {
   static const routeName = '/otp';
   // passed from previous screen
   final String? phoneNumber;
-  // constructor
+  final String otpmode;
+  
   const OtpPage({
     Key? key,
     this.phoneNumber = '',
+    required this.otpmode,
   }) : super(key: key);
 
   @override
@@ -43,14 +44,6 @@ class _OtpPageState extends State<OtpPage> {
   // array to store joined code
   List<String> code = ['', '', '', '', '', ''];
 
-  void _setCode(int position, String value) {
-    setState(() {
-      code[position] = value;
-    });
-  }
-
-
-
   void _onKeyboardTap(String value) {
 
     setState(() {
@@ -58,27 +51,6 @@ class _OtpPageState extends State<OtpPage> {
     });
     debugPrint(text);
   }
-
-//      loginStore.validateOtpAndLogin(context, text);
-
-  final _pin1 = TextEditingController();
-  final _pin2 = TextEditingController();
-  final _pin3 = TextEditingController();
-  final _pin4 = TextEditingController();
-  final _pin5 = TextEditingController();
-  final _pin6 = TextEditingController();
-  final _pin7 = TextEditingController();
-  // final _pinPutController = TextEditingController();
-  final _pinPutFocusNode = FocusNode();
-
-  FocusNode? pin1FocusNode;
-  FocusNode? pin2FocusNode;
-  FocusNode? pin3FocusNode;
-  FocusNode? pin4FocusNode;
-  FocusNode? pin5FocusNode;
-  FocusNode? pin6FocusNode;
-  FocusNode? pin7FocusNode;
-
   String _applicationSignature = "";
   String _smsCode = "";
 
@@ -92,27 +64,13 @@ class _OtpPageState extends State<OtpPage> {
     if (Platform.isAndroid) {
       initSmsListener();
     }
-
-    pin1FocusNode = FocusNode();
-    pin2FocusNode = FocusNode();
-    pin3FocusNode = FocusNode();
-    pin4FocusNode = FocusNode();
-    pin5FocusNode = FocusNode();
-    pin6FocusNode = FocusNode();
-    pin7FocusNode = FocusNode();
   }
 
   @override
   void dispose() {
     AndroidSmsRetriever.stopSmsListener();
     super.dispose();
-    pin1FocusNode!.dispose();
-    pin2FocusNode!.dispose();
-    pin3FocusNode!.dispose();
-    pin4FocusNode!.dispose();
-    pin5FocusNode!.dispose();
-    pin6FocusNode!.dispose();
-    pin7FocusNode!.dispose();
+
   }
 
   String otpCode = '';
@@ -158,6 +116,20 @@ class _OtpPageState extends State<OtpPage> {
   Widget build(BuildContext context) {
 
     return Consumer<LoginStore>(builder: (_, loginStore, __) {
+
+      if (widget.otpmode == 'login') {
+        loginStore.validateOtpAndLogin(
+            context,
+            _codeJoined,
+            // _emailOTP['phone'] =
+            widget.phoneNumber!);
+      } else if (widget.otpmode == 'register') {
+        loginStore.validateOtpAndLogin(
+            // TO DO : Update
+            context,
+            _codeJoined,
+            widget.phoneNumber!);
+      }
       return Observer(
         builder: (_) => Scaffold(
           backgroundColor: AppColors.LM_BACKGROUND_GREY1,
@@ -171,16 +143,15 @@ class _OtpPageState extends State<OtpPage> {
                   right: 0,
                   child: Column(
                     children: [
-                
+
                       Lottie.asset(
                         "assets/animations/otp.json",
                         height: 300.0,
                         width: 250.0,
                       ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      SizedBox(
+                    
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10, bottom: 12),
                         child: Align(
                           alignment: context.locale.toString() == 'en'
                               ? Alignment.centerLeft
@@ -199,10 +170,9 @@ class _OtpPageState extends State<OtpPage> {
                           ),
                         ),
                       ),
-                      const SizedBox(
-                        height: 12,
-                      ),
-                      SizedBox(
+                   
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 24),
                         child: Align(
                           alignment: context.locale.toString() == 'en'
                               ? Alignment.centerLeft
@@ -211,8 +181,8 @@ class _OtpPageState extends State<OtpPage> {
                             padding: EdgeInsets.only(
                                 left: SizeConfig.screenWidthDp! * 0.03),
                             child: Text(
-                                ez.tr("An 6 digit code hase been sent to " +
-                                    widget.phoneNumber.toString()),
+                                ez.tr(
+                                    'An 6 digit code hase been sent to ${widget.phoneNumber}'),
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyText1!
@@ -224,47 +194,63 @@ class _OtpPageState extends State<OtpPage> {
                           ),
                         ),
                       ),
-                      const SizedBox(
-                        height: 24,
-                      ),
+                   
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
-                          otpNumberWidget(
-                              _pin1, pin1FocusNode, pin2FocusNode, 0),
-                          otpNumberWidget(
-                              _pin1, pin2FocusNode, pin3FocusNode, 1),
-                          otpNumberWidget(
-                              _pin1, pin3FocusNode, pin4FocusNode, 2),
-                          otpNumberWidget(
-                              _pin1, pin4FocusNode, pin5FocusNode, 3),
-                          otpNumberWidget(
-                              _pin1, pin5FocusNode, pin6FocusNode, 4),
-                          otpNumberWidget(
-                              _pin1, pin6FocusNode, pin7FocusNode, 5,
-                              isLast: true),
+                          otpNumberWidget(0),
+                          otpNumberWidget(1),
+                          otpNumberWidget(2),
+                          otpNumberWidget(3),
+                          otpNumberWidget(4),
+                          otpNumberWidget(5),
                         ],
                       ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      NumericKeyboard(
-                        onKeyboardTap: _onKeyboardTap,
-                        textColor: AppColors.PRIMARY_500,
-                        rightIcon: const Icon(
-                          Icons.backspace,
-                          color: AppColors.PRIMARY_500,
+                    
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: 16, bottom: _config.uiHeightPx * 0.075),
+                        child: NumericKeyboard(
+                          onKeyboardTap: _onKeyboardTap,
+                          textColor: AppColors.PRIMARY_500,
+
+                          rightIcon: const Icon(
+                            Icons.check,
+                            color: AppColors.PRIMARY_500,
+                          ),
+                          rightButtonFn: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (_) => ProfileScreen()),
+                            );
+                            // if (widget.otpmode == 'login') {
+                            //   loginStore.validateOtpAndLogin(
+                            //       context,
+                            //       _codeJoined,
+                            //       // _emailOTP['login'] =
+                            //       widget.phoneNumber!);
+                            // } else if (widget.otpmode == 'register') {
+                            //   loginStore.validateOtpAndLogin(
+                            //       context,
+                            //       _codeJoined,
+                            //       //_emailOTP['register'] =
+                            //       widget.phoneNumber!);
+                            // }
+                          },
+                          leftIcon: const Icon(
+                            Icons.backspace,
+                            color: AppColors.PRIMARY_500,
+                          ),
+                          leftButtonFn: () {
+                            setState(() {
+                              text = text.isNotEmpty
+                                  ? text.substring(0, text.length - 1)
+                                  : text;
+                            });
+                          },
                         ),
-                        rightButtonFn: () {
-                          setState(() {
-                            text = text.isNotEmpty
-                                ? text.substring(0, text.length - 1)
-                                : text;
-                          });
-                        },
                       ),
-                      SizedBox(height: _config.uiHeightPx * 0.075),
                     ],
                   ),
                 ),
@@ -276,9 +262,7 @@ class _OtpPageState extends State<OtpPage> {
     });
   }
 
-  Widget otpNumberWidget(TextEditingController _tcontroller, FocusNode? _fnode,
-      FocusNode? _nextfocus, int _position,
-      {bool isLast = false}) {
+  Widget otpNumberWidget(int _position) {
     try {
       return Container(
         height: 40,
