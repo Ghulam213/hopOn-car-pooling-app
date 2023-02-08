@@ -259,7 +259,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               Expanded(
                                 child: ElevatedButton(
                                   onPressed: details.onStepCancel,
-                                  child: const Text('Back'),
+                                  child: Text('Back',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium!
+                                          .copyWith(
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.w400,
+                                              height: 1.0,
+                                              color: AppColors
+                                                  .LM_BACKGROUND_BASIC)),
                                 ),
                               ),
                             const SizedBox(
@@ -269,8 +278,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               child: ElevatedButton(
                                 onPressed: details.onStepContinue,
                                 child: (isLastStep)
-                                    ? const Text('Submit')
-                                    : const Text('Next'),
+                                    ? Text('Submit',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium!
+                                            .copyWith(
+                                                fontSize: 17,
+                                                fontWeight: FontWeight.w400,
+                                                height: 1.0,
+                                                color: AppColors
+                                                    .LM_BACKGROUND_BASIC))
+                                    : Text('Next',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium!
+                                            .copyWith(
+                                                fontSize: 17,
+                                                fontWeight: FontWeight.w400,
+                                                height: 1.0,
+                                                color: AppColors
+                                                    .LM_BACKGROUND_BASIC)),
                               ),
                             ),
                           ],

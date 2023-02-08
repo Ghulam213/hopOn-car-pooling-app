@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../../Utils/colors.dart';
 import '../../../Utils/constants.dart';
 
 Widget carouselCard(int index, num distance, num duration) {
   return Card(
+    color: Colors.white,
     clipBehavior: Clip.antiAlias,
     child: Padding(
       padding: const EdgeInsets.all(15),
@@ -22,10 +24,52 @@ Widget carouselCard(int index, num distance, num duration) {
                 Text(restaurants[index]['items'],
                     overflow: TextOverflow.ellipsis),
                 const SizedBox(height: 5),
-                Text(
-                  '${distance.toStringAsFixed(2)}kms, ${duration.toStringAsFixed(2)} mins',
-                  style: const TextStyle(color: Colors.tealAccent),
-                )
+                Row(
+                  children: [
+                    Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Distance',
+                            style:
+                                const TextStyle(color: AppColors.PRIMARY_500),
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            '${distance.toStringAsFixed(2)}kms',
+                            style:
+                                const TextStyle(color: AppColors.PRIMARY_500),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(width: 10),
+                    Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Travel Time',
+                            style:
+                                const TextStyle(color: AppColors.PRIMARY_500),
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          '${duration.toStringAsFixed(2)} mins',
+                          style: const TextStyle(color: AppColors.PRIMARY_500),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              
+                
+                
               ],
             ),
           ),

@@ -8,6 +8,7 @@ import 'package:mapbox_gl/mapbox_gl.dart';
 import '../../../Utils/constants.dart';
 import '../../../Utils/helpers.dart';
 import '../../profile/widgets/registration_modal.dart';
+import '../../widgets/drawer.dart';
 import '../widgets/coursel_card.dart';
 
 class MapScreen extends StatefulWidget {
@@ -120,6 +121,7 @@ class _MapScreenState extends State<MapScreen> {
                   items: carouselItems,
                   options: CarouselOptions(
                       height: 110,
+
                       viewportFraction: 0.6,
                       initialPage: 0,
                       enableInfiniteScroll: false,
@@ -142,52 +144,7 @@ class _MapScreenState extends State<MapScreen> {
         },
         child: const Icon(
           Icons.my_location,
-          color: AppColors.FONT_GRAY,
-        ),
-      ),
-    );
-  }
-}
-
-class AppDrawer extends StatelessWidget {
-  final double width;
-  const AppDrawer({Key? key, required this.width}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Drawer(
-      child: Theme(
-        data: ThemeData(brightness: Brightness.dark),
-        child: SizedBox(
-          width: width,
-          height: double.infinity,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              const SizedBox(height: 40),
-              const ListTile(
-                leading: Icon(Icons.new_releases),
-                title: Text('Profile'),
-              ),
-              const ListTile(
-                leading: Icon(Icons.star),
-                title: Text('Ride History'),
-              ),
-              const ListTile(
-                leading: Icon(Icons.map),
-                title: Text('Map'),
-              ),
-              const ListTile(
-                leading: Icon(Icons.settings),
-                title: Text('Settings'),
-              ),
-              const ListTile(
-                leading: Icon(Icons.person),
-                title: Text('Switch to Driver'),
-              ),
-            ],
-          ),
+          color: Colors.white,
         ),
       ),
     );
