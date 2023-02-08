@@ -185,7 +185,7 @@ class _OtpPageState extends State<OtpPage> {
                                     'An 6 digit code hase been sent to ${widget.phoneNumber}'),
                                 style: Theme.of(context)
                                     .textTheme
-                                    .bodyText1!
+                                    .bodyMedium!
                                     .copyWith(
                                         fontWeight: FontWeight.w400,
                                         fontSize: 14,
@@ -222,7 +222,7 @@ class _OtpPageState extends State<OtpPage> {
                           rightButtonFn: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                  builder: (_) => ProfileScreen()),
+                                  builder: (_) => MapScreen()),
                             );
                             // if (widget.otpmode == 'login') {
                             //   loginStore.validateOtpAndLogin(

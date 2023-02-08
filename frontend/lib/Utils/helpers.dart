@@ -22,8 +22,8 @@ void setSharedPrefs(String key, String value) async {
 }
 
 LatLng getLatLngFromSharedPrefs() {
-  return LatLng(sharedPreferences.getDouble('latitude') ?? 23.3,
-      sharedPreferences.getDouble('longitude') ?? 70.3);
+  return LatLng(sharedPreferences.getDouble('latitude') ?? 33.6844,
+      sharedPreferences.getDouble('longitude') ?? 73.0479);
 }
 
 LatLng getLatLngFromRestaurantData(int index) {

@@ -75,7 +75,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         child: Column(
           children: [
             SizedBox(
-              height: _config.uiHeightPx * 0.6,
+              height: _config.uiHeightPx * 0.5,
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(

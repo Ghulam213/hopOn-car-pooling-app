@@ -123,7 +123,6 @@ class _AppState extends State<App> with WidgetsBindingObserver {
                     height: size.height,
                     width: size.width,
                     allowFontScaling: true);
-
                 return const SplashScreen();
               },
             ),
