@@ -157,9 +157,9 @@ mixin _$LoginStore on LoginStoreBase, Store {
       AsyncAction('LoginStoreBase.phoneLogin', context: context);
 
   @override
-  Future<void> phoneLogin(BuildContext context, String phone, String? appSig) {
+  Future<void> phoneLogin(BuildContext context, String phone, String pass) {
     return _$phoneLoginAsyncAction
-        .run(() => super.phoneLogin(context, phone, appSig));
+        .run(() => super.phoneLogin(context, phone, pass));
   }
 
   late final _$validateOtpAndLoginAsyncAction =
@@ -172,14 +172,14 @@ mixin _$LoginStore on LoginStoreBase, Store {
         .run(() => super.validateOtpAndLogin(context, smsCode, phone));
   }
 
-  late final _$validateEmailAndLoginAsyncAction =
-      AsyncAction('LoginStoreBase.validateEmailAndLogin', context: context);
+  late final _$registerUserAsyncAction =
+      AsyncAction('LoginStoreBase.registerUser', context: context);
 
   @override
-  Future<void> validateEmailAndLogin(
-      BuildContext context, String smsCode, String email) {
-    return _$validateEmailAndLoginAsyncAction
-        .run(() => super.validateEmailAndLogin(context, smsCode, email));
+  Future<void> registerUser(BuildContext context, String password, String phone,
+      String email, String firstName, String lastName) {
+    return _$registerUserAsyncAction.run(() => super
+        .registerUser(context, password, phone, email, firstName, lastName));
   }
 
   @override

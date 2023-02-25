@@ -2,9 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:android_sms_retriever/android_sms_retriever.dart';
-import 'package:hop_on/core/auth/screens/register_info_screen.dart';
 import 'package:hop_on/core/map/screens/home.dart';
-import 'package:hop_on/core/profile/screens/profile_screen.dart';
 import 'package:lottie/lottie.dart';
 import 'package:numeric_keyboard/numeric_keyboard.dart';
 import 'package:flutter/material.dart';
@@ -117,19 +115,7 @@ class _OtpPageState extends State<OtpPage> {
 
     return Consumer<LoginStore>(builder: (_, loginStore, __) {
 
-      if (widget.otpmode == 'login') {
-        loginStore.validateOtpAndLogin(
-            context,
-            _codeJoined,
-            // _emailOTP['phone'] =
-            widget.phoneNumber!);
-      } else if (widget.otpmode == 'register') {
-        loginStore.validateOtpAndLogin(
-            // TO DO : Update
-            context,
-            _codeJoined,
-            widget.phoneNumber!);
-      }
+      // loginStore.validateOtpAndLogin(context, _codeJoined, widget.phoneNumber!);
       return Observer(
         builder: (_) => Scaffold(
           backgroundColor: AppColors.LM_BACKGROUND_GREY1,
@@ -224,19 +210,18 @@ class _OtpPageState extends State<OtpPage> {
                               MaterialPageRoute(
                                   builder: (_) => MapScreen()),
                             );
-                            // if (widget.otpmode == 'login') {
-                            //   loginStore.validateOtpAndLogin(
-                            //       context,
-                            //       _codeJoined,
-                            //       // _emailOTP['login'] =
-                            //       widget.phoneNumber!);
-                            // } else if (widget.otpmode == 'register') {
-                            //   loginStore.validateOtpAndLogin(
-                            //       context,
-                            //       _codeJoined,
-                            //       //_emailOTP['register'] =
-                            //       widget.phoneNumber!);
-                            // }
+                            
+                            loginStore.validateOtpAndLogin(
+                                context, _codeJoined, widget.phoneNumber!);
+      
+                            setState(() {
+                              _codeJoined = code.join();
+
+                              // if (_codeJoined.length < 6) {
+                              //   loginStore.validateOtpAndLogin(
+                              //       context, _codeJoined, widget.phoneNumber!);
+                              // }
+                            });
                           },
                           leftIcon: const Icon(
                             Icons.backspace,

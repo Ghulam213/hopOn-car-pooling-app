@@ -16,7 +16,6 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/loader.dart';
-import 'otp_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   static const routeName = '/phoneAuth';
@@ -30,6 +29,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final SizeConfig _config = SizeConfig();
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -60,7 +61,11 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  final TextEditingController controller = TextEditingController();
+  void _clearField() {
+    FocusScope.of(context).unfocus();
+    phoneController.clear();
+    passwordController.clear();
+  }
 
   Future _performAction(String contact, String code) async {
     setState(() => number = contact);
@@ -147,7 +152,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   () => _endAction(),
                                   false,
                                   false,
-                                  controller),
+                                  phoneController),
                             ),
                           ),
                           Container(
@@ -170,18 +175,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ]),
                               )),
-                          PasswordInput(config: _config),
+                          PasswordInput(
+                            config: _config,
+                            controller: passwordController,
+                          ),
                           LoginButton(
                             text: ez.tr('Log In'),
                             isLoading: loginStore.isPhoneLoading,
-                            onPress: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                    builder: (_) => OtpPage(
-                                          phoneNumber: '336055566',
-                                          otpmode: 'login',
-                                        )),
-                              );
+                            onPress: () {                      
+                              loginStore.phoneLogin(
+                                  context, fullCode, passwordController.text);
+                              if (loginStore.isPhoneDone == true) {
+                                _clearField();
+                              }
                             },
                           ),
                           SizedBox(
@@ -208,15 +214,17 @@ class _LoginScreenState extends State<LoginScreen> {
 class PasswordInput extends StatelessWidget {
   const PasswordInput({
     super.key,
-    required SizeConfig config,
-  }) : _config = config;
+    required this.config,
+    required this.controller,
+  });
 
-  final SizeConfig _config;
+  final TextEditingController controller;
+  final SizeConfig config;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: _config.sh(80).toDouble(),
+      height: config.sh(80).toDouble(),
       width: SizeConfig.screenWidthDp! * 0.94,
       child: Container(
           decoration: BoxDecoration(
@@ -225,6 +233,7 @@ class PasswordInput extends StatelessWidget {
           child: TextField(
               keyboardType: TextInputType.number,
               cursorColor: AppColors.PRIMARY_500,
+              controller: controller,
               style: Theme.of(context)
                   .textTheme
                   .bodyMedium!

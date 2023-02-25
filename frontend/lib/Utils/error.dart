@@ -17,7 +17,7 @@ mixin AppErrors {
   ///
   ///
   static String processErrorJson(Map<String, dynamic> responseBody,
-      {List<String>? fields, String operation = "Operation from Accept"}) {
+      {List<String>? fields, String operation = "Operation from hopOn"}) {
     try {
       final List<String> errors = [];
 

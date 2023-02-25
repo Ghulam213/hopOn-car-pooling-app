@@ -223,13 +223,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           _activeStepIndex += 1;
                         });
                       } else {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                              builder: (_) => OtpPage(
-                                    phoneNumber: '03360555666',
-                                    otpmode: 'signup',
-                                  )),
-                        );
+                        loginStore.registerUser(context, password.text,
+                            phone.text, email.text, fName.text, lName.text);
+
+                     
+                        
                       }
                     },
                     onStepCancel: () {
@@ -242,6 +240,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       });
                     },
                     onStepTapped: (int index) {
+                      final isLastStep =
+                          _activeStepIndex == stepList().length - 1;
+            
+                   
                       setState(() {
                         _activeStepIndex = index;
                       });

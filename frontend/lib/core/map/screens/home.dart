@@ -7,7 +7,8 @@ import 'package:mapbox_gl/mapbox_gl.dart';
 
 import '../../../Utils/constants.dart';
 import '../../../Utils/helpers.dart';
-import '../../profile/widgets/registration_modal.dart';
+import '../models/registration_modal.dart';
+import '../../widgets/custom_toast.dart';
 import '../../widgets/drawer.dart';
 import '../widgets/coursel_card.dart';
 
@@ -19,6 +20,9 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+
   late CameraPosition _initialCameraPosition;
   late MapboxMapController controller;
   late List<CameraPosition> _kRestaurantsList;
@@ -90,10 +94,28 @@ class _MapScreenState extends State<MapScreen> {
 
   _onMapCreated(MapboxMapController controller) async {
     this.controller = controller;
+    await showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        useRootNavigator: true,
+        builder: (context) {
+          return RegistrationModal(
+            // data: data,
+            onErrorOccurred: (error) {
+              customToastBlack(msg: "Error while updating order: $error");
+            },
+            onCloseTap: () {
+              Navigator.of(_scaffoldKey.currentContext!).pop();
+            },
+          );
+        });
   }
 
   @override
   Widget build(BuildContext context) {
+
+     
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,

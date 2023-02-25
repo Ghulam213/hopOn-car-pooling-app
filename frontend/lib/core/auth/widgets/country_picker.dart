@@ -55,7 +55,7 @@ class _ContactInputFieldState extends State<ContactInputField> {
                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         fontSize: 15, height: 1.0, color: AppColors.grey1),
                     textAlignVertical: TextAlignVertical.top,
-                    maxLength: codeString == '+92' ? 9 : 10,
+                    maxLength: codeString == '+966' ? 9 : 10,
                     decoration: InputDecoration(
                         counterText: "",
                         contentPadding: const EdgeInsets.only(

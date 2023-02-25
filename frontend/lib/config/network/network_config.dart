@@ -6,7 +6,7 @@ class NetworkConfig {
 
   late Dio dio;
 
-  static const _STAGING_URL = "https://";
+  static const _STAGING_URL = "http://10.0.2.2:3001";
 
   factory NetworkConfig() {
     return _instance;

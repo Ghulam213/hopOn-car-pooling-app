@@ -18,10 +18,8 @@ class DioInterceptior extends Interceptor {
     final String? authToken = prefs.getString("authToken");
 
     options.headers = {
-      'Content-Type': 'application/json; charset=UTF-8',
-      'Accept': "*/*",
-      'connection': 'keep-alive',
-      'Accept-Encoding': 'gzip, deflate, br',
+      'Content-Type': 'application/json',
+      'accept': 'application/json',
     };
 
     if (authToken != null) {
