@@ -1,10 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:hop_on/core/profile/models/vehicle_info_modal.dart';
+import 'package:hop_on/core/profile/modals/vehicle_info_modal.dart';
 
 import '../../../Utils/colors.dart';
 import '../../../config/sizeconfig/size_config.dart';
-import '../../profile/models/driver_info_modal.dart';
+import '../../profile/modals/driver_info_modal.dart';
 import '../../widgets/custom_toast.dart';
 
 class RegistrationModal extends StatefulWidget {

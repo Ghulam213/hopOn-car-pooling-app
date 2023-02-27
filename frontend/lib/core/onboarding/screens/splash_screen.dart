@@ -41,7 +41,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // if (token == null) {
     Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => MapScreen()));
+        MaterialPageRoute(builder: (context) => AuthScreen()));
     // }
     // else {
     //  // navigate to home screen
