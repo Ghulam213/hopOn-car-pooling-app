@@ -3,9 +3,11 @@ import { ConfigType } from '@nestjs/config';
 import { RideStatusEnum } from '@prisma/client';
 import { applicationConfig } from 'src/config';
 import { DriverService } from 'src/driver/services';
+import { RideNotFoundException } from 'src/library/exception';
 import { UtilityService } from 'src/library/services';
+import { NotificationService } from 'src/library/services/notification.service';
 import { PrismaService } from 'src/prisma/services';
-import { FindRidesForPassengerDto, RideCreateDto } from 'src/ride/dtos';
+import { FindRidesForPassengerDto, RideCreateDto, RideRequestDto } from 'src/ride/dtos';
 
 @Injectable()
 export class RideService {
@@ -14,6 +16,7 @@ export class RideService {
     private readonly appConfig: ConfigType<typeof applicationConfig>,
     private prisma: PrismaService,
     private readonly driverService: DriverService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   async createRide(data: RideCreateDto) {
@@ -67,5 +70,56 @@ export class RideService {
 
       return isDestinationsWithinThreshold && isPassengerOnDriverRouter && isPassengerWithinThresholdOfDriver;
     });
+  }
+
+  /*
+   * This method is called when a passenger requests a ride
+   * It will find the ride that the passenger requested and update the ride status to REQUESTED
+   * and also publish a message to the SNS topic to notify the driver that a passenger has requested a ride.
+   * The driver will then accept or reject the ride request.
+   *
+   * @param data - RideRequestDto
+   */
+  async requestRide(data: RideRequestDto) {
+    const ride = await this.prisma.ride.findUnique({
+      where: {
+        id: data.rideId,
+      },
+    });
+
+    if (!ride) {
+      throw new RideNotFoundException({
+        variables: {
+          rideId: data.rideId,
+        },
+      });
+    }
+
+    if (ride.rideStatus !== RideStatusEnum.ON_GOING) {
+      throw new RideNotFoundException({
+        variables: {
+          rideId: data.rideId,
+        },
+      });
+    }
+
+    await this.notificationService.publishMessage(
+      {
+        subject: 'Request Ride',
+        message: { ...ride },
+      },
+      'rideRequest',
+    );
+
+    await this.prisma.ride.update({
+      where: {
+        id: data.rideId,
+      },
+      data: {
+        rideStatus: RideStatusEnum.REQUESTED,
+      },
+    });
+
+    return ride;
   }
 }
