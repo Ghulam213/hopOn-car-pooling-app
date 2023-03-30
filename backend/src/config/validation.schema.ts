@@ -14,4 +14,7 @@ export const validationSchema = Joi.object({
   JWT_REFRESH_TTL: Joi.number().default(60 * 60 * 24), //1d
   API_KEY_SECRET: Joi.string().default('CHANGE_ME_API_KEY'),
   IMAGE_UPLOAD_BUCKET: Joi.string().default('hopon-image-uploads'),
+  DESTINATION_OVERLAP_THRESHOLD: Joi.number().default(0.5), // in km
+  PASSENGER_DRIVER_DISTANCE_OVERLAP_THRESHOLD: Joi.number().default(0.3), // in km
+  ROUTE_OVERLAP_THRESHOLD: Joi.number().default(0.3), // in km
 });

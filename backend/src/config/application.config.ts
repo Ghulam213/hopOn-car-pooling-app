@@ -22,5 +22,8 @@ export const applicationConfig = registerAs('application', () => ({
   },
   apiKey: {
     secret: process.env.API_KEY_SECRET,
-  }
+  },
+  destinationOverlapThreshold: parseInt(process.env.DESTINATION_OVERLAP_THRESHOLD, 10),
+  passengerDriverDistanceOverlapThreshold: parseInt(process.env.PASSENGER_DRIVER_DISTANCE_OVERLAP_THRESHOLD, 10),
+  routeOverlapThreshold: parseInt(process.env.ROUTE_OVERLAP_THRESHOLD, 10),
 }));
