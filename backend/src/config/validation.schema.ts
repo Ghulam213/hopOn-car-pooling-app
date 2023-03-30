@@ -17,5 +17,5 @@ export const validationSchema = Joi.object({
   DESTINATION_OVERLAP_THRESHOLD: Joi.number().default(0.5), // in km
   PASSENGER_DRIVER_DISTANCE_OVERLAP_THRESHOLD: Joi.number().default(0.3), // in km
   ROUTE_OVERLAP_THRESHOLD: Joi.number().default(0.3), // in km
-  AWS_SNS_TOPIC_ARN_RIDE_REQUEST: Joi.string().default('hopon-ride-request'),
+  AWS_SNS_TOPIC_ARN_RIDE_REQUEST: Joi.string().default('arn:aws:sns:us-east-1:146823716130:hopon-ride-request.fifo'),
 });
