@@ -3,7 +3,7 @@ import { ConfigType } from '@nestjs/config';
 import { RideStatusEnum } from '@prisma/client';
 import { applicationConfig } from 'src/config';
 import { DriverService } from 'src/driver/services';
-import { RideNotFoundException } from 'src/library/exception';
+import { RideNotFoundException, UserNotFoundException } from 'src/library/exception';
 import { UtilityService } from 'src/library/services';
 import { NotificationService } from 'src/library/services/notification.service';
 import { PrismaService } from 'src/prisma/services';
@@ -81,6 +81,20 @@ export class RideService {
    * @param data - RideRequestDto
    */
   async requestRide(data: RideRequestDto) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: data.userId,
+      },
+    });
+
+    if (!user) {
+      throw new UserNotFoundException({
+        variables: {
+          id: data.userId,
+        },
+      });
+    }
+
     const ride = await this.prisma.ride.findUnique({
       where: {
         id: data.rideId,
@@ -103,12 +117,26 @@ export class RideService {
       });
     }
 
-    await this.notificationService.publishMessageToTopic(
+    const deviceArn = await this.prisma.device.findUnique({
+      where: {
+        userId: data.userId,
+      },
+    });
+
+    if (!deviceArn) {
+      throw new RideNotFoundException({
+        variables: {
+          rideId: data.rideId,
+        },
+      });
+    }
+
+    await this.notificationService.publishMessageToDeviceArn(
       {
         subject: 'Request Ride',
         message: { ...ride },
       },
-      'rideRequest',
+      deviceArn.token,
     );
 
     await this.prisma.ride.update({

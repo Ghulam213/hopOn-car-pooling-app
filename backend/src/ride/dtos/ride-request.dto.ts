@@ -9,4 +9,11 @@ export class RideRequestDto {
   @IsUUID()
   @IsDefined()
   rideId: string;
+
+  @ApiProperty()
+  @Trim()
+  @IsNotEmpty()
+  @IsUUID()
+  @IsDefined()
+  userId: string;
 }
