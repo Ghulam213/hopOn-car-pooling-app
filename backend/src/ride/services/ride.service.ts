@@ -73,11 +73,8 @@ export class RideService {
   }
 
   /*
-   * This method is called when a passenger requests a ride
-   * It will find the ride that the passenger requested and update the ride status to REQUESTED
-   * and also publish a message to the SNS topic to notify the driver that a passenger has requested a ride.
-   * The driver will then accept or reject the ride request.
-   *
+   * This method is called when a passenger requests a ride.
+   * It publishes a message to the driver's device and updates the ride status to requested.
    * @param data - RideRequestDto
    */
   async requestRide(data: RideRequestDto) {
