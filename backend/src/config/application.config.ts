@@ -29,4 +29,5 @@ export const applicationConfig = registerAs('application', () => ({
   awsSnsTopicType: {
     rideRequest: process.env.AWS_SNS_TOPIC_ARN_RIDE_REQUEST,
   },
+  awsSnsPlatformApplicationArn: process.env.AWS_SNS_PLATFORM_APPLICATION_ARN,
 }));

@@ -41,7 +41,7 @@ export class NotificationService {
     }
   }
 
-  async publishMessage<T>(payload: NotificationPayload<T>, topicType: TopicType) {
+  async publishMessageToTopic<T>(payload: NotificationPayload<T>, topicType: TopicType) {
     const params = {
       Message: JSON.stringify(payload.message),
       Subject: payload.subject,
@@ -49,5 +49,34 @@ export class NotificationService {
     };
 
     return this.sns.publish(params).promise();
+  }
+
+  async publishMessageToDeviceArn<T>(payload: NotificationPayload<T>, deviceArn: string) {
+    const params = {
+      Message: JSON.stringify(payload.message),
+      Subject: payload.subject,
+      TargetArn: deviceArn,
+    };
+
+    return this.sns.publish(params).promise();
+  }
+
+  async createApplicationPlatformEndpoint(deviceToken: string) {
+    const params = {
+      PlatformApplicationArn: this.appConfig.awsSnsPlatformApplicationArn,
+      Token: deviceToken,
+    };
+
+    return this.sns.createPlatformEndpoint(params).promise();
+  }
+
+  async subscribeEndpointToTopic(endpointArn: string, topicType: TopicType) {
+    const params = {
+      Endpoint: endpointArn,
+      Protocol: 'application',
+      TopicArn: this.getTopicArnFromTopicType(topicType),
+    };
+
+    return this.sns.subscribe(params).promise();
   }
 }

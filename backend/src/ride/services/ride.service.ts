@@ -103,7 +103,7 @@ export class RideService {
       });
     }
 
-    await this.notificationService.publishMessage(
+    await this.notificationService.publishMessageToTopic(
       {
         subject: 'Request Ride',
         message: { ...ride },
