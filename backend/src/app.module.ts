@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, CacheModule, CacheStore } from '@nestjs/common';
 import { ConfigModule, ConfigType } from '@nestjs/config';
 import { S3, CognitoIdentityServiceProvider } from 'aws-sdk';
 import { AwsSdkModule } from 'nest-aws-sdk';
@@ -9,6 +9,8 @@ import { LibraryModule } from 'src/library';
 import { PrismaModule } from 'src/prisma';
 import { UserModule } from 'src/user';
 import { DriverModule } from 'src/driver';
+import type { RedisClientOptions } from 'redis';
+const redisStore = require('cache-manager-redis-store').redisStore as CacheStore;
 
 @Module({
   imports: [
@@ -16,6 +18,10 @@ import { DriverModule } from 'src/driver';
       validationSchema,
       load: [applicationConfig],
       isGlobal: true,
+    }),
+    CacheModule.register<RedisClientOptions>({
+      isGlobal: true,
+      store: redisStore,
     }),
     AwsSdkModule.forRootAsync({
       defaultServiceOptions: {
