@@ -267,4 +267,24 @@ export class RideService {
       deviceArn.token,
     );
   }
+
+  async requestRideReject(data: RideRequestDto) {
+    const { rideId, passengerId } = data;
+
+    await this.isPassengerAvailableForRide({
+      rideId: data.rideId,
+    });
+
+    const deviceArn = await this.findDeviceArnForPassenger({
+      passengerId,
+    });
+
+    await this.notificationService.publishMessageToDeviceArn(
+      {
+        subject: 'Request Ride Reject',
+        message: { ...data },
+      },
+      deviceArn.token,
+    );
+  }
 }
