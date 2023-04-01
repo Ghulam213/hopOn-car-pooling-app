@@ -26,9 +26,6 @@ enum VehicleTypeEnum {
 }
 
 enum RideStatusEnum {
-  REQUESTED
-  ACCEPTED
-  REJECTED
   ON_GOING
   COMPLETED
   CANCELLED

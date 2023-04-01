@@ -50,6 +50,9 @@ export class AuthService {
         password: hashedPassword,
         currentMode: 'PASSENGER',
         coginitoId: results.UserSub,
+        passenger: {
+          create: {},
+        },
       });
 
       this.logger.log(results);

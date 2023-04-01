@@ -9,6 +9,7 @@ import { LibraryModule } from 'src/library';
 import { PrismaModule } from 'src/prisma';
 import { UserModule } from 'src/user';
 import { DriverModule } from 'src/driver';
+import { RideModule } from 'src/ride';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { DriverModule } from 'src/driver';
     AuthModule,
     LibraryModule,
     DriverModule,
+    RideModule,
   ],
   controllers: [AppController],
   providers: [],

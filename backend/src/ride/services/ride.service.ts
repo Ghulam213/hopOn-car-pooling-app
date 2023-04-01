@@ -1,11 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
-import { PasengerRideStatusEnum, RideStatusEnum } from '@prisma/client';
+import { Device, Driver, PasengerRideStatusEnum, Prisma, Ride, RideStatusEnum } from '@prisma/client';
+import { NotificationNotSentException } from 'src/library/exception/notificationNotSentException';
 import { applicationConfig } from 'src/config';
 import { DriverService } from 'src/driver/services';
-import { RideNotFoundException, UserNotFoundException } from 'src/library/exception';
-import { NotificationNotSentException } from 'src/library/exception/notificationNotSentException';
-import { PassengerNotFoundException } from 'src/library/exception/passengerNotFoundException';
+import {
+  PassengerNotFoundException,
+  RideNotAvailableFoundException,
+  RideNotFoundException,
+} from 'src/library/exception';
 import { UtilityService } from 'src/library/services';
 import { NotificationService } from 'src/library/services/notification.service';
 import { PrismaService } from 'src/prisma/services';
@@ -21,7 +24,7 @@ export class RideService {
     private readonly notificationService: NotificationService,
   ) {}
 
-  async createRide(data: RideCreateDto) {
+  async createRide(data: RideCreateDto): Promise<Ride> {
     const { driverId, ...restOfData } = data;
 
     await this.driverService.findDriver({ id: driverId });
@@ -39,6 +42,44 @@ export class RideService {
         rideStartedAt: new Date(),
       },
     });
+  }
+
+  async findRide(
+    rideWhereUniqueInput: Prisma.RideWhereUniqueInput,
+    include?: Prisma.RideInclude,
+  ): Promise<(Ride & { driver?: Driver }) | null> {
+    const ride = await this.prisma.ride.findUnique({
+      where: rideWhereUniqueInput,
+      include,
+    });
+
+    if (!ride) {
+      throw new RideNotFoundException({ variables: { rideId: rideWhereUniqueInput.id } });
+    }
+    return ride;
+  }
+
+  async updateRide(params: { where: Prisma.RideWhereUniqueInput; data: Prisma.RideUpdateInput }): Promise<Ride> {
+    const { where, data } = params;
+
+    await this.findRide(where);
+
+    const updatedRide = await this.prisma.ride.update({
+      data,
+      where,
+    });
+
+    return updatedRide;
+  }
+
+  async deleteRide(where: Prisma.UserWhereUniqueInput): Promise<Ride> {
+    await this.findRide(where);
+
+    const deletedRide = await this.prisma.ride.delete({
+      where,
+    });
+
+    return deletedRide;
   }
 
   async findRidesForPassenger(passengerData: FindRidesForPassengerDto) {
@@ -74,98 +115,6 @@ export class RideService {
     });
   }
 
-  /*
-   * This method is called when a passenger requests a ride.
-   * It publishes a message to the driver's device and updates the ride status to requested.
-   * @param data - RideRequestDto
-   */
-  // async requestRide(data: RideRequestDto) {
-  //   const user = await this.prisma.user.findUnique({
-  //     where: {
-  //       id: data.userId,
-  //     },
-  //   });
-
-  //   if (!user) {
-  //     throw new UserNotFoundException({
-  //       variables: {
-  //         id: data.userId,
-  //       },
-  //     });
-  //   }
-
-  //   const ride = await this.prisma.ride.findUnique({
-  //     where: {
-  //       id: data.rideId,
-  //     },
-  //   });
-
-  //   if (!ride) {
-  //     throw new RideNotFoundException({
-  //       variables: {
-  //         rideId: data.rideId,
-  //       },
-  //     });
-  //   }
-
-  //   if (ride.rideStatus !== RideStatusEnum.ON_GOING) {
-  //     throw new RideNotFoundException({
-  //       variables: {
-  //         rideId: data.rideId,
-  //       },
-  //     });
-  //   }
-
-  //   const deviceArn = await this.prisma.device.findUnique({
-  //     where: {
-  //       userId: data.userId,
-  //     },
-  //   });
-
-  //   if (!deviceArn) {
-  //     throw new RideNotFoundException({
-  //       variables: {
-  //         rideId: data.rideId,
-  //       },
-  //     });
-  //   }
-
-  //   await this.notificationService.publishMessageToDeviceArn(
-  //     {
-  //       subject: 'Request Ride',
-  //       message: { ...ride },
-  //     },
-  //     deviceArn.token,
-  //   );
-
-  //   await this.prisma.ride.update({
-  //     where: {
-  //       id: data.rideId,
-  //     },
-  //     data: {
-  //       rideStatus: RideStatusEnum.REQUESTED,
-  //     },
-  //   });
-
-  //   return ride;
-  // }
-
-  async isPassengerAvailableForRide(data: { rideId: string }) {
-    const passengerRide = await this.prisma.passengersOnRide.findUnique({
-      where: {
-        id: data.rideId,
-      },
-    });
-
-    if (!passengerRide) {
-      throw new PassengerNotFoundException({
-        variables: {
-          id: data.rideId,
-        },
-      });
-    }
-  }
-
   async createPassengerRide(data: PassengerRideCreateDto) {
     const { passengerId, rideId, ...restOfData } = data;
 
@@ -188,8 +137,24 @@ export class RideService {
     });
   }
 
-  async findDeviceArnForDriver(data: { driverId: string }) {
-    const driver = await this.driverService.findDriver({ id: data.driverId });
+  private async isPassengerAvailableForRide(rideId: string) {
+    const passengerRide = await this.prisma.passengersOnRide.findUnique({
+      where: {
+        id: rideId,
+      },
+    });
+
+    if (!passengerRide) {
+      throw new PassengerNotFoundException({
+        variables: {
+          id: rideId,
+        },
+      });
+    }
+  }
+
+  private async findDeviceArnForDriver(driverId: string): Promise<Device> {
+    const driver = await this.driverService.findDriver({ id: driverId });
 
     const deviceArn = await this.prisma.device.findUnique({
       where: {
@@ -208,17 +173,17 @@ export class RideService {
     return deviceArn;
   }
 
-  async findDeviceArnForPassenger(data: { passengerId: string }) {
+  private async findDeviceArnForPassenger(passengerId: string): Promise<Device> {
     const passenger = await this.prisma.passenger.findUnique({
       where: {
-        id: data.passengerId,
+        id: passengerId,
       },
     });
 
     if (!passenger) {
       throw new PassengerNotFoundException({
         variables: {
-          id: data.passengerId,
+          id: passengerId,
         },
       });
     }
@@ -240,12 +205,40 @@ export class RideService {
     return deviceArn;
   }
 
-  async requestRideAccept(data: RideRequestDto) {
+  async requestRide(rideRequestData: RideRequestDto): Promise<true> {
+    const { rideId, passengerId } = rideRequestData;
+
+    const ride = await this.findRide({ id: rideId }, { driver: true });
+    const passenger = await this.prisma.passenger.findUnique({ where: { id: passengerId } });
+    const deviceArn = await this.findDeviceArnForDriver(ride.driverId);
+
+    if (!passenger) {
+      throw new PassengerNotFoundException({ variables: { id: passengerId } });
+    }
+
+    if (ride.rideStatus !== RideStatusEnum.ON_GOING) {
+      throw new RideNotAvailableFoundException({
+        variables: {
+          rideId,
+        },
+      });
+    }
+
+    await this.notificationService.publishMessageToDeviceArn(
+      {
+        subject: 'Request Ride',
+        message: { ...rideRequestData, ...ride },
+      },
+      deviceArn.token,
+    );
+
+    return true;
+  }
+
+  async requestRideAccept(data: RideRequestDto): Promise<true> {
     const { rideId, passengerId, source, destination, distance } = data;
 
-    await this.isPassengerAvailableForRide({
-      rideId: data.rideId,
-    });
+    await this.isPassengerAvailableForRide(data.rideId);
 
     await this.createPassengerRide({
       rideId,
@@ -255,9 +248,7 @@ export class RideService {
       distance,
     });
 
-    const deviceArn = await this.findDeviceArnForPassenger({
-      passengerId,
-    });
+    const deviceArn = await this.findDeviceArnForPassenger(passengerId);
 
     await this.notificationService.publishMessageToDeviceArn(
       {
@@ -266,18 +257,16 @@ export class RideService {
       },
       deviceArn.token,
     );
+
+    return true;
   }
 
-  async requestRideReject(data: RideRequestDto) {
+  async requestRideReject(data: RideRequestDto): Promise<true> {
     const { rideId, passengerId } = data;
 
-    await this.isPassengerAvailableForRide({
-      rideId: data.rideId,
-    });
+    await this.isPassengerAvailableForRide(rideId);
 
-    const deviceArn = await this.findDeviceArnForPassenger({
-      passengerId,
-    });
+    const deviceArn = await this.findDeviceArnForPassenger(passengerId);
 
     await this.notificationService.publishMessageToDeviceArn(
       {
@@ -286,5 +275,7 @@ export class RideService {
       },
       deviceArn.token,
     );
+
+    return true;
   }
 }
