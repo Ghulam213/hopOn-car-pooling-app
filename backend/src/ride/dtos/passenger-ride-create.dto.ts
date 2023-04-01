@@ -1,8 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Prisma } from '@prisma/client';
 import { IsDefined, IsNotEmpty, IsNumber, IsString, IsUUID } from 'class-validator';
 import { Trim } from 'src/library/decorators';
+import { isUuid } from 'uuidv4';
 
-export class RideRequestDto {
+export class PassengerRideCreateDto
+  implements Omit<Prisma.PassengersOnRideCreateInput, 'fare' | 'rideStatus' | 'ride' | 'passenger'>
+{
   @ApiProperty()
   @Trim()
   @IsNotEmpty()

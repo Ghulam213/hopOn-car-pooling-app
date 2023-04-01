@@ -1,13 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
-import { RideStatusEnum } from '@prisma/client';
+import { PasengerRideStatusEnum, RideStatusEnum } from '@prisma/client';
 import { applicationConfig } from 'src/config';
 import { DriverService } from 'src/driver/services';
 import { RideNotFoundException, UserNotFoundException } from 'src/library/exception';
+import { NotificationNotSentException } from 'src/library/exception/notificationNotSentException';
+import { PassengerNotFoundException } from 'src/library/exception/passengerNotFoundException';
 import { UtilityService } from 'src/library/services';
 import { NotificationService } from 'src/library/services/notification.service';
 import { PrismaService } from 'src/prisma/services';
-import { FindRidesForPassengerDto, RideCreateDto, RideRequestDto } from 'src/ride/dtos';
+import { FindRidesForPassengerDto, PassengerRideCreateDto, RideCreateDto, RideRequestDto } from 'src/ride/dtos';
 
 @Injectable()
 export class RideService {
@@ -77,74 +79,192 @@ export class RideService {
    * It publishes a message to the driver's device and updates the ride status to requested.
    * @param data - RideRequestDto
    */
-  async requestRide(data: RideRequestDto) {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id: data.userId,
-      },
-    });
+  // async requestRide(data: RideRequestDto) {
+  //   const user = await this.prisma.user.findUnique({
+  //     where: {
+  //       id: data.userId,
+  //     },
+  //   });
 
-    if (!user) {
-      throw new UserNotFoundException({
-        variables: {
-          id: data.userId,
-        },
-      });
-    }
+  //   if (!user) {
+  //     throw new UserNotFoundException({
+  //       variables: {
+  //         id: data.userId,
+  //       },
+  //     });
+  //   }
 
-    const ride = await this.prisma.ride.findUnique({
+  //   const ride = await this.prisma.ride.findUnique({
+  //     where: {
+  //       id: data.rideId,
+  //     },
+  //   });
+
+  //   if (!ride) {
+  //     throw new RideNotFoundException({
+  //       variables: {
+  //         rideId: data.rideId,
+  //       },
+  //     });
+  //   }
+
+  //   if (ride.rideStatus !== RideStatusEnum.ON_GOING) {
+  //     throw new RideNotFoundException({
+  //       variables: {
+  //         rideId: data.rideId,
+  //       },
+  //     });
+  //   }
+
+  //   const deviceArn = await this.prisma.device.findUnique({
+  //     where: {
+  //       userId: data.userId,
+  //     },
+  //   });
+
+  //   if (!deviceArn) {
+  //     throw new RideNotFoundException({
+  //       variables: {
+  //         rideId: data.rideId,
+  //       },
+  //     });
+  //   }
+
+  //   await this.notificationService.publishMessageToDeviceArn(
+  //     {
+  //       subject: 'Request Ride',
+  //       message: { ...ride },
+  //     },
+  //     deviceArn.token,
+  //   );
+
+  //   await this.prisma.ride.update({
+  //     where: {
+  //       id: data.rideId,
+  //     },
+  //     data: {
+  //       rideStatus: RideStatusEnum.REQUESTED,
+  //     },
+  //   });
+
+  //   return ride;
+  // }
+
+  async isPassengerAvailableForRide(data: { rideId: string }) {
+    const passengerRide = await this.prisma.passengersOnRide.findUnique({
       where: {
         id: data.rideId,
       },
     });
 
-    if (!ride) {
-      throw new RideNotFoundException({
+    if (!passengerRide) {
+      throw new PassengerNotFoundException({
         variables: {
-          rideId: data.rideId,
+          id: data.rideId,
+        },
+      });
+    }
+  }
+
+  async createPassengerRide(data: PassengerRideCreateDto) {
+    const { passengerId, rideId, ...restOfData } = data;
+
+    return this.prisma.passengersOnRide.create({
+      data: {
+        ...restOfData,
+        ride: {
+          connect: {
+            id: rideId,
+          },
+        },
+        passenger: {
+          connect: {
+            id: passengerId,
+          },
+        },
+        rideStatus: PasengerRideStatusEnum.ACCEPTED,
+        fare: 0,
+      },
+    });
+  }
+
+  async findDeviceArnForDriver(data: { driverId: string }) {
+    const driver = await this.driverService.findDriver({ id: data.driverId });
+
+    const deviceArn = await this.prisma.device.findUnique({
+      where: {
+        userId: driver.userId,
+      },
+    });
+
+    if (!deviceArn) {
+      throw new NotificationNotSentException({
+        variables: {
+          id: driver.userId,
         },
       });
     }
 
-    if (ride.rideStatus !== RideStatusEnum.ON_GOING) {
-      throw new RideNotFoundException({
+    return deviceArn;
+  }
+
+  async findDeviceArnForPassenger(data: { passengerId: string }) {
+    const passenger = await this.prisma.passenger.findUnique({
+      where: {
+        id: data.passengerId,
+      },
+    });
+
+    if (!passenger) {
+      throw new PassengerNotFoundException({
         variables: {
-          rideId: data.rideId,
+          id: data.passengerId,
         },
       });
     }
 
     const deviceArn = await this.prisma.device.findUnique({
       where: {
-        userId: data.userId,
+        userId: passenger.userId,
       },
     });
 
     if (!deviceArn) {
-      throw new RideNotFoundException({
+      throw new NotificationNotSentException({
         variables: {
-          rideId: data.rideId,
+          id: passenger.userId,
         },
       });
     }
 
+    return deviceArn;
+  }
+
+  async requestRideAccept(data: RideRequestDto) {
+    const { rideId, passengerId, source, destination, distance } = data;
+
+    await this.isPassengerAvailableForRide({
+      rideId: data.rideId,
+    });
+
+    await this.createPassengerRide({
+      rideId,
+      passengerId,
+      source,
+      destination,
+      distance,
+    });
+
+    const deviceArn = await this.findDeviceArnForPassenger({
+      passengerId,
+    });
+
     await this.notificationService.publishMessageToDeviceArn(
       {
-        subject: 'Request Ride',
-        message: { ...ride },
+        subject: 'Request Ride Accept',
+        message: { ...data },
       },
       deviceArn.token,
     );
-
-    await this.prisma.ride.update({
-      where: {
-        id: data.rideId,
-      },
-      data: {
-        rideStatus: RideStatusEnum.REQUESTED,
-      },
-    });
-
-    return ride;
   }
 }
