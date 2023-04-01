@@ -27,7 +27,7 @@ export const applicationConfig = registerAs('application', () => ({
   passengerDriverDistanceOverlapThreshold: parseInt(process.env.PASSENGER_DRIVER_DISTANCE_OVERLAP_THRESHOLD, 10),
   routeOverlapThreshold: parseInt(process.env.ROUTE_OVERLAP_THRESHOLD, 10),
   awsSnsTopicType: {
-    rideRequest: process.env.AWS_SNS_TOPIC_ARN_RIDE_REQUEST,
+    marketing: process.env.AWS_SNS_TOPIC_ARN_RIDE_REQUEST,
   },
   awsSnsPlatformApplicationArn: process.env.AWS_SNS_PLATFORM_APPLICATION_ARN,
 }));

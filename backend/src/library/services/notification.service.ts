@@ -13,7 +13,7 @@ import { ConfigType } from '@nestjs/config';
  * @docs AWS SDK SNS: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SNS.html
  */
 
-type TopicType = 'rideRequest';
+type TopicType = 'marketing';
 type NotificationPayload<T> = {
   subject: string;
   message: T;
@@ -36,8 +36,8 @@ export class NotificationService {
 
   public getTopicArnFromTopicType(topicType: TopicType) {
     switch (topicType) {
-      case 'rideRequest':
-        return this.appConfig.awsSnsTopicType.rideRequest;
+      case 'marketing':
+        return this.appConfig.awsSnsTopicType.marketing;
     }
   }
 
