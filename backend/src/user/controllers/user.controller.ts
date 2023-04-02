@@ -1,12 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { ApiHeader, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserService } from 'src/user/services';
 import { User } from '@prisma/client';
 import { UserPageModel } from 'src/user/models';
 import { EntityPageOptionsDto } from 'src/library/dtos';
-import { UserEntity } from 'src/user/entities';
+import { DeviceEntity, UserEntity } from 'src/user/entities';
 import { ParseUUIDStringPipe } from 'src/library/pipes';
-import { UserUpdateDto } from 'src/user/dtos';
+import { RegisterUserDeviceDto, UserUpdateDto } from 'src/user/dtos';
 import { AccessTokenGuard } from 'src/auth/guards';
 
 @Controller()
@@ -56,5 +56,12 @@ export class UserController {
     return this.userService.deleteUser({ id });
 
     // TODO: Also delete user's cognitoId.
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Post('user/device')
+  @ApiOkResponse({ type: DeviceEntity })
+  async registerUserDevice(@Body() registerUserDeviceData: RegisterUserDeviceDto): Promise<DeviceEntity> {
+    return this.userService.registerUserDevice(registerUserDeviceData);
   }
 }

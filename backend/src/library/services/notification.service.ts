@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { SNS } from 'aws-sdk';
 import { applicationConfig } from 'src/config';
 import { ConfigType } from '@nestjs/config';
+import { NotificationPayloadModel } from 'src/library/models';
 
 /*
  * This service for handling notifications via AWS SNS.
@@ -14,11 +15,6 @@ import { ConfigType } from '@nestjs/config';
  */
 
 type TopicType = 'marketing';
-type NotificationPayload<T> = {
-  subject: string;
-  message: T;
-};
-
 @Injectable()
 export class NotificationService {
   private sns: SNS;
@@ -41,7 +37,7 @@ export class NotificationService {
     }
   }
 
-  async publishMessageToTopic<T>(payload: NotificationPayload<T>, topicType: TopicType) {
+  async publishMessageToTopic<T>(payload: NotificationPayloadModel<T>, topicType: TopicType) {
     const params = {
       Message: JSON.stringify(payload.message),
       Subject: payload.subject,
@@ -51,7 +47,7 @@ export class NotificationService {
     return this.sns.publish(params).promise();
   }
 
-  async publishMessageToDeviceArn<T>(payload: NotificationPayload<T>, deviceArn: string) {
+  async publishMessageToDeviceArn<T>(payload: NotificationPayloadModel<T>, deviceArn: string) {
     const params = {
       Message: JSON.stringify(payload.message),
       Subject: payload.subject,
