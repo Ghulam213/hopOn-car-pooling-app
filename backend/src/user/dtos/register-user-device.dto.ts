@@ -1,27 +1,27 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Prisma } from '@prisma/client';
-import { IsDefined, IsJSON, IsNotEmpty, IsNumber, IsString, IsUUID } from 'class-validator';
+import { IsDefined, IsNotEmpty, IsString, IsUUID, MaxLength } from 'class-validator';
 import { Trim } from 'src/library/decorators';
 
-export class FindRidesForPassengerDto {
+export class RegisterUserDeviceDto {
   @ApiProperty()
   @Trim()
   @IsNotEmpty()
-  @IsString()
+  @IsUUID()
   @IsDefined()
-  source: string;
+  userId: string;
 
   @ApiProperty()
   @Trim()
   @IsNotEmpty()
+  @MaxLength(255)
   @IsString()
   @IsDefined()
-  destination: string;
+  deviceType: string;
 
   @ApiProperty()
+  @IsString()
   @Trim()
   @IsNotEmpty()
-  @IsString()
   @IsDefined()
-  city: string;
+  token: string;
 }

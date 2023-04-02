@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { User, Prisma } from '@prisma/client';
+import { User, Prisma, Device } from '@prisma/client';
 import { UserAlreadyExistsException, UserNotFoundException } from 'src/library/exception';
 import { PrismaService } from 'src/prisma/services';
+import { RegisterUserDeviceDto } from 'src/user/dtos';
 import { UserPageModel } from 'src/user/models';
 
 @Injectable()
@@ -95,5 +96,25 @@ export class UserService {
     delete deletedUser.password;
 
     return deletedUser;
+  }
+
+  async registerUserDevice(registerUserDevice: RegisterUserDeviceDto): Promise<Device> {
+    const { userId, ...restOfData } = registerUserDevice;
+    return this.prisma.device.upsert({
+      create: {
+        ...restOfData,
+        user: {
+          connect: {
+            id: userId,
+          },
+        },
+      },
+      update: {
+        ...restOfData,
+      },
+      where: {
+        userId,
+      },
+    });
   }
 }

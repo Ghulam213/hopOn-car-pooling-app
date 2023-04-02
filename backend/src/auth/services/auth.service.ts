@@ -6,7 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { ConfirmRegisterDto, LoginDto, RegisterDto, ResendOptDto } from 'src/auth/dto';
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import { InjectAwsService } from 'nest-aws-sdk';
-import { User } from '@prisma/client';
+import { CurrentModeEnum, User } from '@prisma/client';
 import {
   UnauthorizedException,
   UserAlreadyExistsException,
@@ -48,7 +48,7 @@ export class AuthService {
         ...restOfRegisterData,
         phone,
         password: hashedPassword,
-        currentMode: 'PASSENGER',
+        currentMode: CurrentModeEnum.PASSENGER,
         coginitoId: results.UserSub,
         passenger: {
           create: {},
@@ -167,7 +167,6 @@ export class AuthService {
   }
 
   public comparePassword(attempt: string, password: string): Promise<boolean> {
-    this.logger.log({ attempt, password });
     return bcrypt.compare(attempt, password);
   }
 

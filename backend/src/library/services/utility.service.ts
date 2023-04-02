@@ -46,9 +46,9 @@ export class UtilityService {
   public static getDistanceFromPointToLineSegment(point: number[], lineSegment: number[][]) {
     // calculate distance using cross-track method
     let [startPoint, endPoint] = lineSegment;
-    let [startPointLat, startPointLng] = startPoint;
-    let [endPointLat, endPointLng] = endPoint;
-    let [pointLat, pointLng] = point;
+    let [startPointLng, startPointLat] = startPoint;
+    let [endPointLng, endPointLat] = endPoint;
+    let [pointLng, pointLat] = point;
 
     // Convert latitude and longitude to radians
     [pointLat, pointLng, startPointLat, startPointLng, endPointLat, endPointLng] = [
@@ -68,13 +68,10 @@ export class UtilityService {
     const alongTrackDistance = Math.acos(Math.cos(pointLat - startPointLat) * Math.cos(distance)) * 6371; // Radius of the earth in kilometers
 
     // Check if the point is beyond the start or end of the line segment
-    if (
-      alongTrackDistance >
-      UtilityService.getKmDistanceBetweenTwoPoints([startPointLat, startPointLng], [endPointLat, endPointLat])
-    ) {
-      return UtilityService.getKmDistanceBetweenTwoPoints([pointLat, pointLng], [endPointLat, endPointLat]);
+    if (alongTrackDistance > UtilityService.getKmDistanceBetweenTwoPoints(startPoint, endPoint)) {
+      return UtilityService.getKmDistanceBetweenTwoPoints(point, endPoint);
     } else if (alongTrackDistance < 0) {
-      return UtilityService.getKmDistanceBetweenTwoPoints([pointLat, pointLng], [startPointLat, startPointLng]);
+      return UtilityService.getKmDistanceBetweenTwoPoints(point, startPoint);
     }
   }
 
@@ -91,5 +88,7 @@ export class UtilityService {
         return true;
       }
     }
+
+    return false;
   }
 }

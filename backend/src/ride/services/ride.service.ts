@@ -22,7 +22,21 @@ export class RideService {
     private prisma: PrismaService,
     private readonly driverService: DriverService,
     private readonly notificationService: NotificationService,
-  ) {}
+  ) {
+    this.prisma.addMiddleware(async (params, next) => {
+      if (params.model === 'Ride') {
+        if (params.action === 'findMany') {
+          const results: Ride[] = await next(params);
+          return results.map((r) => ({ ...r, polygonPoints: JSON.parse(r.polygonPoints as string) }));
+        } else if (params.action === 'findUnique' || params.action === 'findFirst') {
+          const results: Ride = await next(params);
+          results.polygonPoints = JSON.parse(results.polygonPoints as string);
+          return results;
+        }
+      }
+      return next(params);
+    });
+  }
 
   async createRide(data: RideCreateDto): Promise<Ride> {
     const { driverId, ...restOfData } = data;
