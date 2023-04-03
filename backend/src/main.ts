@@ -3,10 +3,12 @@ import { SwaggerModule, SwaggerDocumentOptions, DocumentBuilder } from '@nestjs/
 import { NestFactory } from '@nestjs/core';
 import { PrismaService } from 'src/prisma/services/prisma.service';
 import { AppModule } from 'src/app.module';
+import { ResponseMappingInterceptor } from 'src/library/interceptors';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useGlobalInterceptors(new ResponseMappingInterceptor());
 
   const prismaService = app.get(PrismaService);
   await prismaService.enableShutdownHooks(app);

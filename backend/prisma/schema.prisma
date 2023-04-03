@@ -110,7 +110,6 @@ model Ride {
   totalDistance    Float
   totalFare        Float
   rideStatus       RideStatusEnum
-  currentLocation  String
   city             String
   rideStartedAt    DateTime?
   rideEndedAt      DateTime?

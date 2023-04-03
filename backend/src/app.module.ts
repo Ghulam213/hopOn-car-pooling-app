@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, CacheModule, CacheStore } from '@nestjs/common';
 import { ConfigModule, ConfigType } from '@nestjs/config';
 import { S3, CognitoIdentityServiceProvider } from 'aws-sdk';
 import { AwsSdkModule } from 'nest-aws-sdk';
@@ -13,6 +13,7 @@ import { RideModule } from 'src/ride';
 import { ConsoleModule } from 'nestjs-console';
 import { ImportModule } from 'src/import';
 
+const redisStore = require('cache-manager-redis-store').redisStore;
 @Module({
   imports: [
     ConfigModule.forRoot({

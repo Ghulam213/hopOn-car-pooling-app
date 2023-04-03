@@ -6,5 +6,5 @@ export { UserActivationException } from './UserActivationException';
 export { UserIncorrectLoginCredentialsException } from './UserIncorrectLoginCredentialsException';
 export { DriverNotFoundException } from './DriverNotFoundException';
 export { RideNotFoundException } from './RideNotFoundException';
-export { RideNotAvailableFoundException } from './RideNotAvailableException';
+export { RideNotAvailableException } from './RideNotAvailableException';
 export { PassengerNotFoundException } from './PassengerNotFoundException';

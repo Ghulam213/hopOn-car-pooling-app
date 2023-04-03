@@ -24,9 +24,6 @@ export class RideEntity implements Ride {
   rideStatus: RideStatusEnum;
 
   @ApiProperty()
-  currentLocation: string;
-
-  @ApiProperty()
   city: string;
 
   @ApiProperty()

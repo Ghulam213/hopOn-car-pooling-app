@@ -1,24 +1,30 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, CACHE_MANAGER } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
-import { Device, Driver, PasengerRideStatusEnum, Prisma, Ride, RideStatusEnum } from '@prisma/client';
+import { Device, Driver, PasengerRideStatusEnum, PassengersOnRide, Prisma, Ride, RideStatusEnum } from '@prisma/client';
 import { NotificationNotSentException } from 'src/library/exception/notificationNotSentException';
 import { applicationConfig } from 'src/config';
 import { DriverService } from 'src/driver/services';
-import {
-  PassengerNotFoundException,
-  RideNotAvailableFoundException,
-  RideNotFoundException,
-} from 'src/library/exception';
+import { PassengerNotFoundException, RideNotAvailableException, RideNotFoundException } from 'src/library/exception';
 import { UtilityService } from 'src/library/services';
 import { NotificationService } from 'src/library/services/notification.service';
 import { PrismaService } from 'src/prisma/services';
-import { FindRidesForPassengerDto, PassengerRideCreateDto, RideCreateDto, RideRequestDto } from 'src/ride/dtos';
+import {
+  FindRidesForPassengerDto,
+  LocationUpdateDto,
+  PassengerRideCreateDto,
+  RideCreateDto,
+  RideRequestDto,
+} from 'src/ride/dtos';
+import { Cache } from 'cache-manager';
+import { RideCacheModel } from 'src/ride/models';
 
 @Injectable()
 export class RideService {
   constructor(
     @Inject(applicationConfig.KEY)
     private readonly appConfig: ConfigType<typeof applicationConfig>,
+    @Inject(CACHE_MANAGER)
+    private cacheManager: Cache,
     private prisma: PrismaService,
     private readonly driverService: DriverService,
     private readonly notificationService: NotificationService,
@@ -61,7 +67,7 @@ export class RideService {
   async findRide(
     rideWhereUniqueInput: Prisma.RideWhereUniqueInput,
     include?: Prisma.RideInclude,
-  ): Promise<(Ride & { driver?: Driver }) | null> {
+  ): Promise<(Ride & { driver?: Driver; passengersOnRide?: PassengersOnRide[] }) | null> {
     const ride = await this.prisma.ride.findUnique({
       where: rideWhereUniqueInput,
       include,
@@ -96,6 +102,56 @@ export class RideService {
     return deletedRide;
   }
 
+  async getRideCurrentLocationFromCache(rideId: string): Promise<RideCacheModel> {
+    const baseCacheKey = this.appConfig.rideCurrentLocationCache.baseCacheKey;
+    const rideCache = await this.cacheManager.get<RideCacheModel>(`${baseCacheKey}_${rideId}`);
+    return rideCache;
+  }
+
+  async setRideCurrentLocationInCache(rideId: string, rideCache: RideCacheModel) {
+    const { ttl, baseCacheKey } = this.appConfig.rideCurrentLocationCache;
+    await this.cacheManager.set(`${baseCacheKey}_${rideId}`, rideCache, ttl);
+  }
+
+  async upsertRideLocationInCache(locationUpdateDto: LocationUpdateDto, mode: 'passenger' | 'driver') {
+    const ride = await this.findRide({ id: locationUpdateDto.rideId }, { passengersOnRide: true, driver: true });
+
+    const rideCache = await this.getRideCurrentLocationFromCache(locationUpdateDto.rideId);
+    let updatedRideCache: RideCacheModel;
+
+    if (rideCache) {
+      updatedRideCache = { ...rideCache };
+    } else {
+      updatedRideCache = {
+        rideId: locationUpdateDto.rideId,
+        driver: {
+          id: ride.driver?.id,
+          currentLocation: '',
+        },
+        passengers: ride.passengersOnRide?.map((pr) => ({
+          id: pr.id,
+          currentLocation: '',
+        })),
+      };
+    }
+
+    switch (mode) {
+      case 'driver':
+        updatedRideCache.driver.currentLocation = locationUpdateDto.currentLocation;
+        break;
+      case 'passenger': {
+        const passengerIndex = updatedRideCache.passengers.findIndex((p) => p.id === locationUpdateDto.entityId);
+        if (passengerIndex === -1) {
+          throw new PassengerNotFoundException({ variables: { id: locationUpdateDto.entityId } });
+        }
+        updatedRideCache.passengers[passengerIndex].currentLocation = locationUpdateDto.currentLocation;
+      }
+    }
+
+    await this.setRideCurrentLocationInCache(locationUpdateDto.rideId, updatedRideCache);
+    return true;
+  }
+
   async findRidesForPassenger(passengerData: FindRidesForPassengerDto) {
     const pasengerDestination = UtilityService.stringToCoordinates(passengerData.destination);
     const pasengerSource = UtilityService.stringToCoordinates(passengerData.source);
@@ -106,9 +162,10 @@ export class RideService {
       },
     });
 
-    return rides.filter((ride) => {
+    return rides.filter(async (ride) => {
       const rideDestination = UtilityService.stringToCoordinates(ride.destination);
-      const rideCurrentLocation = UtilityService.stringToCoordinates(ride.currentLocation);
+      const rideCache = await this.getRideCurrentLocationFromCache(ride.id);
+      const rideCurrentLocation = UtilityService.stringToCoordinates(rideCache.driver.currentLocation);
       const isDestinationsWithinThreshold = UtilityService.arePointsWithinThreshold(
         pasengerDestination,
         rideDestination,
@@ -231,7 +288,7 @@ export class RideService {
     }
 
     if (ride.rideStatus !== RideStatusEnum.ON_GOING) {
-      throw new RideNotAvailableFoundException({
+      throw new RideNotAvailableException({
         variables: {
           rideId,
         },
