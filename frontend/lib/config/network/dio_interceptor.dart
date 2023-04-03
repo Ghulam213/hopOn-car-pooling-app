@@ -25,8 +25,6 @@ class DioInterceptior extends Interceptor {
     if (authToken != null) {
       options.headers = <String, String>{"Authorization": authToken};
     }
-
-    log("DioInterceptor.class: Dio Request: ${options.toString()}, ${options.data?.toString()}, ${options.uri}");
   }
 
   @override

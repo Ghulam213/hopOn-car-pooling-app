@@ -9,8 +9,10 @@ import { LibraryModule } from 'src/library';
 import { PrismaModule } from 'src/prisma';
 import { UserModule } from 'src/user';
 import { DriverModule } from 'src/driver';
-import type { RedisClientOptions } from 'redis';
 const redisStore = require('cache-manager-redis-store').redisStore as CacheStore;
+import { RideModule } from 'src/ride';
+import { ConsoleModule } from 'nestjs-console';
+import { ImportModule } from 'src/import';
 
 @Module({
   imports: [
@@ -46,11 +48,14 @@ const redisStore = require('cache-manager-redis-store').redisStore as CacheStore
       },
       services: [S3, CognitoIdentityServiceProvider],
     }),
+    ConsoleModule,
+    ImportModule,
     PrismaModule,
     UserModule,
     AuthModule,
     LibraryModule,
     DriverModule,
+    RideModule,
   ],
   controllers: [AppController],
   providers: [],

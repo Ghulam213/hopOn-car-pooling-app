@@ -1,0 +1,186 @@
+import 'dart:convert';
+import 'dart:developer';
+import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:hop_on/core/registration/models/driver.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../../Utils/error.dart';
+import '../../../config/network/network_config.dart';
+import '../domain/registartion_service.dart';
+import '../models/driver_response.dart';
+
+class RegistrationServiceImpl extends RegistrationService {
+  final Dio dio = NetworkConfig().dio;
+
+  @override
+  Future<DriverInfoResponse> registerDriver(
+      {String? userId,
+      String? cnicFront,
+      String? cnicBack,
+      String? licenseFront,
+      String? licenseBack,
+      String? vehicleType,
+      String? vehicleBrand,
+      String? vehicleModel,
+      String? vehicleColor,
+      String? vehiclePhoto,
+      String? vehicleRegImage}) async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? id = prefs.getString("profileID");
+
+
+      final body = {
+        "userId": '5ee04f51-0692-48bb-bcbf-de3d88b90dd7',
+        "cnicFront": cnicFront,
+        'cnicBack': cnicBack,
+        "licenseFront": licenseFront,
+        "licenseBack": licenseBack,
+        "vehicle[vehicleType]": vehicleType,
+        "vehicle[vehicleBrand]": vehicleBrand,
+        "vehicle[vehicleModel]": vehicleModel,
+        "vehicle[vehicleColor]": vehicleColor,
+        "vehicle[vehiclePhoto]": vehiclePhoto,
+        "vehicle[vehicleRegImage]": vehicleRegImage,
+      };
+
+      final Response response = await dio.post('/driver',
+          data: jsonEncode(body),
+          options: Options(headers: {
+            HttpHeaders.contentTypeHeader: "application/json",
+          }));
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final DriverInfoResponse driverResponse =
+            DriverInfoResponse.fromJson(response.data as Map<String, dynamic>);
+        log(response.data.toString());
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+        debugPrint("registering Driver");
+        return driverResponse;
+      } else {
+        throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
+      }
+    } catch (e) {
+      if (e is DioError) {
+        if (e.response != null) {
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
+        } else {
+          if (e.message.contains("SocketException: Failed host lookup")) {
+            throw "No internet connection";
+          }
+        }
+      }
+
+      throw e.toString();
+    }
+  }
+
+  Future<DriverInfoResponse> getDriver(String? userId) async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? id = prefs.getString("profileID");
+
+      final Response response = await dio.get('/driver');
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final DriverInfoResponse driverResponse =
+            DriverInfoResponse.fromJson(response.data as Map<String, dynamic>);
+        log(response.data.toString());
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+        await prefs.setString("driverID", driverResponse.data!.id!.toString());
+
+        debugPrint("Getting Driver Details");
+        return driverResponse;
+      } else {
+        throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
+      }
+    } catch (e) {
+      if (e is DioError) {
+        if (e.response != null) {
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
+        } else {
+          if (e.message.contains("SocketException: Failed host lookup")) {
+            throw "No internet connection";
+          }
+        }
+      }
+
+      throw e.toString();
+    }
+  }
+
+  @override
+  Future<DriverInfoResponse> updateDriverInfo(String? userId) async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? id = prefs.getString("profileID");
+
+      final Response response = await dio.get('/user/$id');
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final DriverInfoResponse driverResponse =
+            DriverInfoResponse.fromJson(response.data as Map<String, dynamic>);
+        log(response.data.toString());
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+        await prefs.setString("driverID", driverResponse.data!.id!.toString());
+
+        debugPrint("Updating Driver Details");
+        return driverResponse;
+      } else {
+        throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
+      }
+    } catch (e) {
+      if (e is DioError) {
+        if (e.response != null) {
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
+        } else {
+          if (e.message.contains("SocketException: Failed host lookup")) {
+            throw "No internet connection";
+          }
+        }
+      }
+
+      throw e.toString();
+    }
+  }
+
+  @override
+  Future<DriverInfoResponse> searchDriver(String? userId) async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? id = prefs.getString("profileID");
+
+      final Response response = await dio.get('/user/$id');
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final DriverInfoResponse driverResponse =
+            DriverInfoResponse.fromJson(response.data as Map<String, dynamic>);
+        log(response.data.toString());
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+        await prefs.setString("driverID", driverResponse.data!.id!.toString());
+
+        debugPrint("Searching Driver Details");
+        return driverResponse;
+      } else {
+        throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
+      }
+    } catch (e) {
+      if (e is DioError) {
+        if (e.response != null) {
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
+        } else {
+          if (e.message.contains("SocketException: Failed host lookup")) {
+            throw "No internet connection";
+          }
+        }
+      }
+
+      throw e.toString();
+    }
+  }
+}

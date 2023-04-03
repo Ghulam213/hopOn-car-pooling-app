@@ -35,7 +35,6 @@ export class RideCreateDto
   currentLocation: string;
 
   @ApiProperty()
-  @Trim()
   @IsNotEmpty()
   @IsNumber()
   @IsDefined()
@@ -44,7 +43,7 @@ export class RideCreateDto
   @ApiProperty()
   @Trim()
   @IsNotEmpty()
-  @IsNumber()
+  @IsString()
   @IsDefined()
   city: string;
 

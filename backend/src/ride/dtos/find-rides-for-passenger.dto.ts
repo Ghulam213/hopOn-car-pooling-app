@@ -21,7 +21,7 @@ export class FindRidesForPassengerDto {
   @ApiProperty()
   @Trim()
   @IsNotEmpty()
-  @IsNumber()
+  @IsString()
   @IsDefined()
   city: string;
 }
