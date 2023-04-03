@@ -119,7 +119,10 @@ export class AuthService {
     const isConfirmed = user?.verified;
     const { active: isActive } = user || {};
 
-    if (!user || !valid || !isConfirmed || !isActive) {
+    console.log(this.appConfig.environment)
+
+
+    if (this.appConfig.environment === 'production' && (!user || !valid || !isConfirmed || !isActive)) {
       throw new UserIncorrectLoginCredentialsException();
     }
 
@@ -164,7 +167,6 @@ export class AuthService {
   }
 
   public comparePassword(attempt: string, password: string): Promise<boolean> {
-    this.logger.log({ attempt, password });
     return bcrypt.compare(attempt, password);
   }
 

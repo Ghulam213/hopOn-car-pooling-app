@@ -6,8 +6,10 @@ import 'package:phone_number/phone_number.dart';
 import 'package:provider/provider.dart';
 
 import '../../../Utils/colors.dart';
+import '../../../config/network/resources.dart';
 import '../../../config/sizeconfig/size_config.dart';
 import '../../auth/widgets/country_picker.dart';
+import '../viewmodel/profile_viewmodel.dart';
 import '../widgets/profile_textfield.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -29,10 +31,14 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final SizeConfig _config = SizeConfig();
 
+  final TextEditingController _fNameController = TextEditingController();
+  final TextEditingController _lNameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _numberController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
-
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _ageController = TextEditingController();
+  final TextEditingController _genderController = TextEditingController();
+  
   String fullCode = '';
 
   final GlobalKey<FormState> _formKey = GlobalKey();
@@ -64,7 +70,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final ProfileViewModel profileViewModel = context.watch<ProfileViewModel>();
+    final ProfileViewModel profileViewModel = context.watch<ProfileViewModel>();
 
     return Container(
       width: SizeConfig.screenWidthDp,
@@ -93,7 +99,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       height: _config.sh(5).toDouble(),
                     ),
                     EditProfileTextField(
-                        textEditingController: _nameController,
+                        textEditingController: _fNameController,
                         textDirection: TextDirection.ltr,
                         validator: (String? value) {
                           if (value == null || value.isEmpty) {
@@ -117,7 +123,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       height: _config.sh(5).toDouble(),
                     ),
                     EditProfileTextField(
-                        textEditingController: _emailController,
+                        textEditingController: _lNameController,
                         textDirection: TextDirection.ltr,
                         keyBoardType: TextInputType.emailAddress,
                         validator: (String? value) {
@@ -158,7 +164,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               () => {},
                               false,
                               false,
-                              _numberController,
+                              _phoneController,
                               initialCountryCode:
                                   '+${snapshot.data!.countryCode}',
                               validator: (String? value) {
@@ -179,7 +185,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               () => {},
                               false,
                               false,
-                              _numberController,
+                              _phoneController,
                               validator: (String? value) {
                                 if (value == null) {
                                   return "Please input your phone";
@@ -212,7 +218,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       height: _config.sh(5).toDouble(),
                     ),
                     EditProfileTextField(
-                        textEditingController: _nameController,
+                        textEditingController: _emailController,
                         textDirection: TextDirection.ltr,
                         validator: (String? value) {
                           if (value == null || value.isEmpty) {
@@ -236,7 +242,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       height: _config.sh(5).toDouble(),
                     ),
                     EditProfileTextField(
-                        textEditingController: _nameController,
+                        textEditingController: _passwordController,
                         textDirection: TextDirection.ltr,
                         validator: (String? value) {
                           if (value == null || value.isEmpty) {
@@ -260,7 +266,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       height: _config.sh(5).toDouble(),
                     ),
                     EditProfileTextField(
-                        textEditingController: _nameController,
+                        textEditingController: _genderController,
                         textDirection: TextDirection.ltr,
                         validator: (String? value) {
                           if (value == null || value.isEmpty) {
@@ -284,11 +290,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       height: _config.sh(5).toDouble(),
                     ),
                     EditProfileTextField(
-                        textEditingController: _nameController,
+                        textEditingController: _ageController,
                         textDirection: TextDirection.ltr,
                         validator: (String? value) {
                           if (value == null || value.isEmpty) {
-                            return easy.tr("Please input your name");
+                            return easy.tr("Please input your age");
                           }
                           return null;
                         },
@@ -306,10 +312,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     // profileViewModel.updateProfileResource.ops !=
                     //     NetworkStatus.LOADING
                     ) {
-                  if (_formKey.currentState!.validate() &&
-                      _numberController.text.isNotEmpty) {
-                    updateProfile();
-                  }
+                  // if (_formKey.currentState!.validate() &&
+                  //     _numberController.text.isNotEmpty) {
+                  //   updateProfile();
+                  // }
                 }
               },
               child: Card(
@@ -338,23 +344,40 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> updateProfile() async {
-    // final ProfileViewModel profileViewModel = context.read<ProfileViewModel>();
-    final String name = _nameController.text;
+    final ProfileViewModel profileViewModel = context.read<ProfileViewModel>();
+    final String fName = _fNameController.text;
+    final String lName = _lNameController.text;
+    final String phone = _phoneController.text;
     final String email = _emailController.text;
+    final String password = _passwordController.text;
+    final String age = _ageController.text;
+    final String gender = _genderController.text;
 
-    // await profileViewModel.updateProfile(
-    //     profileID: profileViewModel.id,
-    //     fullName: name,
-    //     emailAddress: email,
-    //     phoneNumber: fullCode);
+    log(fullCode);
 
-    if (true
-        // profileViewModel.updateProfileResource.ops ==NetworkStatus.SUCCESSFUL
-        ) {
+    await profileViewModel.updateProfile(
+      id: profileViewModel.id,
+      birthDate: 'birthDate',
+      currentCity: 'currentCity',
+      currentMode: 'currentMode',
+      firstName: fName,
+      lastName: lName,
+      gender: gender,
+      locale: 'locale',
+      phone: phone,
+      profilePic: 'profilePic',
+      timezone: 'timezone',
+      optedInAt: true,
+      active: true,
+      verified: true,
+    );
+
+    if (profileViewModel.updateProfileResource.ops ==
+        NetworkStatus.SUCCESSFUL) {
       widget.onUpdateSuccess();
     } else {
-      // widget
-      //     .onUpdateFailed(profileViewModel.updateProfileResource.networkError!);
+      widget
+          .onUpdateFailed(profileViewModel.updateProfileResource.networkError!);
     }
   }
 }

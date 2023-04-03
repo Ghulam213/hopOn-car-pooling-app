@@ -1,10 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:hop_on/core/profile/models/vehicle_info_modal.dart';
+import 'package:hop_on/core/registration/modals/vehicle_info_modal.dart';
 
 import '../../../Utils/colors.dart';
 import '../../../config/sizeconfig/size_config.dart';
-import '../../profile/models/driver_info_modal.dart';
 import '../../widgets/custom_toast.dart';
 
 class RegistrationModal extends StatefulWidget {
@@ -67,76 +66,27 @@ class _ReferenceNumberBottomSheetState extends State<RegistrationModal> {
               const SizedBox(
                 height: 24,
               ),
-              // Form(
-              //   key: _formKey,
-              //   child: Card(
-              //     elevation: 2,
-              //     margin: const EdgeInsets.symmetric(horizontal: 13.0),
-              //     child: SizedBox(
-              //       width: SizeConfig.screenWidthDp!,
-              //       child: Padding(
-              //         padding: const EdgeInsets.all(10.0),
-              //         child: TextFormField(
-              //           textInputAction: TextInputAction.done,
-              //           keyboardType: TextInputType.datetime,
-              //           onChanged: (String? value) {},
-              //           onEditingComplete: () {
-              //             FocusScope.of(context).unfocus();
-              //           },
-              //           controller: _searchController,
-              //           validator: (String? value) {
-              //             if (value == null) {
-              //               return tr(
-              //                       "Please provide the reference number of this order in your system")
-              //                   .toString();
-              //             }
-
-              //             if (value.isEmpty) {
-              //               return tr(
-              //                       "Please provide the reference number of this order in your system")
-              //                   .toString();
-              //             }
-
-              //             return null;
-              //           },
-              //           decoration: InputDecoration(
-              //             border: InputBorder.none,
-              //             disabledBorder: InputBorder.none,
-              //             enabledBorder: InputBorder.none,
-              //             focusedBorder: InputBorder.none,
-              //             errorBorder: InputBorder.none,
-              //             hintText: tr("Reference number"),
-              //             hintStyle: Theme.of(context)
-              //                 .textTheme
-              //                 .bodyText2!
-              //                 .copyWith(fontSize: 15, height: 1.5),
-              //           ),
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
-
+     
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 13.0),
                 child: InkWell(
                   onTap: () async {
-                    await showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        useRootNavigator: true,
-                        builder: (context) {
-                          return DriverInfoModal(
-                            // data: data,
-                            onErrorOccurred: (error) {
-                              customToastBlack(
-                                  msg: "Error while updating order: $error");
-                            },
-                            onCloseTap: () {
-                              Navigator.of(_scaffoldKey.currentContext!).pop();
-                            },
-                          );
-                        });
+                    // await showModalBottomSheet(
+                    //     context: context,
+                    //     isScrollControlled: true,
+                    //     useRootNavigator: true,
+                    //     builder: (context) {
+                    //       return DriverInfoModal(
+                    //         // data: data,
+                    //         onErrorOccurred: (error) {
+                    //           customToastBlack(
+                    //               msg: "Error while updating order: $error");
+                    //         },
+                    //         onCloseTap: () {
+                    //           Navigator.of(_scaffoldKey.currentContext!).pop();
+                    //         },
+                    //       );
+                    //     });
                   },
                   child: Card(
                     child: Container(
