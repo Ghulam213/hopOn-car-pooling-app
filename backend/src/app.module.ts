@@ -19,9 +19,15 @@ const redisStore = require('cache-manager-redis-store').redisStore as CacheStore
       load: [applicationConfig],
       isGlobal: true,
     }),
-    CacheModule.register<RedisClientOptions>({
-      isGlobal: true,
-      store: redisStore,
+    CacheModule.registerAsync({
+      useFactory: (appConfig: ConfigType<typeof applicationConfig>) => {
+        return {
+          isGlobal: true,
+          store: redisStore,
+          host: appConfig.redisServerHostname,
+          port: appConfig.redisServerPort,
+        };
+      },
     }),
     AwsSdkModule.forRootAsync({
       defaultServiceOptions: {

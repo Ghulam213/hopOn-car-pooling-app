@@ -11,3 +11,14 @@ services:
       POSTGRES_MULTIPLE_DATABASES: hopon_dev,hopon_test
       POSTGRES_USER: hopon
       POSTGRES_PASSWORD: hopon
+  redis:
+      container_name: cache
+      image: redis
+      ports:
+        - 6379:6379
+      volumes:
+        - redis:/data
+
+volumes:
+  redis:
+    driver: local

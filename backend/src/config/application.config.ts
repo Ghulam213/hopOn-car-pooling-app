@@ -30,4 +30,7 @@ export const applicationConfig = registerAs('application', () => ({
     marketing: process.env.AWS_SNS_TOPIC_ARN_RIDE_REQUEST,
   },
   awsSnsPlatformApplicationArn: process.env.AWS_SNS_PLATFORM_APPLICATION_ARN,
+  redisServerPort: process.env.REDIS_SERVER_PORT,
+  redisServerUrl: process.env.REDIS_SERVER_URL,
+  redisServerHostname: process.env.REDIS_SERVER_HOSTNAME,
 }));

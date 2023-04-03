@@ -19,4 +19,7 @@ export const validationSchema = Joi.object({
   ROUTE_OVERLAP_THRESHOLD: Joi.number().default(0.3), // in km
   AWS_SNS_TOPIC_ARN_MARKETING: Joi.string().default('arn:aws:sns:us-east-1:146823716130:hopon-marketing.fifo'),
   AWS_SNS_PLATFORM_APPLICATION_ARN: Joi.string().default('arn:aws:sns:us-east-1:146823716130:app/GCM/hopon-client'),
+  REDIS_SERVER_PORT: Joi.number().default(6379),
+  REDIS_SERVER_URL: Joi.string().default('redis://localhost:6379'),
+  REDIS_SERVER_HOSTNAME: Joi.string().default('localhost'),
 });
