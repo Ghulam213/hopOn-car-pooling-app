@@ -226,7 +226,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         loginStore.registerUser(context, password.text,
                             phone.text, email.text, fName.text, lName.text);
 
-                     
                         
                       }
                     },
@@ -243,7 +242,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       final isLastStep =
                           _activeStepIndex == stepList().length - 1;
             
-                   
+                 
                       setState(() {
                         _activeStepIndex = index;
                       });
@@ -253,58 +252,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       final isLastStep =
                           _activeStepIndex == stepList().length - 1;
 
-                      return Container(
-                        padding: EdgeInsets.only(top: 20),
-                        child: Row(
-                          children: [
-                            if (_activeStepIndex > 0)
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: details.onStepCancel,
-                                  child: Text('Back',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium!
-                                          .copyWith(
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.w400,
-                                              height: 1.0,
-                                              color: AppColors
-                                                  .LM_BACKGROUND_BASIC)),
-                                ),
-                              ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: details.onStepContinue,
-                                child: (isLastStep)
-                                    ? Text('Submit',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium!
-                                            .copyWith(
-                                                fontSize: 17,
-                                                fontWeight: FontWeight.w400,
-                                                height: 1.0,
-                                                color: AppColors
-                                                    .LM_BACKGROUND_BASIC))
-                                    : Text('Next',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium!
-                                            .copyWith(
-                                                fontSize: 17,
-                                                fontWeight: FontWeight.w400,
-                                                height: 1.0,
-                                                color: AppColors
-                                                    .LM_BACKGROUND_BASIC)),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
+                      return StepControlBuilder(
+                          details: details,
+                          activeStepIndex: _activeStepIndex,
+                          isLastStep: isLastStep);
                     },
                   ),
                 ],
@@ -313,6 +264,64 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
         );
       },
+    );
+  }
+}
+
+class StepControlBuilder extends StatelessWidget {
+  const StepControlBuilder({
+    super.key,
+    required ControlsDetails details,
+    required int activeStepIndex,
+    required this.isLastStep,
+  })  : _activeStepIndex = activeStepIndex,
+        _details = details;
+
+  final int _activeStepIndex;
+  final ControlsDetails _details;
+  final bool isLastStep;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(top: 20),
+      child: Row(
+        children: [
+          if (_activeStepIndex > 0)
+            Expanded(
+              child: ElevatedButton(
+                onPressed: _details.onStepCancel,
+                child: Text('Back',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w400,
+                        height: 1.0,
+                        color: AppColors.LM_BACKGROUND_BASIC)),
+              ),
+            ),
+          const SizedBox(
+            width: 10,
+          ),
+          Expanded(
+            child: ElevatedButton(
+              onPressed: _details.onStepContinue,
+              child: (isLastStep)
+                  ? Text('Submit',
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w400,
+                          height: 1.0,
+                          color: AppColors.LM_BACKGROUND_BASIC))
+                  : Text('Next',
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w400,
+                          height: 1.0,
+                          color: AppColors.LM_BACKGROUND_BASIC)),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

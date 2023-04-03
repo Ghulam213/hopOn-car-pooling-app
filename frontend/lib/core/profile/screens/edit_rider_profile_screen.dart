@@ -9,7 +9,7 @@ import '../../../Utils/colors.dart';
 import '../../../config/network/resources.dart';
 import '../../../config/sizeconfig/size_config.dart';
 import '../../auth/widgets/country_picker.dart';
-import '../viewmodels/profile_viewmodel.dart';
+import '../viewmodel/profile_viewmodel.dart';
 import '../widgets/profile_textfield.dart';
 
 class EditProfileScreen extends StatefulWidget {

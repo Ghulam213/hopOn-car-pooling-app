@@ -1,4 +1,4 @@
-class Data {
+class UserData {
   String? id;
   String? coginitoId;
   String? email;
@@ -18,7 +18,7 @@ class Data {
   bool? active;
   bool? verified;
 
-  Data({
+  UserData({
     this.id,
     this.coginitoId,
     this.email,
@@ -39,7 +39,7 @@ class Data {
     this.updatedAt,
   });
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
+  factory UserData.fromJson(Map<String, dynamic> json) => UserData(
         id: json['id'] as String?,
         coginitoId: json['coginitoId'] as String?,
         email: json['email'] as String?,

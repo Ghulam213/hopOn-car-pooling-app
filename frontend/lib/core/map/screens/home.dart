@@ -7,7 +7,7 @@ import 'package:mapbox_gl/mapbox_gl.dart';
 
 import '../../../Utils/constants.dart';
 import '../../../Utils/helpers.dart';
-import '../models/registration_modal.dart';
+import '../../registration/modals/registration_modal.dart';
 import '../../widgets/custom_toast.dart';
 import '../../widgets/drawer.dart';
 import '../widgets/coursel_card.dart';

@@ -1,19 +1,20 @@
 import 'package:hop_on/core/profile/models/user_model.dart';
+import 'package:hop_on/core/registration/models/driver.dart';
 
-class UserInfoResponse {
+class DriverInfoResponse {
   int? code;
   String? error;
-  UserData? data;
+  Driver? data;
 
-  UserInfoResponse({this.code, this.error, this.data});
+  DriverInfoResponse({this.code, this.error, this.data});
 
-  factory UserInfoResponse.fromJson(Map<String, dynamic> json) {
-    return UserInfoResponse(
+  factory DriverInfoResponse.fromJson(Map<String, dynamic> json) {
+    return DriverInfoResponse(
       code: json['statusCode'] as int?,
       error: json['message'] as String?,
       data: json['data'] == null
           ? null
-          : UserData.fromJson(json['data'] as Map<String, dynamic>),
+          : Driver.fromJson(json['data'] as Map<String, dynamic>),
     );
   }
 
