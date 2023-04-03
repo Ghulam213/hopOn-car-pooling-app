@@ -4,7 +4,14 @@ import { ParseUUIDStringPipe } from 'src/library/pipes';
 import { AccessTokenGuard } from 'src/auth/guards';
 import { RideService } from 'src/ride/services';
 import { RideEntity } from 'src/ride/entities';
-import { FindRidesForPassengerDto, RideCreateDto, RideRequestDto, RideUpdateDto } from 'src/ride/dtos';
+import {
+  FindRidesForPassengerDto,
+  LocationUpdateDto,
+  RideCreateDto,
+  RideRequestDto,
+  RideUpdateDto,
+} from 'src/ride/dtos';
+import { RideCacheModel } from 'src/ride/models';
 
 @Controller()
 @ApiTags('ride')
@@ -48,7 +55,7 @@ export class RideController {
 
   @UseGuards(AccessTokenGuard)
   @Get('ride-for-passenger')
-  @ApiOkResponse({ type: RideEntity })
+  @ApiOkResponse({ type: RideEntity, isArray: true })
   async getRidesForPassenger(@Query() rideForPassengerData: FindRidesForPassengerDto): Promise<RideEntity[]> {
     return this.rideService.findRidesForPassenger(rideForPassengerData);
   }
@@ -72,5 +79,26 @@ export class RideController {
   @ApiOkResponse({ type: Boolean })
   async rejectRideRequest(@Body() rideRequestData: RideRequestDto): Promise<true> {
     return this.rideService.requestRideReject(rideRequestData);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Post('ride/driver/current-location')
+  @ApiOkResponse({ type: Boolean })
+  async upsertDriverCurrentLocation(@Body() locationUpdateDto: LocationUpdateDto): Promise<Boolean> {
+    return this.rideService.upsertRideLocationInCache(locationUpdateDto, 'driver');
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Post('ride/passenger/current-location')
+  @ApiOkResponse({ type: Boolean })
+  async upsertPassengerCurrentLocation(@Body() locationUpdateDto: LocationUpdateDto): Promise<Boolean> {
+    return this.rideService.upsertRideLocationInCache(locationUpdateDto, 'passenger');
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get('ride/:rideId/current-location')
+  @ApiOkResponse({ type: RideCacheModel })
+  async getRideCurrentLocation(@Param('rideId', ParseUUIDStringPipe) rideId: string): Promise<RideCacheModel | null> {
+    return this.rideService.getRideCurrentLocationFromCache(rideId);
   }
 }

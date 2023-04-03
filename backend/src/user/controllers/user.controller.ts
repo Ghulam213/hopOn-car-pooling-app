@@ -8,6 +8,7 @@ import { DeviceEntity, UserEntity } from 'src/user/entities';
 import { ParseUUIDStringPipe } from 'src/library/pipes';
 import { RegisterUserDeviceDto, UserUpdateDto } from 'src/user/dtos';
 import { AccessTokenGuard } from 'src/auth/guards';
+import { ResponseModel } from 'src/library/models';
 
 @Controller()
 @ApiTags('user')

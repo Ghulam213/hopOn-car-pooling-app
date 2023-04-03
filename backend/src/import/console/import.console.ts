@@ -83,6 +83,8 @@ export class ImportConsole {
           throw new Error(errorMessage);
         }
       }
+      console.log('The saved entities are', savedEntities);
+      process.exit(0);
     } catch (err) {
       console.error('The error while importing Entities is', err);
       process.exit(1);

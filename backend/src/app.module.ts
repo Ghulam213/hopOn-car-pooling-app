@@ -13,23 +13,13 @@ import { RideModule } from 'src/ride';
 import { ConsoleModule } from 'nestjs-console';
 import { ImportModule } from 'src/import';
 
-const redisStore = require('cache-manager-redis-store').redisStore as CacheStore;
+const redisStore = require('cache-manager-redis-store').redisStore;
 @Module({
   imports: [
     ConfigModule.forRoot({
       validationSchema,
       load: [applicationConfig],
       isGlobal: true,
-    }),
-    CacheModule.registerAsync({
-      useFactory: (appConfig: ConfigType<typeof applicationConfig>) => {
-        return {
-          isGlobal: true,
-          store: redisStore,
-          host: appConfig.redisServerHostname,
-          port: appConfig.redisServerPort,
-        };
-      },
     }),
     AwsSdkModule.forRootAsync({
       defaultServiceOptions: {
