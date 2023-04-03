@@ -1,23 +1,23 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Controller, Get, CACHE_MANAGER } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { Device, Driver, PasengerRideStatusEnum, Prisma, Ride, RideStatusEnum } from '@prisma/client';
 import { NotificationNotSentException } from 'src/library/exception/notificationNotSentException';
 import { applicationConfig } from 'src/config';
 import { DriverService } from 'src/driver/services';
-import {
-  PassengerNotFoundException,
-  RideNotAvailableFoundException,
-  RideNotFoundException,
-} from 'src/library/exception';
+import { PassengerNotFoundException, RideNotAvailableException, RideNotFoundException } from 'src/library/exception';
 import { UtilityService } from 'src/library/services';
 import { NotificationService } from 'src/library/services/notification.service';
 import { PrismaService } from 'src/prisma/services';
 import { FindRidesForPassengerDto, PassengerRideCreateDto, RideCreateDto, RideRequestDto } from 'src/ride/dtos';
+import { Cache } from 'cache-manager';
+import { RideCacheModel } from 'src/ride/models';
 
 @Injectable()
 export class RideService {
   constructor(
     @Inject(applicationConfig.KEY)
+    @Inject(CACHE_MANAGER)
+    private cacheManager: Cache,
     private readonly appConfig: ConfigType<typeof applicationConfig>,
     private prisma: PrismaService,
     private readonly driverService: DriverService,
@@ -96,6 +96,17 @@ export class RideService {
     return deletedRide;
   }
 
+  private async getRideCurrentLocationFromCache(rideId: string): Promise<RideCacheModel> {
+    const baseCacheKey = this.appConfig.rideCurrentLocationCache.baseCacheKey;
+    const rideCache = await this.cacheManager.get<RideCacheModel>(`${baseCacheKey}_${rideId}`);
+
+    if (!rideCache) {
+      throw new RideNotAvailableException({ variables: { rideId } });
+    }
+
+    return rideCache;
+  }
+
   async findRidesForPassenger(passengerData: FindRidesForPassengerDto) {
     const pasengerDestination = UtilityService.stringToCoordinates(passengerData.destination);
     const pasengerSource = UtilityService.stringToCoordinates(passengerData.source);
@@ -106,9 +117,10 @@ export class RideService {
       },
     });
 
-    return rides.filter((ride) => {
+    return rides.filter(async (ride) => {
       const rideDestination = UtilityService.stringToCoordinates(ride.destination);
-      const rideCurrentLocation = UtilityService.stringToCoordinates(ride.currentLocation);
+      const rideCache = await this.getRideCurrentLocationFromCache(ride.id);
+      const rideCurrentLocation = UtilityService.stringToCoordinates(rideCache.driver.currentLocation);
       const isDestinationsWithinThreshold = UtilityService.arePointsWithinThreshold(
         pasengerDestination,
         rideDestination,
@@ -231,7 +243,7 @@ export class RideService {
     }
 
     if (ride.rideStatus !== RideStatusEnum.ON_GOING) {
-      throw new RideNotAvailableFoundException({
+      throw new RideNotAvailableException({
         variables: {
           rideId,
         },

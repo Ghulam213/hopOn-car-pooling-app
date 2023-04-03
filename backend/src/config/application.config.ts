@@ -33,4 +33,8 @@ export const applicationConfig = registerAs('application', () => ({
   redisServerPort: process.env.REDIS_SERVER_PORT,
   redisServerUrl: process.env.REDIS_SERVER_URL,
   redisServerHostname: process.env.REDIS_SERVER_HOSTNAME,
+  rideCurrentLocationCache: {
+    ttl: parseInt(process.env.RIDE_CURRENT_LOCATION_CACHE_TTL, 10),
+    baseCacheKey: process.env.RIDE_CURRENT_LOCATION_BASE_CACHE_KEY,
+  },
 }));

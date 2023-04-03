@@ -13,7 +13,7 @@ interface RideNotAvailableExceptionInterface {
 
 const defaultMessage = 'Ride with id {{rideId}} is not available';
 
-export class RideNotAvailableFoundException extends BadRequestException {
+export class RideNotAvailableException extends BadRequestException {
   constructor(error: RideNotAvailableExceptionInterface, description?: string) {
     super(prepareError(defaultMessage, ErrorCodeEnum.RIDE_NOT_AVAILABLE, error), description);
   }

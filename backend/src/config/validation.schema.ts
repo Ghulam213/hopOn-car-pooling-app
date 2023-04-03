@@ -22,4 +22,6 @@ export const validationSchema = Joi.object({
   REDIS_SERVER_PORT: Joi.number().default(6379),
   REDIS_SERVER_URL: Joi.string().default('redis://localhost:6379'),
   REDIS_SERVER_HOSTNAME: Joi.string().default('localhost'),
+  RIDE_CURRENT_LOCATION_CACHE_TTL: Joi.number().default(60 * 60 * 24), //24h
+  RIDE_CURRENT_LOCATION_BASE_CACHE_KEY: Joi.string().default('ride_current_location'),
 });
