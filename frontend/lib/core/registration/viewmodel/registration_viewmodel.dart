@@ -1,136 +1,113 @@
-// import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:hop_on/core/registration/models/driver_response.dart';
 
-// import '../../../config/network/resources.dart';
+import '../../../config/network/resources.dart';
+import '../domain/registartion_service.dart';
+import '../service/registration_service_impl.dart';
 
-// class RegistrationViewModel extends ChangeNotifier {
-//   late ProfileService _profileService;
+class RegistrationViewModel extends ChangeNotifier {
+  late RegistrationService _registrationService;
 
-//   RegistrationViewModel() {
-//     _profileService = ProfileServiceImpl();
+  RegistrationViewModel() {
+    _registrationService = RegistrationServiceImpl();
+  }
 
-//     loadLocalDetails();
-//     getProfile();
-//   }
+  Resource<DriverInfoResponse> getDriverResource = Resource.idle();
 
-//   Resource<UserInfoResponse> getProfileResource = Resource.idle();
+  String id = '';
+  String active = '';
+  String cnicBack = '';
+  String cnicFront = '';
+  String licenseBack = '';
+  String licenseFront = '';
+  String userId = '';
+  String verified = '';
 
-//   String id = '';
-//   String email = '';
-//   String firstName = '';
-//   String lastName = '';
-//   String phone = '';
-//   String locale = '';
-//   String timezone = '';
-//   String currentCity = '';
-//   String gender = '';
-//   String birthDate = '';
-//   String profilePic = '';
-//   String currentMode = '';
 
-//   Future<void> loadLocalDetails() async {
-//     final Map<String, String> details =
-//         await ProfileServiceImpl().getStoredProfile();
 
-//     // name = details["profileName"]!;
-//     // email = details["profileEmail"]!;
-//     // phone = details["profileNumber"]!;
-//     // id = details["profileID"]!;
-//     // placeHolderName = details["placeHolderName"]!;
 
-//     notifyListeners();
-//   }
+  Future<void> getDriver(String? userId) async {
+    try {
+      getDriverResource = Resource.loading();
+      notifyListeners();
 
-//   Future<void> getProfile() async {
-//     try {
-//       getProfileResource = Resource.loading();
-//       notifyListeners();
+      final DriverInfoResponse response =
+          await _registrationService.getDriver(userId);
 
-//       final UserInfoResponse response = await _profileService.getProfile();
+      getDriverResource = Resource.success(response);
 
-//       getProfileResource = Resource.success(response);
+      id = getDriverResource.modelResponse!.data!.id!.toString();
 
-//       id = getProfileResource.modelResponse!.data!.id!;
-//       email = getProfileResource.modelResponse!.data!.email.toString();
-//       firstName = getProfileResource.modelResponse!.data!.firstName!;
-//       lastName = getProfileResource.modelResponse!.data!.lastName!.toString();
-//       phone = getProfileResource.modelResponse!.data!.phone!.toString();
-//       locale = getProfileResource.modelResponse!.data!.locale!;
-//       timezone = getProfileResource.modelResponse!.data!.timezone.toString();
-//       currentCity = getProfileResource.modelResponse!.data!.currentCity!;
-//       gender = getProfileResource.modelResponse!.data!.gender!.toString();
-//       birthDate = getProfileResource.modelResponse!.data!.birthDate.toString();
-//       profilePic =
-//           getProfileResource.modelResponse!.data!.profilePic!.toString();
-//       currentMode =
-//           getProfileResource.modelResponse!.data!.currentMode!.toString();
+      active = getDriverResource.modelResponse!.data!.active.toString();
+      cnicBack = getDriverResource.modelResponse!.data!.cnicBack.toString();
+      cnicFront = getDriverResource.modelResponse!.data!.cnicFront.toString();
+      licenseBack =
+          getDriverResource.modelResponse!.data!.licenseBack.toString();
+      licenseFront =
+          getDriverResource.modelResponse!.data!.licenseFront.toString();
+      // timezone = getDriverResource.modelResponse!.data!.user timezone.toString();
+      userId = getDriverResource.modelResponse!.data!.userId.toString();
+      // gender = getDriverResource.modelResponse!.data!.vehicles toString();
+      verified = getDriverResource.modelResponse!.data!.verified.toString();
 
-//       notifyListeners();
-//     } catch (e) {
-//       getProfileResource = Resource.failed(e.toString());
-//       notifyListeners();
-//     }
-//   }
+      notifyListeners();
+    } catch (e) {
+      getDriverResource = Resource.failed(e.toString());
+      notifyListeners();
+    }
+  }
 
-//   Resource<UserInfoResponse> updateProfileResource = Resource.idle();
+  Resource<DriverInfoResponse> updateProfileResource = Resource.idle();
 
-//   Future<void> updateProfile({
-//     required String id,
-//     required String firstName,
-//     required String lastName,
-//     required String phone,
-//     required String locale,
-//     required String timezone,
-//     required String currentCity,
-//     required String gender,
-//     required String birthDate,
-//     required String profilePic,
-//     required String currentMode,
-//     required bool optedInAt,
-//     required bool active,
-//     required bool verified,
-//   }) async {
-//     try {
-//       updateProfileResource = Resource.loading();
-//       notifyListeners();
+  Future<void> registerDriver({
+    required String userId,
+    required String cnicFront,
+    required String cnicBack,
+    required String licenseFront,
+    required String licenseBack,
+    required String vehicleType,
+    required String vehicleBrand,
+    required String vehicleModel,
+    required String vehicleColor,
+    required String vehiclePhoto,
+    required String vehicleRegImage,
+  }) async {
+    try {
+      updateProfileResource = Resource.loading();
+      notifyListeners();
 
-//       final UserInfoResponse response = await _profileService.updateUserProfile(
-//         id: id,
-//         birthDate: birthDate,
-//         currentCity: currentCity,
-//         currentMode: currentMode,
-//         firstName: firstName,
-//         lastName: lastName,
-//         gender: gender,
-//         locale: locale,
-//         phone: phone,
-//         profilePic: profilePic,
-//         timezone: timezone,
-//         optedInAt: optedInAt,
-//         active: active,
-//         verified: verified,
-//       );
+      final DriverInfoResponse response =
+          await _registrationService.registerDriver(
+        userId: userId,
+        cnicFront: cnicFront,
+        cnicBack: cnicBack,
+        licenseFront: licenseFront,
+        licenseBack: licenseBack,
+        vehicleType: vehicleType,
+        vehicleBrand: vehicleBrand,
+        vehicleModel: vehicleModel,
 
-//       updateProfileResource = Resource.success(response);
+vehicleColor: vehicleColor,
+        vehiclePhoto: vehiclePhoto,
+        vehicleRegImage: vehicleRegImage,
+      );
 
-//       id = getProfileResource.modelResponse!.data!.id!;
-//       email = getProfileResource.modelResponse!.data!.email.toString();
-//       firstName = getProfileResource.modelResponse!.data!.firstName!;
-//       lastName = getProfileResource.modelResponse!.data!.lastName!.toString();
-//       phone = getProfileResource.modelResponse!.data!.phone!.toString();
-//       locale = getProfileResource.modelResponse!.data!.locale!;
-//       timezone = getProfileResource.modelResponse!.data!.timezone.toString();
-//       currentCity = getProfileResource.modelResponse!.data!.currentCity!;
-//       gender = getProfileResource.modelResponse!.data!.gender!.toString();
-//       birthDate = getProfileResource.modelResponse!.data!.birthDate.toString();
-//       profilePic =
-//           getProfileResource.modelResponse!.data!.profilePic!.toString();
-//       currentMode =
-//           getProfileResource.modelResponse!.data!.currentMode!.toString();
+      updateProfileResource = Resource.success(response);
+      id = getDriverResource.modelResponse!.data!.id!.toString();
+      active = getDriverResource.modelResponse!.data!.active.toString();
+      cnicBack = getDriverResource.modelResponse!.data!.cnicBack.toString();
+      cnicFront = getDriverResource.modelResponse!.data!.cnicFront.toString();
+      licenseBack =
+          getDriverResource.modelResponse!.data!.licenseBack.toString();
+      licenseFront =
+          getDriverResource.modelResponse!.data!.licenseFront.toString();
+      userId = getDriverResource.modelResponse!.data!.userId.toString();
+      verified = getDriverResource.modelResponse!.data!.verified.toString();
 
-//       notifyListeners();
-//     } catch (e) {
-//       updateProfileResource = Resource.failed(e.toString());
-//       notifyListeners();
-//     }
-//   }
-// }
+      notifyListeners();
+    } catch (e) {
+      updateProfileResource = Resource.failed(e.toString());
+      notifyListeners();
+    }
+  }
+}

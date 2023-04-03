@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../Utils/colors.dart';
 import '../../../config/sizeconfig/size_config.dart';
+import '../viewmodel/registration_viewmodel.dart';
 
 class VehicleInfoModal extends StatefulWidget {
   final Function() onCloseTap;
@@ -181,7 +183,7 @@ class _VehicleInfoModalState extends State<VehicleInfoModal> {
       ),
       Step(
           state: StepState.complete,
-          isActive: _activeStepIndex >= 2,
+          // isActive: _activeStepIndex >= 2,
           title: const Text('Confirm'),
           content: Center(
             child: Text(
@@ -194,6 +196,9 @@ class _VehicleInfoModalState extends State<VehicleInfoModal> {
 
   @override
   Widget build(BuildContext context) {
+    final RegistrationViewModel registrationViewModel =
+        context.watch<RegistrationViewModel>();
+
     return DraggableScrollableSheet(
       maxChildSize: 0.95,
       minChildSize: 0.5,
@@ -229,8 +234,18 @@ class _VehicleInfoModalState extends State<VehicleInfoModal> {
                     _activeStepIndex += 1;
                   });
                 } else {
-                  // loginStore.registerUser(context, password.text, phone.text,
-                  //     email.text, fName.text, lName.text);
+                  registrationViewModel.registerDriver(
+                      userId: 'userId',
+                      cnicFront: 'cnicFront',
+                      cnicBack: 'cnicBack',
+                      licenseFront: 'licenseFront',
+                      licenseBack: 'licenseBack',
+                      vehicleType: 'vehicleType',
+                      vehicleBrand: 'vehicleBrand',
+                      vehicleModel: 'vehicleModel',
+                      vehicleColor: 'vehicleColor',
+                      vehiclePhoto: 'vehiclePhoto',
+                      vehicleRegImage: 'vehicleRegImage');
                 }
               },
               onStepCancel: () {
