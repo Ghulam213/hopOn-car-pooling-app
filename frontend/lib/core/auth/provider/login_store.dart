@@ -60,6 +60,8 @@ abstract class LoginStoreBase with Store {
       BuildContext context, String phone, String pass) async {
     final body = {"phone": phone, "password": pass};
 
+
+    final prefs = await SharedPreferences.getInstance();
     if (phone != '') {
       try {
         isPhoneLoading = true;
@@ -74,6 +76,16 @@ abstract class LoginStoreBase with Store {
 
         if (response.statusCode == 200) {
           isPhoneDone = true;
+
+          prefs.setString(
+              'accessToken',
+              response.data.accessToken
+                  ? response.data.accessToken.toString()
+                  : '');
+          prefs.setString('refreshToken',
+              response.data.id ? response.data.refreshToken.toString() : '');
+          prefs.setString('profileID',
+              response.data.id ? response.data.userId.toString() : '');
 
           Future.delayed(const Duration(milliseconds: 1), () {
             Navigator.of(context).push(
@@ -186,6 +198,7 @@ abstract class LoginStoreBase with Store {
       String email, String firstName, String lastName) async {
     log("registerUser");
 
+    final prefs = await SharedPreferences.getInstance();
     final body = {
       "password": password,
       "phone": phone,
@@ -214,6 +227,8 @@ abstract class LoginStoreBase with Store {
         log(response.data.toString());
         // await _storeUserData(response.data);
 
+        prefs.setString(
+            'profileID', response.data.id ? response.data.id.toString() : '');
         isUserInfoLoading = false;
         Future.delayed(const Duration(milliseconds: 1), () {
           Navigator.of(context).push(

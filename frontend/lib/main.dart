@@ -3,6 +3,9 @@ import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:hop_on/core/auth/screens/auth_screen.dart';
+import 'package:hop_on/core/registration/viewmodel/registration_viewmodel.dart';
+import 'core/profile/viewmodel/profile_viewmodel.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -45,9 +48,9 @@ Future<void> main() async {
   //                 child: const App())),
   //           )
   //         });
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  // await Firebase.initializeApp(
+  //   options: DefaultFirebaseOptions.currentPlatform,
+  // );
   await EasyLocalization.ensureInitialized();
   NetworkConfig().initNetworkConfig();
   await initializeLocationAndSave();
@@ -110,6 +113,13 @@ class _AppState extends State<App> with WidgetsBindingObserver {
           Provider<LoginStore>(
             create: (_) => LoginStore(),
           ),
+          
+          ChangeNotifierProvider<RegistrationViewModel>(
+            create: (_) => RegistrationViewModel(),
+          ),
+          ChangeNotifierProvider<ProfileViewModel>(
+            create: (_) => ProfileViewModel(),
+          ),
         ],
         child: Consumer<LoginStore>(
           builder: (ctx, auth, _) => MaterialApp(
@@ -128,7 +138,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
                     height: size.height,
                     width: size.width,
                     allowFontScaling: true);
-                return const SplashScreen();
+                return const AuthScreen();
               },
             ),
           ),
