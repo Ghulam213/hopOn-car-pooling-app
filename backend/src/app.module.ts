@@ -9,6 +9,9 @@ import { LibraryModule } from 'src/library';
 import { PrismaModule } from 'src/prisma';
 import { UserModule } from 'src/user';
 import { DriverModule } from 'src/driver';
+import { RideModule } from 'src/ride';
+import { ConsoleModule } from 'nestjs-console';
+import { ImportModule } from 'src/import';
 
 @Module({
   imports: [
@@ -34,11 +37,14 @@ import { DriverModule } from 'src/driver';
       },
       services: [S3, CognitoIdentityServiceProvider],
     }),
+    ConsoleModule,
+    ImportModule,
     PrismaModule,
     UserModule,
     AuthModule,
     LibraryModule,
     DriverModule,
+    RideModule,
   ],
   controllers: [AppController],
   providers: [],

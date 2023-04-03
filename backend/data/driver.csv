@@ -1,0 +1,2 @@
+id,cnicFront,cnicBack,licenseFront,licenseBack,userId,verified:boolean,active:boolean
+e0d89a2b-f8da-441a-8182-bc4bb4f945e7,string,string,string,string,bd8c17df-5d49-4546-87ae-3073a7408f83,true,true

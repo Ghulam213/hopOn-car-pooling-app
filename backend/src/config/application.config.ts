@@ -22,5 +22,12 @@ export const applicationConfig = registerAs('application', () => ({
   },
   apiKey: {
     secret: process.env.API_KEY_SECRET,
-  }
+  },
+  destinationOverlapThreshold: parseFloat(process.env.DESTINATION_OVERLAP_THRESHOLD),
+  passengerDriverDistanceOverlapThreshold: parseFloat(process.env.PASSENGER_DRIVER_DISTANCE_OVERLAP_THRESHOLD),
+  routeOverlapThreshold: parseFloat(process.env.ROUTE_OVERLAP_THRESHOLD),
+  awsSnsTopicType: {
+    marketing: process.env.AWS_SNS_TOPIC_ARN_RIDE_REQUEST,
+  },
+  awsSnsPlatformApplicationArn: process.env.AWS_SNS_PLATFORM_APPLICATION_ARN,
 }));

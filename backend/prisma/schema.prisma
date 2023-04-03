@@ -25,6 +25,18 @@ enum VehicleTypeEnum {
   BIKE
 }
 
+enum RideStatusEnum {
+  ON_GOING
+  COMPLETED
+  CANCELLED
+}
+
+enum PasengerRideStatusEnum {
+  ACCEPTED
+  ON_GOING
+  COMPLETED
+}
+
 model User {
   id          String          @id @default(uuid())
   coginitoId  String          @unique
@@ -46,6 +58,8 @@ model User {
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
   driver      Driver?
+  passenger   Passenger?
+  device      Device?
 }
 
 model Driver {
@@ -61,6 +75,7 @@ model Driver {
   active       Boolean   @default(false)
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+  rides        Ride[]
 }
 
 model Vehicle {
@@ -75,4 +90,59 @@ model Vehicle {
   driverId        String
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
+}
+
+model Passenger {
+  id               String             @id @default(uuid())
+  user             User               @relation(fields: [userId], references: [id])
+  userId           String             @unique
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  passengersOnRide PassengersOnRide[]
+}
+
+model Ride {
+  id               String             @id @default(uuid())
+  driver           Driver             @relation(fields: [driverId], references: [id])
+  driverId         String
+  source           String
+  destination      String
+  totalDistance    Float
+  totalFare        Float
+  rideStatus       RideStatusEnum
+  currentLocation  String
+  city             String
+  rideStartedAt    DateTime?
+  rideEndedAt      DateTime?
+  polygonPoints    Json
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  passengersOnRide PassengersOnRide[]
+}
+
+model PassengersOnRide {
+  id            String                 @id @default(uuid())
+  ride          Ride                   @relation(fields: [rideId], references: [id])
+  rideId        String
+  passenger     Passenger              @relation(fields: [passengerId], references: [id])
+  passengerId   String
+  source        String
+  destination   String
+  distance      Float
+  fare          Float
+  rideStatus    PasengerRideStatusEnum
+  rideStartedAt DateTime?
+  rideEndedAt   DateTime?
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+}
+
+model Device {
+  id         String   @id @default(uuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String   @unique
+  deviceType String
+  token      String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
