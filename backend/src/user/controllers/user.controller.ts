@@ -18,28 +18,28 @@ import { AccessTokenGuard } from 'src/auth/guards';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @UseGuards(AccessTokenGuard)
+  //@UseGuards(AccessTokenGuard)
   @Get('/user/:id')
   @ApiOkResponse({ type: UserEntity })
   async getUserById(@Param('id', ParseUUIDStringPipe) id: string): Promise<UserEntity> {
     return this.userService.findUser({ id });
   }
 
-  @UseGuards(AccessTokenGuard)
+  //@UseGuards(AccessTokenGuard)
   @Get('user')
   @ApiOkResponse({ type: UserEntity })
   async getUserByEmail(@Query('email') email: string): Promise<UserEntity> {
     return this.userService.findUser({ email });
   }
 
-  @UseGuards(AccessTokenGuard)
+  //@UseGuards(AccessTokenGuard)
   @Get('/users')
   @ApiOkResponse({ type: UserPageModel })
   async getUsers(@Query() pageOptionsDto: EntityPageOptionsDto): Promise<UserPageModel> {
     return this.userService.findUsers({ ...pageOptionsDto });
   }
 
-  @UseGuards(AccessTokenGuard)
+  //@UseGuards(AccessTokenGuard)
   @Put('user/:id')
   @ApiOkResponse({ type: UserEntity })
   async updateUser(@Param('id', ParseUUIDStringPipe) id: string, @Body() userData: UserUpdateDto): Promise<UserEntity> {
@@ -49,7 +49,7 @@ export class UserController {
     });
   }
 
-  @UseGuards(AccessTokenGuard)
+  //@UseGuards(AccessTokenGuard)
   @Delete('user/:id')
   @ApiOkResponse({ type: UserEntity })
   async deleteUser(@Param('id', ParseUUIDStringPipe) id: string): Promise<UserEntity> {
@@ -58,7 +58,7 @@ export class UserController {
     // TODO: Also delete user's cognitoId.
   }
 
-  @UseGuards(AccessTokenGuard)
+  //@UseGuards(AccessTokenGuard)
   @Post('user/device')
   @ApiOkResponse({ type: DeviceEntity })
   async registerUserDevice(@Body() registerUserDeviceData: RegisterUserDeviceDto): Promise<DeviceEntity> {

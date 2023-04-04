@@ -18,35 +18,35 @@ import { VehicleEntity } from 'src/driver/entities/vehicle.entity';
 export class DriverController {
   constructor(private readonly driverService: DriverService) {}
 
-  @UseGuards(AccessTokenGuard)
+  //@UseGuards(AccessTokenGuard)
   @Post('/driver')
   @ApiCreatedResponse({ type: DriverEntity })
   async createDriver(@Body() driverData: DriverCreateDto): Promise<DriverEntity> {
     return this.driverService.createDriver(driverData);
   }
 
-  @UseGuards(AccessTokenGuard)
+  //@UseGuards(AccessTokenGuard)
   @Get('/driver/:id')
   @ApiOkResponse({ type: DriverEntity })
   async getDriverById(@Param('id', ParseUUIDStringPipe) id: string): Promise<DriverEntity> {
     return this.driverService.findDriver({ id });
   }
 
-  @UseGuards(AccessTokenGuard)
+  //@UseGuards(AccessTokenGuard)
   @Get('driver')
   @ApiOkResponse({ type: DriverEntity })
   async getDriverByUserId(@Query('userId', ParseUUIDStringPipe) userId: string): Promise<DriverEntity> {
     return this.driverService.findDriver({ userId });
   }
 
-  @UseGuards(AccessTokenGuard)
+  //@UseGuards(AccessTokenGuard)
   @Get('/drivers')
   @ApiOkResponse({ type: DriverPageModel })
   async getDrivers(@Query() pageOptionsDto: EntityPageOptionsDto): Promise<DriverPageModel> {
     return this.driverService.findDrivers({ ...pageOptionsDto });
   }
 
-  @UseGuards(AccessTokenGuard)
+  //@UseGuards(AccessTokenGuard)
   @Put('driver/:id')
   @ApiOkResponse({ type: DriverEntity })
   async updateDriver(
@@ -59,21 +59,21 @@ export class DriverController {
     });
   }
 
-  @UseGuards(AccessTokenGuard)
+  //@UseGuards(AccessTokenGuard)
   @Delete('driver/:id')
   @ApiOkResponse({ type: DriverEntity })
   async deleteDriver(@Param('id', ParseUUIDStringPipe) id: string): Promise<DriverEntity> {
     return this.driverService.deleteDriver({ id });
   }
 
-  @UseGuards(AccessTokenGuard)
+  //@UseGuards(AccessTokenGuard)
   @Post('driver/:id/verify')
   @ApiOkResponse({ type: DriverEntity })
   async verifyDriver(@Param('id', ParseUUIDStringPipe) id: string): Promise<DriverEntity> {
     return this.driverService.verifyDriver({ id });
   }
 
-  @UseGuards(AccessTokenGuard)
+  //@UseGuards(AccessTokenGuard)
   @Get('driver/:id/vehicles')
   @ApiOkResponse({ isArray: true, type: VehicleEntity })
   async getVehicleOfDriver(@Param('id', ParseUUIDStringPipe) id: string): Promise<VehicleEntity[]> {

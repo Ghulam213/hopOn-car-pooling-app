@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:hop_on/core/registration/modals/vehicle_info_modal.dart';
+import 'package:hop_on/core/map/screens/search_page.dart';
+import 'package:hop_on/core/registration/screens/vehicle_info_modal.dart';
 
 import '../../../Utils/colors.dart';
 import '../../../config/sizeconfig/size_config.dart';
@@ -40,10 +41,10 @@ class _ReferenceNumberBottomSheetState extends State<RegistrationModal> {
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
-      maxChildSize: 0.95,
+      maxChildSize: 0.65,
       minChildSize: 0.5,
       expand: false,
-      initialChildSize: 0.95,
+      initialChildSize: 0.65,
       builder: (BuildContext context, ScrollController controller) {
         return Container(
           color: AppColors.LM_BACKGROUND_BASIC,
@@ -66,59 +67,6 @@ class _ReferenceNumberBottomSheetState extends State<RegistrationModal> {
               const SizedBox(
                 height: 24,
               ),
-     
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 13.0),
-                child: InkWell(
-                  onTap: () async {
-                    // await showModalBottomSheet(
-                    //     context: context,
-                    //     isScrollControlled: true,
-                    //     useRootNavigator: true,
-                    //     builder: (context) {
-                    //       return DriverInfoModal(
-                    //         // data: data,
-                    //         onErrorOccurred: (error) {
-                    //           customToastBlack(
-                    //               msg: "Error while updating order: $error");
-                    //         },
-                    //         onCloseTap: () {
-                    //           Navigator.of(_scaffoldKey.currentContext!).pop();
-                    //         },
-                    //       );
-                    //     });
-                  },
-                  child: Card(
-                    child: Container(
-                      width: SizeConfig.screenWidthDp,
-                      height: _config.sh(40).toDouble(),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        gradient: const LinearGradient(
-                            colors: AppColors.GRADIENTS,
-                            stops: [
-                              0.1,
-                              0.9,
-                            ]),
-                      ),
-                      child: Center(
-                        child: Text(
-                          tr("Driver Info"),
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 17,
-                              fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(
-                height: 48,
-              ),
-
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 13.0),
                 child: InkWell(
@@ -135,7 +83,7 @@ class _ReferenceNumberBottomSheetState extends State<RegistrationModal> {
                                   msg: "Error while updating order: $error");
                             },
                             onCloseTap: () {
-                              Navigator.of(_scaffoldKey.currentContext!).pop();
+                              Navigator.of(context).pop();
                             },
                           );
                         });

@@ -2,9 +2,6 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:get/route_manager.dart';
-import 'package:hop_on/Utils/colors.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,7 +12,7 @@ class DioInterceptior extends Interceptor {
     super.onRequest(options, handler);
 
     final prefs = await SharedPreferences.getInstance();
-    final String? authToken = prefs.getString("authToken");
+    final String? authToken = prefs.getString("accessToken");
 
     options.headers = {
       'Content-Type': 'application/json',

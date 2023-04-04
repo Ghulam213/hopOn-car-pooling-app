@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:hop_on/core/auth/screens/auth_screen.dart';
+import 'package:hop_on/core/map/screens/home.dart';
 import 'package:hop_on/core/registration/viewmodel/registration_viewmodel.dart';
 import 'core/profile/viewmodel/profile_viewmodel.dart';
 import 'firebase_options.dart';
@@ -51,6 +52,7 @@ Future<void> main() async {
   // await Firebase.initializeApp(
   //   options: DefaultFirebaseOptions.currentPlatform,
   // );
+  
   await EasyLocalization.ensureInitialized();
   NetworkConfig().initNetworkConfig();
   await initializeLocationAndSave();
@@ -138,7 +140,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
                     height: size.height,
                     width: size.width,
                     allowFontScaling: true);
-                return const AuthScreen();
+                return const MapScreen();
               },
             ),
           ),

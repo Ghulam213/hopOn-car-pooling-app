@@ -60,32 +60,29 @@ abstract class LoginStoreBase with Store {
       BuildContext context, String phone, String pass) async {
     final body = {"phone": phone, "password": pass};
 
-
     final prefs = await SharedPreferences.getInstance();
     if (phone != '') {
       try {
         isPhoneLoading = true;
-        final Response response = await dio.post('/login',
+        final Response<dynamic> response = await dio.post('/login',
             data: jsonEncode(body),
-            options: Options(headers: {
-              HttpHeaders.contentTypeHeader: "application/json",
-            }));
-        debugPrint(response.statusMessage);
-        final responseData = response.data as Map<String, dynamic>;
+            options: Options(
+              headers: {
+                HttpHeaders.contentTypeHeader: "application/json",
+              },
+            ));
+
         isPhoneLoading = false;
 
-        if (response.statusCode == 200) {
+        if (response.statusCode == 200 || response.statusCode == 201) {
           isPhoneDone = true;
 
+          debugPrint(response.data['userId']);
           prefs.setString(
-              'accessToken',
-              response.data.accessToken
-                  ? response.data.accessToken.toString()
-                  : '');
-          prefs.setString('refreshToken',
-              response.data.id ? response.data.refreshToken.toString() : '');
-          prefs.setString('profileID',
-              response.data.id ? response.data.userId.toString() : '');
+              'accessToken', response.data['accessToken'] as String);
+          prefs.setString(
+              'refreshToken', response.data['refreshToken'] as String);
+          prefs.setString('profileID', response.data['userId'] as String);
 
           Future.delayed(const Duration(milliseconds: 1), () {
             Navigator.of(context).push(
@@ -97,7 +94,10 @@ abstract class LoginStoreBase with Store {
             );
           });
         } else {
-          final String errorMsg = responseData["message"] as String;
+          debugPrint(response.toString());
+          final String errorMsg = response.statusMessage as String;
+
+          debugPrint(errorMsg.toString());
 
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             duration: const Duration(seconds: 3),
@@ -106,8 +106,7 @@ abstract class LoginStoreBase with Store {
             content: Text(errorMsg,
                 style: const TextStyle(color: Colors.red, fontSize: 15.0)),
           ));
-          AppErrors.processErrorJson(
-              response.data as Map<String, dynamic>);
+          AppErrors.processErrorJson(response.data as Map<String, dynamic>);
         }
       } on DioError catch (e) {
         debugPrint("phoneLogin. $e");
@@ -116,8 +115,7 @@ abstract class LoginStoreBase with Store {
         if (e.response != null) {
           _showSnackBar(context, '${e.response!.data["message"]?.toString()}');
           log(e.response!.data.toString());
-          AppErrors.processErrorJson(
-              e.response!.data as Map<String, dynamic>);
+          AppErrors.processErrorJson(e.response!.data as Map<String, dynamic>);
         } else {
           // Something happened in setting up or sending the request that triggered an Error
 
@@ -139,7 +137,6 @@ abstract class LoginStoreBase with Store {
   @action
   Future<void> validateOtpAndLogin(
       BuildContext context, String smsCode, String phone) async {
-
     final body = {"phone": phone, "code": smsCode};
 
     try {
@@ -182,8 +179,7 @@ abstract class LoginStoreBase with Store {
       if (e.response != null) {
         _showSnackBar(context, '${e.response!.data["message"]?.toString()}');
         log(e.response!.data.toString());
-        AppErrors.processErrorJson(
-            e.response!.data as Map<String, dynamic>);
+        AppErrors.processErrorJson(e.response!.data as Map<String, dynamic>);
       } else {
         // Something happened in setting up or sending the request that triggered an Error
 
@@ -221,11 +217,17 @@ abstract class LoginStoreBase with Store {
           }));
 
       isOtpLoading = false;
-      final result = response.data as Map<String, dynamic>;
+      // final result = response.data as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         log(response.data.toString());
         // await _storeUserData(response.data);
+        debugPrint(response.data['id']);
+        prefs.setString('userEmail', response.data['email'] as String);
+        prefs.setString('currentMode', response.data['currentMode'] as String);
+        prefs.setString('profileID', response.data['id'] as String);
+        prefs.setString('currentCity', response.data['currentCity'] as String);
+        
 
         prefs.setString(
             'profileID', response.data.id ? response.data.id.toString() : '');
@@ -239,10 +241,9 @@ abstract class LoginStoreBase with Store {
                     )),
           );
         });
-        onOtpSuccessful(context, result);
-
+        // onOtpSuccessful(context, result);
       } else {
-        final String errorMsg = response.data["message"] as String;
+        final String errorMsg = response.statusMessage as String;
 
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           duration: const Duration(seconds: 3),
@@ -259,8 +260,7 @@ abstract class LoginStoreBase with Store {
       if (e.response != null) {
         _showSnackBar(context, '${e.response!.data["message"]?.toString()}');
         log(e.response!.data.toString());
-        AppErrors.processErrorJson(
-            e.response!.data as Map<String, dynamic>);
+        AppErrors.processErrorJson(e.response!.data as Map<String, dynamic>);
       } else {
         // Something happened in setting up or sending the request that triggered an Error
 
@@ -364,7 +364,7 @@ abstract class LoginStoreBase with Store {
         data: jsonEncode(body),
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
       } else {
         final String errorMsg = response.data["message"] as String;
 
