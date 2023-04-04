@@ -3,6 +3,7 @@ import 'package:hop_on/core/map/models/map_response.dart';
 
 import '../../../config/network/resources.dart';
 import '../domain/map_service.dart';
+import '../models/ride.dart';
 import '../service/map_service_impl.dart';
 
 class MapViewModel extends ChangeNotifier {
@@ -14,12 +15,26 @@ class MapViewModel extends ChangeNotifier {
 
   Resource<MapResponse> findRidesResource = Resource.idle();
 
-  // String polygonPoints = '';
-  // String destination = '';
-  // String cnicBack = '';
-  // String cnicFront = '';
+  String rideId = '';
+  String driverId = '';
+  String source = '';
+  String destination = '';
+  num? totalDistance = 0;
+  num? totalFare = 0;
 
-  Future<void> getDriver({
+  String rideStatus = "ON_GOING";
+  String currentLocation = '';
+  String city = '';
+  String rideStartedAt = '';
+  String rideEndedAt = '';
+  List<LatLng>? polygonPoints = [
+    LatLng(latitude: 72.9914673283913, longitude: 33.64333419508494)
+  ];
+
+
+
+
+  Future<void> findRides({
     String? source,
     String? destination,
   }) async {
@@ -32,15 +47,30 @@ class MapViewModel extends ChangeNotifier {
         destination: destination,
       );
 
-      debugPrint('getDriver');
+  
       debugPrint(response.toString());
       findRidesResource = Resource.success(response);
 
-      // active = findRidesResource.modelResponse!.data!.active.toString();
-      // cnicBack = findRidesResource.modelResponse!.data!.cnicBack.toString();
-      // cnicFront = findRidesResource.modelResponse!.data!.cnicFront.toString();
-      // licenseBack =
-      //     findRidesResource.modelResponse!.data!.licenseBack.toString();
+      rideId = findRidesResource.modelResponse!.data!.rideId.toString();
+      driverId = findRidesResource.modelResponse!.data!.driverId.toString();
+      source = findRidesResource.modelResponse!.data!.source.toString();
+
+      destination =
+          findRidesResource.modelResponse!.data!.destination.toString();
+      totalDistance = findRidesResource.modelResponse!.data!.totalDistance;
+      totalFare = findRidesResource.modelResponse!.data!.totalFare;
+
+      rideStatus = findRidesResource.modelResponse!.data!.rideStatus.toString();
+      currentLocation =
+          findRidesResource.modelResponse!.data!.currentLocation.toString();
+      city = findRidesResource.modelResponse!.data!.city.toString();
+
+      rideStartedAt =
+          findRidesResource.modelResponse!.data!.rideStartedAt.toString();
+      rideEndedAt =
+          findRidesResource.modelResponse!.data!.rideEndedAt.toString();
+      polygonPoints = findRidesResource.modelResponse!.data!.polygonPoints;
+
 
       notifyListeners();
     } catch (e) {
@@ -53,7 +83,6 @@ class MapViewModel extends ChangeNotifier {
 
   Future<void> requestRide({
     required String? rideId,
-    required String? passengerId,
     required String? source,
     required String? destination,
     required num? distance,
@@ -64,7 +93,6 @@ class MapViewModel extends ChangeNotifier {
 
       final MapResponse response = await _mapService.requestRide(
         rideId: rideId,
-        passengerId: passengerId,
         source: source,
         destination: destination,
         distance: distance,

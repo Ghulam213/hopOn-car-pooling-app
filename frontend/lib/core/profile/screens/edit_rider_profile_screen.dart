@@ -70,7 +70,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final ProfileViewModel profileViewModel = context.watch<ProfileViewModel>();
+   
 
     return Container(
       width: SizeConfig.screenWidthDp,

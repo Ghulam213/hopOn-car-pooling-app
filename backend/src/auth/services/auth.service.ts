@@ -6,7 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { ConfirmRegisterDto, LoginDto, RegisterDto, ResendOptDto } from 'src/auth/dto';
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import { InjectAwsService } from 'nest-aws-sdk';
-import { CurrentModeEnum, User } from '@prisma/client';
+import { CurrentModeEnum, Driver, Passenger, User } from '@prisma/client';
 import {
   UnauthorizedException,
   UserAlreadyExistsException,
@@ -82,7 +82,7 @@ export class AuthService {
   async verifyOTP(confirmRegisterData: ConfirmRegisterDto): Promise<SessionModel> {
     const { phone, code } = confirmRegisterData;
 
-    const user = await this.userService.findUser({ phone });
+    const user = await this.userService.findUser({ phone }, { driver: true, passenger: true });
 
     const result = await this.congnitoService
       .confirmSignUp({
@@ -112,6 +112,7 @@ export class AuthService {
   async login(credentials: LoginDto): Promise<SessionModel> {
     const user = await this.prismaService.user.findUnique({
       where: { phone: credentials.phone },
+      include: { driver: true, passenger: true }
     });
 
     if (!user) {
@@ -136,7 +137,7 @@ export class AuthService {
     try {
       const { secret } = this.appConfig.jwt.refresh;
       const payload = await this.jwtService.verifyAsync(refreshToken, { secret });
-      const user = await this.userService.findUser({ id: payload.id });
+      const user = await this.userService.findUser({ id: payload.id }, { driver: true, passenger: true });
       return this.processLogin(user);
     } catch (error) {
       // if any error occurs, we want to throw unauthorized exception because that all a user has to know.
@@ -144,7 +145,7 @@ export class AuthService {
     }
   }
 
-  private async processLogin(user: User): Promise<SessionModel> {
+  private async processLogin(user: User & { driver?: Driver, passenger?: Passenger }): Promise<SessionModel> {
     const refreshToken = await this.createRefreshToken(user);
     const accessToken = await this.createAccessToken(user);
 
@@ -152,6 +153,7 @@ export class AuthService {
       accessToken,
       refreshToken,
       userId: user.id,
+      ...(user.currentMode === CurrentModeEnum.DRIVER ? {driverId: user.driver?.id} : { passengerId: user.passenger?.id })
     };
   }
 

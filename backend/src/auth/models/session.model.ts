@@ -9,4 +9,10 @@ export class SessionModel {
 
   @ApiProperty()
   userId: string;
+
+  @ApiProperty()
+  driverId?: string;
+
+  @ApiProperty()
+  passengerId?: string;
 }

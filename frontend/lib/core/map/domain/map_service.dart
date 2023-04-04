@@ -10,7 +10,6 @@ abstract class MapService {
 
   Future<MapResponse> requestRide({
     String? rideId,
-    String? passengerId,
     String? source,
     String? destination,
     num? distance,

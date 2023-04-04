@@ -8,11 +8,12 @@ mixin AppColors {
   static const Color YELLOW = Color.fromRGBO(250, 184, 76, 1);
   static const Color BLUE = Color.fromRGBO(54, 118, 236, 1);
   static const Color GREEN = Color.fromRGBO(61, 199, 159, 1);
+  static const Color WHITE = Color.fromRGBO(255, 255, 255, 1);
 
 
   static const Color PRIMARY_700 = Color.fromRGBO(43, 74, 157, 1);
   static const Color PRIMARY_500 = Color.fromRGBO(54, 118, 236, 1);
-  static const Color PRIMARY_300 = Color.fromRGBO(204, 225, 255, 1);
+  static const Color PRIMARY_300 = Color.fromARGB(255, 148, 189, 247);
 
   static const Color FONT_GRAY = Color.fromRGBO(68, 68, 68, 1);
 

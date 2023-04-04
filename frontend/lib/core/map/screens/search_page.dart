@@ -1,4 +1,7 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
+import 'package:hop_on/core/map/viewmodel/map_view_model.dart';
 
 import 'package:provider/provider.dart';
 
@@ -40,9 +43,7 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     setFocus();
 
-    // String address =
-    //     Provider.of<AppData>(context).pickupAddress.placeName ?? '';
-    // pickupController.text = address;
+    final MapViewModel mapViewModel = context.watch<MapViewModel>();
 
     return DraggableScrollableSheet(
         maxChildSize: 0.65,
@@ -172,9 +173,13 @@ class _SearchPageState extends State<SearchPage> {
                     ),
                   ),
                 ),
+                
                 LoginButton(
                   text: 'Start Ride',
                   onPress: () {
+                    mapViewModel.findRides(
+                        source: '72.988149,33.642838',
+                        destination: '73.087289,33.664512');
                     widget.onSuccess(
                         pickupController.text, destinationController.text);
                   },

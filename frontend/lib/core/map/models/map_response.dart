@@ -1,9 +1,10 @@
+import 'package:hop_on/core/map/models/ride.dart';
 import 'package:hop_on/core/registration/models/driver.dart';
 
 class MapResponse {
   int? code;
   String? error;
-  Driver? data;
+  Ride? data;
 
   MapResponse({this.code, this.error, this.data});
 
@@ -13,7 +14,7 @@ class MapResponse {
       error: json['message'] as String?,
       data: json['data'] == null
           ? null
-          : Driver.fromJson(json['data'] as Map<String, dynamic>),
+          : Ride.fromJson(json['data'] as Map<String, dynamic>),
     );
   }
 

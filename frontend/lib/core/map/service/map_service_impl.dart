@@ -29,6 +29,7 @@ class MapServiceImpl extends MapService {
       };
 
       debugPrint(body.toString());
+      debugPrint('/ride-for-passenger');
 
       final Response response =
           await dio.get('/ride-for-passenger', queryParameters: body);
@@ -63,14 +64,17 @@ class MapServiceImpl extends MapService {
   @override
   Future<MapResponse> requestRide({
     String? rideId,
-    String? passengerId,
     String? source,
     String? destination,
     num? distance,
   }) async {
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? pessengerId = prefs.getString("passengerId");
+      
     final body = {
       "rideId": rideId,
-      'destinpassengerIdation': passengerId,
+      'passengerId': pessengerId,
       "destination": destination,
     };
 
@@ -79,7 +83,7 @@ class MapServiceImpl extends MapService {
       debugPrint(body.toString());
 
       final Response response = await dio.post(
-        '/driver',
+        '/request',
         data: jsonEncode(body),
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -89,7 +93,7 @@ class MapServiceImpl extends MapService {
         // final SharedPreferences prefs = await SharedPreferences.getInstance();
         // await prefs.setString("driverID", driverResponse.data!.id!.toString());
 
-        debugPrint("Getting Driver Details");
+      
         return driverResponse;
       } else {
         throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);

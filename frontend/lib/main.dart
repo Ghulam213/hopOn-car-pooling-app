@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:hop_on/core/auth/screens/auth_screen.dart';
 import 'package:hop_on/core/map/screens/home.dart';
 import 'package:hop_on/core/registration/viewmodel/registration_viewmodel.dart';
+import 'core/map/viewmodel/map_view_model.dart';
 import 'core/profile/viewmodel/profile_viewmodel.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
@@ -114,6 +115,9 @@ class _AppState extends State<App> with WidgetsBindingObserver {
         providers: [
           Provider<LoginStore>(
             create: (_) => LoginStore(),
+          ),
+          ChangeNotifierProvider<MapViewModel>(
+            create: (_) => MapViewModel(),
           ),
           
           ChangeNotifierProvider<RegistrationViewModel>(

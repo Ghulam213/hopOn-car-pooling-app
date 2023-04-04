@@ -226,7 +226,10 @@ abstract class LoginStoreBase with Store {
         prefs.setString('userEmail', response.data['email'] as String);
         prefs.setString('currentMode', response.data['currentMode'] as String);
         prefs.setString('profileID', response.data['id'] as String);
-        prefs.setString('currentCity', response.data['currentCity'] as String);
+        prefs.setString('driverId',
+            response.data['driverId'] ? response.data['driverId'] : '');
+        prefs.setString('passengerId',
+            response.data['passengerId'] ? response.data['passengerId'] : '');
         
 
         prefs.setString(
