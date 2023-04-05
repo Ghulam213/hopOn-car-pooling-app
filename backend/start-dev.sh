@@ -11,6 +11,13 @@ main() {
   # Wait for the container to start up
   sleep 5
 
+  echo "Installing Dependencies"
+  # Run the database migration
+  npm i || {
+    kill $(jobs -p)
+    exit 1
+  }
+
   echo "Running database migrations"
   # Run the database migration
   npm run migration:dev || {

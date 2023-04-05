@@ -45,11 +45,11 @@ export class RideService {
   }
 
   async createRide(data: RideCreateDto): Promise<Ride> {
-    const { driverId, ...restOfData } = data;
+    const { driverId, currentLocation, ...restOfData } = data;
 
     await this.driverService.findDriver({ id: driverId });
 
-    return this.prisma.ride.create({
+    const ride = await this.prisma.ride.create({
       data: {
         ...restOfData,
         driver: {
@@ -62,6 +62,10 @@ export class RideService {
         rideStartedAt: new Date(),
       },
     });
+
+    this.upsertRideLocationInCache({ currentLocation, entityId: driverId, rideId: ride.id }, 'driver');
+
+    return ride;
   }
 
   async findRide(
@@ -162,28 +166,36 @@ export class RideService {
       },
     });
 
-    return rides.filter(async (ride) => {
-      const rideDestination = UtilityService.stringToCoordinates(ride.destination);
-      const rideCache = await this.getRideCurrentLocationFromCache(ride.id);
-      const rideCurrentLocation = UtilityService.stringToCoordinates(rideCache.driver.currentLocation);
-      const isDestinationsWithinThreshold = UtilityService.arePointsWithinThreshold(
-        pasengerDestination,
-        rideDestination,
-        this.appConfig.destinationOverlapThreshold,
-      );
-      const isPassengerOnDriverRouter = UtilityService.isPointOnRouteWithinThreshold(
-        pasengerSource,
-        ride.polygonPoints as number[][],
-        this.appConfig.routeOverlapThreshold,
-      );
-      const isPassengerWithinThresholdOfDriver = UtilityService.arePointsWithinThreshold(
-        pasengerSource,
-        rideCurrentLocation,
-        this.appConfig.passengerDriverDistanceOverlapThreshold,
-      );
+    const promisesResults = await Promise.all(
+      rides.map(async (ride) => {
+        const rideDestination = UtilityService.stringToCoordinates(ride.destination);
+        const rideCache = await this.getRideCurrentLocationFromCache(ride.id);
 
-      return isDestinationsWithinThreshold && isPassengerOnDriverRouter && isPassengerWithinThresholdOfDriver;
-    });
+        if (!rideCache) {
+          return false;
+        }
+
+        const rideCurrentLocation = UtilityService.stringToCoordinates(rideCache.driver.currentLocation);
+        const isDestinationsWithinThreshold = UtilityService.arePointsWithinThreshold(
+          pasengerDestination,
+          rideDestination,
+          this.appConfig.destinationOverlapThreshold,
+        );
+        const isPassengerOnDriverRouter = UtilityService.isPointOnRouteWithinThreshold(
+          pasengerSource,
+          ride.polygonPoints as number[][],
+          this.appConfig.routeOverlapThreshold,
+        );
+        const isPassengerWithinThresholdOfDriver = UtilityService.arePointsWithinThreshold(
+          pasengerSource,
+          rideCurrentLocation,
+          this.appConfig.passengerDriverDistanceOverlapThreshold,
+        );
+
+        return isDestinationsWithinThreshold && isPassengerOnDriverRouter && isPassengerWithinThresholdOfDriver;
+      }),
+    );
+    return rides.filter((_, index) => promisesResults[index]);
   }
 
   async createPassengerRide(data: PassengerRideCreateDto) {

@@ -14,9 +14,9 @@ export const validationSchema = Joi.object({
   JWT_REFRESH_TTL: Joi.number().default(60 * 60 * 24), //1d
   API_KEY_SECRET: Joi.string().default('CHANGE_ME_API_KEY'),
   IMAGE_UPLOAD_BUCKET: Joi.string().default('hopon-image-uploads'),
-  DESTINATION_OVERLAP_THRESHOLD: Joi.number().default(0.5), // in km
-  PASSENGER_DRIVER_DISTANCE_OVERLAP_THRESHOLD: Joi.number().default(0.5), // in km
-  ROUTE_OVERLAP_THRESHOLD: Joi.number().default(0.3), // in km
+  DESTINATION_OVERLAP_THRESHOLD: Joi.number().default(3), // in km
+  PASSENGER_DRIVER_DISTANCE_OVERLAP_THRESHOLD: Joi.number().default(4), // in km
+  ROUTE_OVERLAP_THRESHOLD: Joi.number().default(4), // in km
   AWS_SNS_TOPIC_ARN_MARKETING: Joi.string().default('arn:aws:sns:us-east-1:146823716130:hopon-marketing.fifo'),
   AWS_SNS_PLATFORM_APPLICATION_ARN: Joi.string().default('arn:aws:sns:us-east-1:146823716130:app/GCM/hopon-client'),
   REDIS_SERVER_PORT: Joi.number().default(6379),

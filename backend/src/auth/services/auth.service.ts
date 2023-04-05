@@ -55,7 +55,6 @@ export class AuthService {
         },
       });
 
-      this.logger.log(results);
       delete userServiceResult.password;
       return userServiceResult;
     } catch (error) {
@@ -122,8 +121,7 @@ export class AuthService {
     const isConfirmed = user?.verified;
     const { active: isActive } = user || {};
 
-    console.log(this.appConfig.environment)
-
+    console.log(this.appConfig.environment);
 
     if (this.appConfig.environment === 'production' && (!user || !valid || !isConfirmed || !isActive)) {
       throw new UserIncorrectLoginCredentialsException();
