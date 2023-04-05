@@ -23,17 +23,16 @@ class RegistrationViewModel extends ChangeNotifier {
   String userId = '';
   String verified = '';
 
-
-
-
-  Future<void> getDriver(String? userId) async {
+  Future<void> getDriver() async {
     try {
       getDriverResource = Resource.loading();
       notifyListeners();
 
       final DriverInfoResponse response =
-          await _registrationService.getDriver(userId);
+          await _registrationService.getDriver();
 
+      debugPrint('getDriver');
+      debugPrint(response.toString());
       getDriverResource = Resource.success(response);
 
       id = getDriverResource.modelResponse!.data!.id!.toString();
@@ -57,7 +56,7 @@ class RegistrationViewModel extends ChangeNotifier {
     }
   }
 
-  Resource<DriverInfoResponse> updateProfileResource = Resource.idle();
+  Resource<DriverInfoResponse> registerDriverResource = Resource.idle();
 
   Future<void> registerDriver({
     required String userId,
@@ -73,7 +72,7 @@ class RegistrationViewModel extends ChangeNotifier {
     required String vehicleRegImage,
   }) async {
     try {
-      updateProfileResource = Resource.loading();
+      registerDriverResource = Resource.loading();
       notifyListeners();
 
       final DriverInfoResponse response =
@@ -86,13 +85,12 @@ class RegistrationViewModel extends ChangeNotifier {
         vehicleType: vehicleType,
         vehicleBrand: vehicleBrand,
         vehicleModel: vehicleModel,
-
-vehicleColor: vehicleColor,
+        vehicleColor: vehicleColor,
         vehiclePhoto: vehiclePhoto,
         vehicleRegImage: vehicleRegImage,
       );
 
-      updateProfileResource = Resource.success(response);
+      registerDriverResource = Resource.success(response);
       id = getDriverResource.modelResponse!.data!.id!.toString();
       active = getDriverResource.modelResponse!.data!.active.toString();
       cnicBack = getDriverResource.modelResponse!.data!.cnicBack.toString();
@@ -106,7 +104,7 @@ vehicleColor: vehicleColor,
 
       notifyListeners();
     } catch (e) {
-      updateProfileResource = Resource.failed(e.toString());
+      registerDriverResource = Resource.failed(e.toString());
       notifyListeners();
     }
   }

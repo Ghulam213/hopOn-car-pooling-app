@@ -26,7 +26,7 @@ class _AppDrawerState extends State<AppDrawer> {
         color: AppColors.PRIMARY_500);
 
     return Drawer(
-      backgroundColor: AppColors.LM_BACKGROUND_BASIC,
+      backgroundColor: Colors.white,
       child: Theme(
         data: ThemeData(brightness: Brightness.light),
         child: SizedBox(
@@ -67,7 +67,8 @@ class _AppDrawerState extends State<AppDrawer> {
                     size: 22, color: AppColors.PRIMARY_500),
                 title: Text('Settings', style: textStyle),
               ),
-              const SizedBox(height: 20),
+              
+              Spacer(),
               ListTile(
                 title: Padding(
                   padding: const EdgeInsets.only(left: 1.0),
@@ -75,24 +76,27 @@ class _AppDrawerState extends State<AppDrawer> {
                     alignment: Alignment.centerLeft,
                     child: Column(
                       children: [
-                        SizedBox(
-                          width: _config.sw(20).toDouble(),
-                          height: _config.sh(65).toDouble(),
-                          child: FittedBox(
-                            fit: BoxFit.fitHeight,
-                            child: Switch.adaptive(
-                              trackColor:
-                                  MaterialStateProperty.all(Colors.black38),
-                              activeColor: AppColors.LM_BACKGROUND_BASIC,
-                              inactiveThumbColor: AppColors.LM_BACKGROUND_BASIC,
-                              activeThumbImage:
-                                  const AssetImage('assets/images/carpool.png'),
-                              inactiveThumbImage:
-                                  const AssetImage('assets/images/driver.png'),
-                              value: isDriver,
-                              onChanged: (value) => setState(() {
-                                isDriver = !isDriver;
-                              }),
+                        Center(
+                          child: SizedBox(
+                            width: _config.sw(30).toDouble(),
+                            height: _config.sh(65).toDouble(),
+                            child: FittedBox(
+                              fit: BoxFit.fitHeight,
+                              child: Switch.adaptive(
+                                trackColor:
+                                    MaterialStateProperty.all(Colors.black38),
+                                activeColor: AppColors.LM_BACKGROUND_BASIC,
+                                inactiveThumbColor:
+                                    AppColors.LM_BACKGROUND_BASIC,
+                                activeThumbImage: const AssetImage(
+                                    'assets/images/carpool.png'),
+                                inactiveThumbImage: const AssetImage(
+                                    'assets/images/driver.png'),
+                                value: isDriver,
+                                onChanged: (value) => setState(() {
+                                  isDriver = !isDriver;
+                                }),
+                              ),
                             ),
                           ),
                         ),
@@ -103,6 +107,7 @@ class _AppDrawerState extends State<AppDrawer> {
                   ),
                 ),
               ),
+              const SizedBox(height: 50),
             ],
           ),
         ),

@@ -16,7 +16,7 @@ abstract class RegistrationService {
     String? vehiclePhoto,
     String? vehicleRegImage,
   });
-  Future<DriverInfoResponse> getDriver(String? userId);
+  Future<DriverInfoResponse> getDriver();
   Future<DriverInfoResponse> updateDriverInfo(String? userId);
   Future<DriverInfoResponse> searchDriver(String? userId);
 }

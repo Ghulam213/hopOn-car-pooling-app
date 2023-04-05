@@ -30,26 +30,31 @@ class RegistrationServiceImpl extends RegistrationService {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final String? id = prefs.getString("profileID");
 
-
       final body = {
-        "userId": '5ee04f51-0692-48bb-bcbf-de3d88b90dd7',
+        "userId": id,
         "cnicFront": cnicFront,
         'cnicBack': cnicBack,
         "licenseFront": licenseFront,
         "licenseBack": licenseBack,
-        "vehicle[vehicleType]": vehicleType,
-        "vehicle[vehicleBrand]": vehicleBrand,
-        "vehicle[vehicleModel]": vehicleModel,
-        "vehicle[vehicleColor]": vehicleColor,
-        "vehicle[vehiclePhoto]": vehiclePhoto,
-        "vehicle[vehicleRegImage]": vehicleRegImage,
+        "vehicle": {
+          "vehicleType": 'CAR',
+          "vehicleBrand": vehicleBrand,
+          "vehicleModel": vehicleModel,
+          "vehicleColor": vehicleColor,
+          "vehiclePhoto": vehiclePhoto,
+          "vehicleRegImage": vehicleRegImage,
+        }
+ 
       };
 
+      debugPrint(body.toString());
+      debugPrint(jsonEncode(body));
       final Response response = await dio.post('/driver',
           data: jsonEncode(body),
           options: Options(headers: {
             HttpHeaders.contentTypeHeader: "application/json",
           }));
+      debugPrint(response.toString());
       if (response.statusCode == 200 || response.statusCode == 201) {
         final DriverInfoResponse driverResponse =
             DriverInfoResponse.fromJson(response.data as Map<String, dynamic>);
@@ -77,12 +82,17 @@ class RegistrationServiceImpl extends RegistrationService {
     }
   }
 
-  Future<DriverInfoResponse> getDriver(String? userId) async {
+  @override
+  Future<DriverInfoResponse> getDriver() async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final String? id = prefs.getString("profileID");
 
-      final Response response = await dio.get('/driver');
+      debugPrint('profileID');
+      debugPrint(id);
+
+      final Response response =
+          await dio.get('/driver', queryParameters: {'userId': id});
       if (response.statusCode == 200 || response.statusCode == 201) {
         final DriverInfoResponse driverResponse =
             DriverInfoResponse.fromJson(response.data as Map<String, dynamic>);

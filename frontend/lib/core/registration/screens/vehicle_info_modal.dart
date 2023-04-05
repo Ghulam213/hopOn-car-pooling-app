@@ -5,7 +5,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../Utils/colors.dart';
+import '../../../config/network/resources.dart';
 import '../../../config/sizeconfig/size_config.dart';
+import '../../auth/widgets/login_button.dart';
 import '../viewmodel/registration_viewmodel.dart';
 
 class VehicleInfoModal extends StatefulWidget {
@@ -235,7 +237,7 @@ class _VehicleInfoModalState extends State<VehicleInfoModal> {
                   });
                 } else {
                   registrationViewModel.registerDriver(
-                      userId: 'userId',
+                      userId: '5ee04f51-0692-48bb-bcbf-de3d88b90dd7',
                       cnicFront: 'cnicFront',
                       cnicBack: 'cnicBack',
                       licenseFront: 'licenseFront',
@@ -246,6 +248,7 @@ class _VehicleInfoModalState extends State<VehicleInfoModal> {
                       vehicleColor: 'vehicleColor',
                       vehiclePhoto: 'vehiclePhoto',
                       vehicleRegImage: 'vehicleRegImage');
+                  widget.onCloseTap();
                 }
               },
               onStepCancel: () {
@@ -258,15 +261,29 @@ class _VehicleInfoModalState extends State<VehicleInfoModal> {
                 });
               },
               onStepTapped: (int index) {
-                final isLastStep = _activeStepIndex == stepList().length - 1;
-
                 setState(() {
                   _activeStepIndex = index;
                 });
+                if (_activeStepIndex == 4) {
+                  //   registrationViewModel.registerDriver(
+                  //       userId: '5ee04f51-0692-48bb-bcbf-de3d88b90dd7',
+                  //       cnicFront: 'cnicFront',
+                  //       cnicBack: 'cnicBack',
+                  //       licenseFront: 'licenseFront',
+                  //       licenseBack: 'licenseBack',
+                  //       vehicleType: 'vehicleType',
+                  //       vehicleBrand: 'vehicleBrand',
+                  //       vehicleModel: 'vehicleModel',
+                  //       vehicleColor: 'vehicleColor',
+                  //       vehiclePhoto: 'vehiclePhoto',
+                  //       vehicleRegImage: 'vehicleRegImage');
+                  // }
+                }
               },
               controlsBuilder: (BuildContext context, ControlsDetails details) {
                 final isLastStep = _activeStepIndex == stepList().length - 1;
                 return StepControlBuilder(
+                    viewModel: registrationViewModel,
                     details: details,
                     activeStepIndex: _activeStepIndex,
                     isLastStep: isLastStep);
@@ -374,12 +391,15 @@ class StepControlBuilder extends StatelessWidget {
     super.key,
     required ControlsDetails details,
     required int activeStepIndex,
+    required RegistrationViewModel viewModel,
     required this.isLastStep,
   })  : _activeStepIndex = activeStepIndex,
+        _viewModel = viewModel,
         _details = details;
 
   final int _activeStepIndex;
   final ControlsDetails _details;
+  final RegistrationViewModel _viewModel;
   final bool isLastStep;
 
   @override
@@ -404,22 +424,31 @@ class StepControlBuilder extends StatelessWidget {
             width: 10,
           ),
           Expanded(
-            child: ElevatedButton(
-              onPressed: _details.onStepContinue,
-              child: (isLastStep)
-                  ? Text('Submit',
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w400,
-                          height: 1.0,
-                          color: AppColors.LM_BACKGROUND_BASIC))
-                  : Text('Next',
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w400,
-                          height: 1.0,
-                          color: AppColors.LM_BACKGROUND_BASIC)),
-            ),
+            child: isLastStep
+                ? LoginButton(
+                    text: 'Submit',
+                    isLoading: _viewModel.registerDriverResource.ops ==
+                        NetworkStatus.LOADING,
+                    onPress: _details.onStepContinue,
+                  )
+                : ElevatedButton(
+                    onPressed: _details.onStepContinue,
+                    child: (isLastStep)
+                        ? LoginButton(
+                            text: 'Submit',
+                            isLoading: _viewModel.registerDriverResource.ops ==
+                                NetworkStatus.LOADING,
+                          )
+                        : Text('Next',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w400,
+                                    height: 1.0,
+                                    color: AppColors.LM_BACKGROUND_BASIC)),
+                  ),
           ),
         ],
       ),
