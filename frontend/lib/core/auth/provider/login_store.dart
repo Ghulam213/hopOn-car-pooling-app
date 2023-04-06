@@ -64,25 +64,25 @@ abstract class LoginStoreBase with Store {
     if (phone != '') {
       try {
         isPhoneLoading = true;
-        final Response<dynamic> response = await dio.post('/login',
+        final Response response = await dio.post('/login',
             data: jsonEncode(body),
             options: Options(
               headers: {
                 HttpHeaders.contentTypeHeader: "application/json",
               },
             ));
-
+ 
         isPhoneLoading = false;
 
         if (response.statusCode == 200 || response.statusCode == 201) {
           isPhoneDone = true;
 
-          debugPrint(response.data['userId']);
           prefs.setString(
-              'accessToken', response.data['accessToken'] as String);
+              'accessToken', response.data['data']['accessToken'] as String);
           prefs.setString(
-              'refreshToken', response.data['refreshToken'] as String);
-          prefs.setString('profileID', response.data['userId'] as String);
+              'refreshToken', response.data['data']['refreshToken'] as String);
+          prefs.setString(
+              'profileID', response.data['data']['userId'] as String);
 
           Future.delayed(const Duration(milliseconds: 1), () {
             Navigator.of(context).push(
@@ -106,7 +106,8 @@ abstract class LoginStoreBase with Store {
             content: Text(errorMsg,
                 style: const TextStyle(color: Colors.red, fontSize: 15.0)),
           ));
-          AppErrors.processErrorJson(response.data as Map<String, dynamic>);
+          AppErrors.processErrorJson(
+              response.data['data'] as Map<String, dynamic>);
         }
       } on DioError catch (e) {
         debugPrint("phoneLogin. $e");
@@ -149,11 +150,11 @@ abstract class LoginStoreBase with Store {
           }));
 
       isOtpLoading = false;
-      final result = response.data as Map<String, dynamic>;
+      final result = response.data['data'] as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        log(response.data.toString());
-        // await _storeUserData(response.data);
+        log(response.data['data'].toString());
+        // await _storeUserData(response.data['data']);
 
         isUserInfoLoading = false;
 
@@ -162,7 +163,7 @@ abstract class LoginStoreBase with Store {
         //NOTE: This line only allows branch users to enter the Accept App
         // await limitEntry(response, context, result);
       } else {
-        final String errorMsg = response.data["message"] as String;
+        final String errorMsg = response.data['data']["message"] as String;
 
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           duration: const Duration(seconds: 3),
@@ -217,23 +218,30 @@ abstract class LoginStoreBase with Store {
           }));
 
       isOtpLoading = false;
-      // final result = response.data as Map<String, dynamic>;
+      // final result = response.data['data'] as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        log(response.data.toString());
-        // await _storeUserData(response.data);
-        debugPrint(response.data['id']);
-        prefs.setString('userEmail', response.data['email'] as String);
-        prefs.setString('currentMode', response.data['currentMode'] as String);
-        prefs.setString('profileID', response.data['id'] as String);
+        log(response.data['data'].toString());
+        // await _storeUserData(response.data['data']);
+        debugPrint(response.data['data']['id']);
+        prefs.setString('userEmail', response.data['data']['email'] as String);
+        prefs.setString(
+            'currentMode', response.data['data']['currentMode'] as String);
+        prefs.setString('profileID', response.data['data']['id'] as String);
         prefs.setString('driverId',
-            response.data['driverId'] ? response.data['driverId'] : '');
+            response.data['data']['driverId']
+                ? response.data['data']['driverId']
+                : '');
         prefs.setString('passengerId',
-            response.data['passengerId'] ? response.data['passengerId'] : '');
-        
+            response.data['data']['passengerId']
+                ? response.data['data']['passengerId']
+                : '');
 
         prefs.setString(
-            'profileID', response.data.id ? response.data.id.toString() : '');
+            'profileID',
+            response.data['data'].id
+                ? response.data['data'].id.toString()
+                : '');
         isUserInfoLoading = false;
         Future.delayed(const Duration(milliseconds: 1), () {
           Navigator.of(context).push(
@@ -369,7 +377,7 @@ abstract class LoginStoreBase with Store {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
       } else {
-        final String errorMsg = response.data["message"] as String;
+        final String errorMsg = response.data['data']["message"] as String;
 
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           duration: const Duration(seconds: 3),

@@ -84,6 +84,7 @@ class _ReferenceNumberBottomSheetState extends State<RegistrationModal> {
                             },
                             onCloseTap: () {
                               Navigator.of(context).pop();
+                              Navigator.of(context).pop();
                             },
                           );
                         });

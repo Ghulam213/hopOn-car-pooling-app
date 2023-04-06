@@ -4,23 +4,24 @@ import 'package:hop_on/core/registration/models/driver.dart';
 class MapResponse {
   int? code;
   String? error;
-  Ride? data;
+  List<Ride>? data;
 
   MapResponse({this.code, this.error, this.data});
 
-  factory MapResponse.fromJson(Map<String, dynamic> json) {
+  factory MapResponse.fromJson(json) {
     return MapResponse(
-      code: json['statusCode'] as int?,
-      error: json['message'] as String?,
-      data: json['data'] == null
+    
+      data: json.data['data'] == null
           ? null
-          : Ride.fromJson(json['data'] as Map<String, dynamic>),
+          : (json.data['data'] as List<dynamic>?)
+              ?.map((e) => Ride.fromJson(e as Map<String, dynamic>))
+              .toList(),
     );
   }
 
   Map<String, dynamic> toJson() => {
         'code': code,
         'error': error,
-        'data': data?.toJson(),
+        'data': data?.map((e) => e.toJson()).toList(),
       };
 }

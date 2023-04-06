@@ -28,22 +28,22 @@ class MapServiceImpl extends MapService {
         "city": city ?? 'Islamabad',
       };
 
-      debugPrint(body.toString());
-      debugPrint('/ride-for-passenger');
-
       final Response response =
           await dio.get('/ride-for-passenger', queryParameters: body);
 
-      debugPrint(response.toString());
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final MapResponse driverResponse =
-            MapResponse.fromJson(response.data as Map<String, dynamic>);
-        debugPrint(response.data.toString());
+      // debugPrint(response.data['data'].toString());
 
-        debugPrint("Requesting for Rides ");
+ 
+      if (response.statusCode == 200 || response.statusCode == 201) {
+
+        final MapResponse driverResponse =
+            MapResponse.fromJson(response);
+
+        debugPrint("Requesting for Rides");
         return driverResponse;
       } else {
-        throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
+        throw AppErrors.processErrorJson(
+            response.data['data'] as Map<String, dynamic>);
       }
     } catch (e) {
       if (e is DioError) {
@@ -56,7 +56,6 @@ class MapServiceImpl extends MapService {
           }
         }
       }
-
       throw e.toString();
     }
   }

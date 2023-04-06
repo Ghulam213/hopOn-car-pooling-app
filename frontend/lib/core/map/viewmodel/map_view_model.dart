@@ -21,18 +21,14 @@ class MapViewModel extends ChangeNotifier {
   String destination = '';
   num? totalDistance = 0;
   num? totalFare = 0;
-
   String rideStatus = "ON_GOING";
   String currentLocation = '';
   String city = '';
   String rideStartedAt = '';
   String rideEndedAt = '';
-  List<LatLng>? polygonPoints = [
-    LatLng(latitude: 72.9914673283913, longitude: 33.64333419508494)
-  ];
+  List<List<double>>? polygonPoints;
 
-
-
+  final List<Ride> availableRides = [];
 
   Future<void> findRides({
     String? source,
@@ -47,32 +43,34 @@ class MapViewModel extends ChangeNotifier {
         destination: destination,
       );
 
-  
-      debugPrint(response.toString());
       findRidesResource = Resource.success(response);
 
-      rideId = findRidesResource.modelResponse!.data!.rideId.toString();
-      driverId = findRidesResource.modelResponse!.data!.driverId.toString();
-      source = findRidesResource.modelResponse!.data!.source.toString();
+      if (response.data != null) {
+        availableRides.addAll(response.data!);
+        notifyListeners();
+      }
+     
+      debugPrint(availableRides.toString());
+      // rideId = findRidesResource.modelResponse!.data!.rideId.toString();
+      // driverId = findRidesResource.modelResponse!.data!.driverId.toString();
+      // source = findRidesResource.modelResponse!.data!.source.toString();
 
-      destination =
-          findRidesResource.modelResponse!.data!.destination.toString();
-      totalDistance = findRidesResource.modelResponse!.data!.totalDistance;
-      totalFare = findRidesResource.modelResponse!.data!.totalFare;
+      // destination =
+      //     findRidesResource.modelResponse!.data!.destination.toString();
+      // totalDistance = findRidesResource.modelResponse!.data!.totalDistance;
+      // totalFare = findRidesResource.modelResponse!.data!.totalFare;
 
-      rideStatus = findRidesResource.modelResponse!.data!.rideStatus.toString();
-      currentLocation =
-          findRidesResource.modelResponse!.data!.currentLocation.toString();
-      city = findRidesResource.modelResponse!.data!.city.toString();
+      // rideStatus = findRidesResource.modelResponse!.data!.rideStatus.toString();
+      // currentLocation =
+      //     findRidesResource.modelResponse!.data!.currentLocation.toString();
+      // city = findRidesResource.modelResponse!.data!.city.toString();
 
-      rideStartedAt =
-          findRidesResource.modelResponse!.data!.rideStartedAt.toString();
-      rideEndedAt =
-          findRidesResource.modelResponse!.data!.rideEndedAt.toString();
-      polygonPoints = findRidesResource.modelResponse!.data!.polygonPoints;
+      // rideStartedAt =
+      //     findRidesResource.modelResponse!.data!.rideStartedAt.toString();
+      // rideEndedAt =
+      //     findRidesResource.modelResponse!.data!.rideEndedAt.toString();
+      // polygonPoints = findRidesResource.modelResponse!.data!.polygonPoints;
 
-
-      notifyListeners();
     } catch (e) {
       findRidesResource = Resource.failed(e.toString());
       notifyListeners();
