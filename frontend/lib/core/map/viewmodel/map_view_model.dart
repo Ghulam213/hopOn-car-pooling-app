@@ -49,12 +49,7 @@ class MapViewModel extends ChangeNotifier {
         availableRides.addAll(response.data!);
         notifyListeners();
       }
-      // acceptedCount = data.acceptedCount as int;
-      // acceptedAmount = data.acceptedAmount;
-
-      // timeoutCount = data.timeoutCount as int;
-      // timeoutAmount = data.timeoutAmount;
-
+     
       debugPrint(availableRides.toString());
       // rideId = findRidesResource.modelResponse!.data!.rideId.toString();
       // driverId = findRidesResource.modelResponse!.data!.driverId.toString();
@@ -76,7 +71,6 @@ class MapViewModel extends ChangeNotifier {
       //     findRidesResource.modelResponse!.data!.rideEndedAt.toString();
       // polygonPoints = findRidesResource.modelResponse!.data!.polygonPoints;
 
-      notifyListeners();
     } catch (e) {
       findRidesResource = Resource.failed(e.toString());
       notifyListeners();

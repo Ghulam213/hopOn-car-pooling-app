@@ -11,6 +11,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:hop_on/Utils/colors.dart';
 import 'package:hop_on/core/map/modals/search_rides_modal.dart';
 import 'package:hop_on/core/map/screens/search_page.dart';
+import 'package:hop_on/core/registration/screens/registration_modal.dart';
 // import 'package:latlng/latlng.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:provider/provider.dart';
@@ -77,7 +78,6 @@ class _MapScreenState extends State<MapScreen> {
   _onMapCreated(MapboxMapController controller) async {
     this.controller = controller;
 
-    debugPrint(initLatLng.toString());
 
     controller.onLineTapped.add(_onLineTapped);
     controller.addListener(() {
@@ -88,14 +88,17 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   _onLineTapped(Line line) async {
+    
     await _updateSelectedLine(
-      const LineOptions(lineColor: "#ff0000"),
+      const LineOptions(lineColor: "#000000"),
     );
     setState(() {
       _selectedLine = line;
     });
     await _updateSelectedLine(
-      const LineOptions(lineColor: "#ffe100"),
+      const LineOptions(
+        lineColor: "#3676EC",
+      ),
     );
   }
 
@@ -104,29 +107,34 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   _onStyleLoadedCallback(MapViewModel model) async {
-    if (model.availableRides.isNotEmpty) {
+
+    model.findRides(
+        source: '72.988149,33.642838', destination: '73.087289,33.664512');
+
+
+  }
+
+  onRideRequested(MapViewModel model) async {
+if (model.availableRides.isNotEmpty) {
       await controller.addLine(
         LineOptions(
-            geometry:
-                convertListToListLatLng(model.availableRides[0].polygonPoints),
-            lineColor: "#000000",
+            geometry: polyLineArray,
+//convertListToListLatLng(model.availableRides[0].polygonPoints),
+            lineColor: "#3676EC",
             lineWidth: 4.0,
             lineOpacity: 0.9,
             draggable: false),
       );
-
-
       setState(() {
         _markers.add(Marker(
             _rnd.nextInt(100000).toString(),
-            LatLng(double.parse('33.64333419508494'),
-                double.parse('72.9914673283913')),
-            Point(720.966796875, 575.681884765625),
+            LatLng(double.parse('33.684757'), double.parse('73.048020')),
+            Point(820.966796875, 675.681884765625),
             _addMarkerStates));
       });
     }
   }
-
+    
   Future<void> addImageFromAsset(String name, String assetName) async {
     final ByteData bytes = await rootBundle.load(assetName);
     final Uint8List list = bytes.buffer.asUint8List();
@@ -155,9 +163,6 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _onMapLongClickCallback(Point<double> point, LatLng coordinates) {
-    debugPrint('HEERRRRRR');
-    debugPrint(point.toString());
-    debugPrint(coordinates.toString());
     _addMarker(point, coordinates);
   }
 
@@ -186,24 +191,6 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  _move() async {
-    final currentStart = _selectedLine!.options.geometry![0];
-    final currentEnd = _selectedLine!.options.geometry![1];
-    final end =
-        LatLng(currentEnd.latitude + 0.001, currentEnd.longitude + 0.001);
-    final start =
-        LatLng(currentStart.latitude - 0.001, currentStart.longitude - 0.001);
-    await controller!
-        .updateLine(_selectedLine!, LineOptions(geometry: [start, end]));
-  }
-
-  void _remove() {
-    controller!.removeLine(_selectedLine!);
-    setState(() {
-      _selectedLine = null;
-      _lineCount -= 1;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -214,6 +201,41 @@ class _MapScreenState extends State<MapScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.PRIMARY_300,
         toolbarHeight: _config.uiHeightPx * 0.06,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(3.0),
+            child: TextButton(
+                style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(AppColors.PRIMARY_500),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        side: BorderSide(color: AppColors.PRIMARY_500)),
+                  ),
+                ),
+                onPressed: () async {
+                  await showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      useRootNavigator: true,
+                      builder: (context) {
+                        return RegistrationModal(
+                          onCloseTap: () {},
+                          onErrorOccurred: (String) {},
+                        );
+                      });
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Text(
+                    'Register as a Driver',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w400),
+                  ),
+                )),
+          )
+        ],
       ),
       drawer: const AppDrawer(
         width: 250,
@@ -231,7 +253,7 @@ class _MapScreenState extends State<MapScreen> {
                   initialCameraPosition: _initialCameraPosition,
                   onMapCreated: _onMapCreated,
                   onMapLongClick: _onMapLongClickCallback,
-                  // onCameraIdle: _onCameraIdleCallback,
+                  onCameraIdle: _onCameraIdleCallback,
                   myLocationEnabled: true,
                   myLocationTrackingMode: MyLocationTrackingMode.TrackingGPS,
                   minMaxZoomPreference: const MinMaxZoomPreference(14, 17),
@@ -273,57 +295,26 @@ class _MapScreenState extends State<MapScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
                                 children: [
-                                  // Container(
-                                  //     width: 80,
-                                  //     height: 2.875,
-                                  //     decoration: BoxDecoration(
-                                  //       borderRadius: const BorderRadius.all(
-                                  //           Radius.circular(80)),
-                                  //       color:
-                                  //           AppColors.PRIMARY_500,
-                                  //     )),
-                     
-                              SingleChildScrollView(
-                                  scrollDirection: Axis.vertical,
-                                  child: Column(
-                                    children: [
-                                      SearchRidesModal(
-                                        onCloseTap: () {},
-                                        onErrorOccurred: (String) {},
-                                        onSuccess: () {},
-                                      ),
-                                    ],
+                                  SingleChildScrollView(
+                                      scrollDirection: Axis.vertical,
+                                      child: Column(
+                                        children: [
+                                          SearchRidesModal(
+                                            onCloseTap: () {},
+                                            onErrorOccurred: (String) {},
+                                            onRideRequest: () {
+                                              onRideRequested(mapViewModel);
+                                            },
+                                          ),
+                                        ],
                                       )),
-                          
-                            ])))
+                                ])))
                   ],
                 ))
           ],
         ),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () async {
-      //     controller.animateCamera(
-      //         CameraUpdate.newCameraPosition(_initialCameraPosition));
-      //     await showModalBottomSheet(
-      //         context: context,
-      //         isScrollControlled: true,
-      //         useRootNavigator: true,
-      //         builder: (context) {
-      //           return SearchPage(
-      //             onCloseTap: () {},
-      //             onErrorOccurred: (String) {},
-      //             onSuccess: (String source, String destination) {},
-      //           );
-      //         });
-      //   },
-      //   child: const Center(
-      //     child: Icon(
-      //       Icons.search,
-      //       color: Colors.white,
-      //     ),
-      //   ),
-      // ),
+     
     );
   }
 }
@@ -346,7 +337,7 @@ class Marker extends StatefulWidget {
 }
 
 class _MarkerState extends State with TickerProviderStateMixin {
-  final _iconSize = 20.0;
+  final _iconSize = 35.0;
 
   Point _position;
 

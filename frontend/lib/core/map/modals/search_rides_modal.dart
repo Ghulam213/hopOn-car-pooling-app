@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hop_on/Utils/helpers.dart';
 import 'package:hop_on/core/auth/widgets/login_button.dart';
 import 'package:hop_on/core/map/modals/trip_details_modal.dart';
@@ -10,13 +11,13 @@ import '../../../config/sizeconfig/size_config.dart';
 class SearchRidesModal extends StatefulWidget {
   final Function() onCloseTap;
   final Function(String) onErrorOccurred;
-  final Function() onSuccess;
+  final Function() onRideRequest;
 
   const SearchRidesModal(
       {Key? key,
       required this.onCloseTap,
       required this.onErrorOccurred,
-      required this.onSuccess})
+      required this.onRideRequest})
       : super(key: key);
 
   @override
@@ -52,7 +53,7 @@ class _SearchRidesModalState extends State<SearchRidesModal> {
             builder: (context) {
               return Container(
                 padding: const EdgeInsets.only(top: 7),
-                height: _config.uiHeightPx - 110,
+                height: _config.uiHeightPx / 1.5,
                 width: _config.uiWidthPx * 1,
                 decoration: const BoxDecoration(
                   color: AppColors.LM_BACKGROUND_BASIC,
@@ -61,8 +62,8 @@ class _SearchRidesModalState extends State<SearchRidesModal> {
                     topRight: Radius.circular(15),
                   ),
                 ),
-                child: pickLocation(
-                    context, _config, currentController, destinationController),
+                child: pickLocation(context, _config, currentController,
+                    destinationController, widget.onRideRequest),
               );
             });
       }),
@@ -70,8 +71,12 @@ class _SearchRidesModalState extends State<SearchRidesModal> {
   }
 }
 
-Widget pickLocation(BuildContext context, SizeConfig _config,
-    TextEditingController controller1, TextEditingController controller2) {
+Widget pickLocation(
+    BuildContext context,
+    SizeConfig _config,
+    TextEditingController controller1,
+    TextEditingController controller2,
+    Function() onRideRequest) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
@@ -129,8 +134,10 @@ Widget pickLocation(BuildContext context, SizeConfig _config,
                         child: LoginButton(
                           text: 'Search ',
                           onPress: () {
+                
                             buildTripDetails(
-                                context, controller1.text, controller2.text);
+                                context, controller1.text,
+                                controller2.text, onRideRequest);
                           },
                         ),
                       ),
@@ -222,6 +229,11 @@ class CustomPlaceTextWidget extends StatelessWidget {
         cursorColor: AppColors.FONT_GRAY,
         keyboardType: TextInputType.streetAddress,
         autofillHints: const [AutofillHints.addressCity],
+        style: GoogleFonts.montserrat(
+          fontSize: 14.0,
+          fontWeight: FontWeight.w700,
+          color: AppColors.PRIMARY_500.withOpacity(0.8),
+        ),
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 15,

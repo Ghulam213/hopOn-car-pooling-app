@@ -1,7 +1,7 @@
-// import 'package:flutter/material.dart';
-// import 'package:hop_on/core/map/models/ride.dart';
+import 'package:flutter/material.dart';
+import 'package:hop_on/core/map/models/ride.dart';
 
-// import '../../../Utils/image_path.dart';
+import '../../../Utils/image_path.dart';
 
 // class RideModel {
 //   int id;
@@ -21,27 +21,19 @@
 //   });
 // }
 
-// class RideData {
-//   static List<Ride> rideDetails = <Ride>[
-//     Ride(
-//       // image: ImagesAsset.regular,
-//       // isSelected: true,
-//       source: "Rydr Regular",
-//       totalFare: 100,
-//       rideStartedAt: "07: 38 pm",
-//       rideId: '1',
-//     ),
-//     Ride(
-//       source: "Rydr Regular",
-//       totalFare: 100,
-//       rideStartedAt: "07: 38 pm",
-//       rideId: '1',
-//     ),
-//     Ride(
-//       source: "Rydr Regular",
-//       totalFare: 100,
-//       rideStartedAt: "07: 38 pm",
-//       rideId: '1',
-//     ),
-//   ];
-// }
+class RideData {
+  static List<Ride> rideDetails = <Ride>[
+    Ride(
+      source: "Umer Zia",
+      totalFare: 3000,
+      rideStartedAt: "09: 38 am",
+      rideId: '1',
+    ),
+    Ride(
+      source: "Rydr Regular",
+      totalFare: 5000,
+      rideStartedAt: "10: 45 am",
+      rideId: '2',
+    ),
+  ];
+}

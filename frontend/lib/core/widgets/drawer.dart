@@ -57,16 +57,17 @@ class _AppDrawerState extends State<AppDrawer> {
                   )
                 },
               ),
-              ListTile(
-                leading:
-                    Icon(Icons.star, size: 22, color: AppColors.PRIMARY_500),
-                title: Text('Ride History', style: textStyle),
-              ),
-              ListTile(
-                leading: Icon(Icons.settings,
-                    size: 22, color: AppColors.PRIMARY_500),
-                title: Text('Settings', style: textStyle),
-              ),
+              // ListTile(
+              //   leading:
+              //       Icon(Icons.star, size: 22, color: AppColors.PRIMARY_500),
+              //   title: Text('Ride History', style: textStyle),
+
+              // ),
+              // ListTile(
+              //   leading: Icon(Icons.settings,
+              //       size: 22, color: AppColors.PRIMARY_500),
+              //   title: Text('Settings', style: textStyle),
+              // ),
               
               Spacer(),
               ListTile(

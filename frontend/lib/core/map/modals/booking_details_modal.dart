@@ -55,15 +55,15 @@ class _BookingDetialsState extends State<BookingDetials> {
           topRight: Radius.circular(15),
         ),
       ),
-      child: Container(
+
         child: Column(
           children: [
             Container(
                 width: 80,
                 height: 2.875,
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(80)),
-                  color: AppColors.PRIMARY_500.withOpacity(0.5),
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(80)),
+                color: AppColors.PRIMARY_500,
                 )),
             const SizedBox(height: 15),
             Text(
@@ -71,14 +71,15 @@ class _BookingDetialsState extends State<BookingDetials> {
               style: GoogleFonts.montserrat(
                 fontSize: 20.0,
                 fontWeight: FontWeight.w500,
-                color: AppColors.FONT_GRAY,
+              color: AppColors.PRIMARY_500,
               ),
             ),
+          const SizedBox(height: 10),
             Text(
-              "Your Driver is making this way  to you!",
+            "Your Driver is coming to pick you!",
               style: GoogleFonts.montserrat(
-                fontSize: 11.0,
-                fontWeight: FontWeight.w300,
+              fontSize: 12.0,
+              fontWeight: FontWeight.w400,
                 color: AppColors.FONT_GRAY.withOpacity(0.7),
               ),
             ),
@@ -103,31 +104,33 @@ class _BookingDetialsState extends State<BookingDetials> {
                         "DRIVERS INFORMATION",
                         style: GoogleFonts.montserrat(
                           fontSize: 9.0,
-                          fontWeight: FontWeight.w300,
+                        fontWeight: FontWeight.w400,
                           color: AppColors.FONT_GRAY.withOpacity(0.7),
                         ),
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        "David James",
+                      "Umer Zia",
                         style: GoogleFonts.montserrat(
                           fontSize: 12.0,
                           fontWeight: FontWeight.w700,
                           color: AppColors.FONT_GRAY,
                         ),
                       ),
+                    const SizedBox(height: 2),
                       Row(
                         children: [
                           Text(
-                            "Toyata Camery 2010 |",
+                          "Toyata Corolla 2013 |",
                             style: GoogleFonts.montserrat(
                               fontSize: 10.0,
                               fontWeight: FontWeight.w400,
                               color: AppColors.FONT_GRAY,
                             ),
                           ),
+                          
                           Text(
-                            "237183AR",
+                          "AUC-206",
                             style: GoogleFonts.montserrat(
                               fontSize: 10.0,
                               fontWeight: FontWeight.w600,
@@ -231,7 +234,7 @@ class _BookingDetialsState extends State<BookingDetials> {
                 ),
                 SizedBox(width: 5),
                 Text(
-                  "Driver Arrives In 5 munites",
+                "Driver Will Arrive In 5 munites",
                   style: GoogleFonts.montserrat(
                     fontSize: 12.0,
                     fontWeight: FontWeight.w500,
@@ -260,7 +263,7 @@ class _BookingDetialsState extends State<BookingDetials> {
                       Text(
                         "Continue",
                         style: GoogleFonts.montserrat(
-                          color: AppColors.FONT_GRAY,
+                        color: Colors.white,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -271,7 +274,7 @@ class _BookingDetialsState extends State<BookingDetials> {
             ),
           ],
         ),
-      ),
+
     );
   }
 }
