@@ -1,4 +1,4 @@
-import 'dart:collection';
+
 
 import 'package:flutter/material.dart';
 import 'package:hop_on/core/map/viewmodel/map_view_model.dart';
@@ -56,7 +56,8 @@ class _SearchPageState extends State<SearchPage> {
               children: <Widget>[
                 Container(
                   height: 210,
-                  decoration: BoxDecoration(color: Colors.white, boxShadow: [
+                  decoration:
+                      const BoxDecoration(color: Colors.white, boxShadow: [
                     BoxShadow(
                       color: Colors.black12,
                       blurRadius: 5.0,
@@ -100,7 +101,7 @@ class _SearchPageState extends State<SearchPage> {
                               height: 16,
                               width: 16,
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 18,
                             ),
                             Expanded(
@@ -113,7 +114,7 @@ class _SearchPageState extends State<SearchPage> {
                                   padding: EdgeInsets.all(2.0),
                                   child: TextField(
                                     controller: pickupController,
-                                    decoration: InputDecoration(
+                                    decoration: const InputDecoration(
                                         hintText: 'Pickup location',
                                         fillColor:
                                             AppColors.LM_BACKGROUND_BASIC,
@@ -128,7 +129,7 @@ class _SearchPageState extends State<SearchPage> {
                             )
                           ],
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Row(
@@ -138,7 +139,7 @@ class _SearchPageState extends State<SearchPage> {
                               height: 16,
                               width: 16,
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 18,
                             ),
                             Expanded(
@@ -155,7 +156,7 @@ class _SearchPageState extends State<SearchPage> {
                                     },
                                     focusNode: focusDestination,
                                     controller: destinationController,
-                                    decoration: InputDecoration(
+                                    decoration: const InputDecoration(
                                         hintText: 'Where to?',
                                         fillColor: AppColors.PRIMARY_500,
                                         filled: true,

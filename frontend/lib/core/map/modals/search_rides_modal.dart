@@ -1,8 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hop_on/Utils/helpers.dart';
+import 'package:hop_on/core/auth/widgets/login_button.dart';
 import 'package:hop_on/core/map/modals/trip_details_modal.dart';
 import '../../../Utils/colors.dart';
 import '../../../Utils/image_path.dart';
@@ -32,35 +31,16 @@ class _SearchRidesModalState extends State<SearchRidesModal> {
     super.initState();
   }
 
+  final TextEditingController currentController = TextEditingController();
+  final TextEditingController destinationController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 30.0),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        height: 55,
-        width: _config.uiWidthPx * 1,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(9),
-          color: AppColors.PRIMARY_500.withOpacity(0.3),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(children: [
-              SvgPicture.asset(ImagesAsset.car, height: 25, width: 25),
-              const SizedBox(height: 10),
-              Text(
-                "Where to ?",
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.PRIMARY_500,
-                    ),
-              ),
-            ]),
-          ],
-        ),
+    return SizedBox(
+      width: _config.uiWidthPx * 0.8,
+      child: const LoginButton(
+        text: "Start a Ride ?",
+        isLoading: false,
       ).ripple(() {
         showModalBottomSheet(
             isDismissible: true,
@@ -81,7 +61,8 @@ class _SearchRidesModalState extends State<SearchRidesModal> {
                     topRight: Radius.circular(15),
                   ),
                 ),
-                child: pickLocation(context, _config),
+                child: pickLocation(
+                    context, _config, currentController, destinationController),
               );
             });
       }),
@@ -89,7 +70,8 @@ class _SearchRidesModalState extends State<SearchRidesModal> {
   }
 }
 
-Widget pickLocation(BuildContext context, SizeConfig _config) {
+Widget pickLocation(BuildContext context, SizeConfig _config,
+    TextEditingController controller1, TextEditingController controller2) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
@@ -99,35 +81,60 @@ Widget pickLocation(BuildContext context, SizeConfig _config) {
               width: 80,
               height: 2.875,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(80)),
+                borderRadius: const BorderRadius.all(Radius.circular(80)),
                 color: AppColors.PRIMARY_500.withOpacity(0.5),
               )),
           const SizedBox(height: 40),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SvgPicture.asset(ImagesAsset.side),
+                Padding(
+                  padding: const EdgeInsets.only(top: 12.0),
+                  child: SvgPicture.asset(ImagesAsset.side,
+                      colorFilter: const ColorFilter.mode(
+                          AppColors.PRIMARY_500, BlendMode.srcIn)),
+                ),
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     CustomPlaceTextWidget(
                       hintText: "Current location",
-                      onSubmitted: (_) {
-                        buildTripDetails(context);
-                      },
+                      // onSubmitted: (_) {
+                      //   buildTripDetails(
+                      //       context, controller1.text, controller2.text);
+                      // },
+                      controlelr: controller1,
                       prefix: PrefixIcon1(),
                       config: _config,
                     ),
                     const SizedBox(height: 5.0),
                     CustomPlaceTextWidget(
-                      hintText: "Your current location",
-                      onSubmitted: (_) {
-                        buildTripDetails(context);
-                      },
-                      // suffix: const SuffixNow2(),
+                      hintText: "Your destination",
+                      // onSubmitted: (_) {
+                      //   buildTripDetails(
+                      //       context, controller1.text, controller2.text);
+                      // },
+                      controlelr: controller2,
                       prefix: const PrefixIcon2(),
                       config: _config,
                     ),
+                    const SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 30),
+                      child: SizedBox(
+                        height: _config.uiHeightPx * 0.06,
+                        width: _config.uiWidthPx - 100,
+                        child: LoginButton(
+                          text: 'Search ',
+                          onPress: () {
+                            buildTripDetails(
+                                context, controller1.text, controller2.text);
+                          },
+                        ),
+                      ),
+                    )
                   ],
                 ),
               ],
@@ -137,52 +144,46 @@ Widget pickLocation(BuildContext context, SizeConfig _config) {
       ),
       Column(
         children: [
-          SvgPicture.asset(ImagesAsset.stopwatch),
-          const SizedBox(height: 10),
-          Text(
-            "Consider the driver and don’t keep the driver waiting.",
-            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.PRIMARY_500,
-                ),
+          SizedBox(
+            height: 60,
+            width: 60,
+            child: SvgPicture.asset(
+              ImagesAsset.hopOn,
+              colorFilter: const ColorFilter.mode(
+                  AppColors.PRIMARY_500, BlendMode.srcIn),
+            ),
           ),
           const SizedBox(height: 10),
-          Text(
-            "You will be charged an additional N150 for every minute you \nkeep the driver waiting",
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                  fontSize: 8.0,
-                  fontWeight: FontWeight.w400,
-                  color: const Color(0xFF999393),
-                ),
-          ),
-          const SizedBox(height: 15),
           Container(
             height: 70,
             width: _config.uiWidthPx * 1,
             decoration: const BoxDecoration(
-              color: AppColors.FONT_GRAY,
+              color: AppColors.PRIMARY_500,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(10),
                 topRight: Radius.circular(10),
               ),
             ),
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SvgPicture.asset(ImagesAsset.globe),
-                  const SizedBox(width: 5),
-                  Text(
-                    "Search on Map",
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.white,
-                        ),
-                  )
-                ]),
+            child: InkWell(
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(ImagesAsset.globe,
+                          colorFilter: const ColorFilter.mode(
+                              Colors.white, BlendMode.srcIn)),
+                      const SizedBox(width: 5),
+                      Text(
+                        "Search on Map",
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white),
+                      )
+                    ]),
+                onTap: () {
+                  Navigator.pop(context);
+                }),
           ),
         ],
       )
@@ -196,28 +197,28 @@ class CustomPlaceTextWidget extends StatelessWidget {
   final Widget? prefix;
   final String hintText;
   final SizeConfig config;
+  final TextEditingController controlelr;
 
-  final TextEditingController placetexteditingcontroller =
-      TextEditingController();
   CustomPlaceTextWidget(
       {this.onSubmitted,
       this.suffix,
       this.prefix,
       required this.hintText,
       required this.config,
+      required this.controlelr,
       Key? key})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 30),
+      padding: const EdgeInsets.only(left: 30),
       height: 55,
       width: config.uiWidthPx - 60,
       child: TextField(
-        scrollPadding: EdgeInsets.symmetric(vertical: 15),
+        scrollPadding: const EdgeInsets.symmetric(vertical: 15),
         onSubmitted: onSubmitted,
-        controller: placetexteditingcontroller,
+        controller: controlelr,
         cursorColor: AppColors.FONT_GRAY,
         keyboardType: TextInputType.streetAddress,
         autofillHints: const [AutofillHints.addressCity],
@@ -227,13 +228,13 @@ class CustomPlaceTextWidget extends StatelessWidget {
             vertical: 10,
           ),
           prefixIcon: prefix ?? prefix,
-          suffix: suffix ?? suffix,
           filled: true,
-          fillColor: AppColors.PRIMARY_500.withOpacity(0.9),
+          fillColor: AppColors.PRIMARY_500.withOpacity(0.2),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(9),
             borderSide: const BorderSide(
-              color: Colors.transparent,
+              width: 1,
+              color: AppColors.PRIMARY_500,
             ),
           ),
           focusedBorder: OutlineInputBorder(
@@ -245,7 +246,7 @@ class CustomPlaceTextWidget extends StatelessWidget {
           hintStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: AppColors.PRIMARY_300.withOpacity(0.9),
+                color: AppColors.PRIMARY_500.withOpacity(0.9),
               ),
         ),
       ),
@@ -264,6 +265,8 @@ class PrefixIcon2 extends StatelessWidget {
       padding: const EdgeInsets.all(15.0),
       child: SvgPicture.asset(
         ImagesAsset.locate,
+        colorFilter:
+            const ColorFilter.mode(AppColors.PRIMARY_500, BlendMode.srcIn),
         height: 10,
         width: 10,
       ),
@@ -306,28 +309,6 @@ class SuffixNow1 extends StatelessWidget {
   }
 }
 
-class SuffixNow2 extends StatelessWidget {
-  const SuffixNow2({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-        child: Container(
-            height: 20,
-            width: 20,
-            decoration: const BoxDecoration(
-                color: AppColors.PRIMARY_500,
-                borderRadius: BorderRadius.all(Radius.circular(5.0))),
-            child: const Icon(
-              Icons.add,
-              size: 12.0,
-              color: Colors.white,
-            )));
-  }
-}
-
 class PrefixIcon1 extends StatelessWidget {
   PrefixIcon1({
     Key? key,
@@ -337,7 +318,11 @@ class PrefixIcon1 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: SvgPicture.asset(ImagesAsset.car, height: 15, width: 15),
+      child: SvgPicture.asset(ImagesAsset.car,
+          colorFilter:
+              const ColorFilter.mode(AppColors.PRIMARY_500, BlendMode.srcIn),
+          height: 15,
+          width: 15),
     );
   }
 }

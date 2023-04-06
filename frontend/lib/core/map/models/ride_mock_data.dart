@@ -1,48 +1,47 @@
-import 'package:flutter/material.dart';
+// import 'package:flutter/material.dart';
+// import 'package:hop_on/core/map/models/ride.dart';
 
-import '../../../Utils/image_path.dart';
+// import '../../../Utils/image_path.dart';
 
-class RideModel {
-  int id;
-  String name;
-  String image;
-  String price;
-  String time;
-  bool isSelected;
+// class RideModel {
+//   int id;
+//   String name;
+//   String image;
+//   String price;
+//   String time;
+//   bool isSelected;
 
-  RideModel({
-    required this.id,
-    required this.name,
-    required this.image,
-    required this.price,
-    required this.time,
-    this.isSelected = false,
-  });
-}
+//   RideModel({
+//     required this.id,
+//     required this.name,
+//     required this.image,
+//     required this.price,
+//     required this.time,
+//     this.isSelected = false,
+//   });
+// }
 
-class RideData {
-  static List<RideModel> rideDetails = <RideModel>[
-    RideModel(
-      image: ImagesAsset.regular,
-      isSelected: true,
-      name: "Rydr Regular",
-      price: "1,100",
-      time: "07: 38 pm",
-      id: 1,
-    ),
-    RideModel(
-      image: ImagesAsset.classic,
-      name: "Rydr Classic",
-      price: "2,200",
-      time: "07: 38 pm",
-      id: 2,
-    ),
-    RideModel(
-      image: ImagesAsset.premium,
-      name: "Rydr Premium",
-      price: "3,200",
-      time: "07: 38 pm",
-      id: 1,
-    ),
-  ];
-}
+// class RideData {
+//   static List<Ride> rideDetails = <Ride>[
+//     Ride(
+//       // image: ImagesAsset.regular,
+//       // isSelected: true,
+//       source: "Rydr Regular",
+//       totalFare: 100,
+//       rideStartedAt: "07: 38 pm",
+//       rideId: '1',
+//     ),
+//     Ride(
+//       source: "Rydr Regular",
+//       totalFare: 100,
+//       rideStartedAt: "07: 38 pm",
+//       rideId: '1',
+//     ),
+//     Ride(
+//       source: "Rydr Regular",
+//       totalFare: 100,
+//       rideStartedAt: "07: 38 pm",
+//       rideId: '1',
+//     ),
+//   ];
+// }

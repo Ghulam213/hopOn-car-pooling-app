@@ -23,6 +23,7 @@ class ImagesAsset {
   static String vehicle1 = 'assets/images/vehicle1.png';
   static String rydrlogo = 'assets/images/rydrlogo.png';
   static String splash = 'assets/images/rydylogo.png';
+  static String hopOn = 'assets/images/logo.svg';
 
 //Icons
   static String rightarrow = 'assets/images/Rightarrow.svg';

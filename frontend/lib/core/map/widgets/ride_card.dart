@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hop_on/Utils/helpers.dart';
+import 'package:hop_on/core/map/models/map_response.dart';
 import 'package:hop_on/core/map/widgets/vehicle_details.dart';
-
 import '../../../Utils/colors.dart';
 import '../../../Utils/image_path.dart';
+import '../models/ride.dart';
 import '../models/ride_mock_data.dart';
 
 class RideCard extends StatefulWidget {
-  final RideModel rideModel;
-  final ValueChanged<RideModel> onSelected;
+  final Ride rideModel;
+  final ValueChanged<Ride> onSelected;
 
   const RideCard({
     required this.rideModel,
@@ -23,27 +24,32 @@ class RideCard extends StatefulWidget {
 }
 
 class _RideCardState extends State<RideCard> {
+  bool isSelected = false;
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onLongPress: () {
         vehicleDetails(context);
+        setState(() {
+          isSelected = !isSelected;
+        });
       },
       child: Container(
-        color: widget.rideModel.isSelected
+        color: isSelected
             ? AppColors.PRIMARY_500
             : AppColors.PRIMARY_300.withOpacity(0.3),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-              child: Image(
-                width: 110,
-                height: 66,
-                image: AssetImage(widget.rideModel.image),
-              ),
-            ),
+            // Container(
+            //   child: Image(
+            //     width: 110,
+            //     height: 66,
+            //     image: AssetImage(widget.rideModel.image),
+            //   ),
+            // ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -52,18 +58,18 @@ class _RideCardState extends State<RideCard> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      widget.rideModel.name,
+                      widget.rideModel.rideStartedAt.toString(),
                       style: GoogleFonts.montserrat(
                         fontSize: 15.0,
                         fontWeight: FontWeight.w700,
-                        color: widget.rideModel.isSelected
+                        color: isSelected
                             ? AppColors.PRIMARY_300
                             : AppColors.PRIMARY_500,
                       ),
                     ),
                     Icon(
                       Icons.info_outline,
-                      color: widget.rideModel.isSelected
+                      color: isSelected
                           ? AppColors.PRIMARY_300
                           : AppColors.PRIMARY_500,
                       size: 8,
@@ -75,7 +81,7 @@ class _RideCardState extends State<RideCard> {
                   children: [
                     SvgPicture.asset(
                       ImagesAsset.time,
-                      color: widget.rideModel.isSelected
+                      color: isSelected
                           ? AppColors.PRIMARY_300
                           : AppColors.PRIMARY_500,
                       height: 8,
@@ -87,7 +93,7 @@ class _RideCardState extends State<RideCard> {
                       style: GoogleFonts.montserrat(
                         fontSize: 11.0,
                         fontWeight: FontWeight.w300,
-                        color: widget.rideModel.isSelected
+                        color: isSelected
                             ? AppColors.PRIMARY_300
                             : AppColors.PRIMARY_500,
                       ),
@@ -97,7 +103,7 @@ class _RideCardState extends State<RideCard> {
                       children: [
                         Icon(
                           Icons.person_outline,
-                          color: widget.rideModel.isSelected
+                          color: isSelected
                               ? AppColors.PRIMARY_300
                               : AppColors.PRIMARY_500,
                           size: 10,
@@ -107,7 +113,7 @@ class _RideCardState extends State<RideCard> {
                           style: GoogleFonts.montserrat(
                             fontSize: 11.0,
                             fontWeight: FontWeight.w300,
-                            color: widget.rideModel.isSelected
+                            color: isSelected
                                 ? AppColors.PRIMARY_300
                                 : AppColors.PRIMARY_500,
                           ),
@@ -121,7 +127,7 @@ class _RideCardState extends State<RideCard> {
                   children: [
                     SvgPicture.asset(
                       ImagesAsset.up,
-                      color: widget.rideModel.isSelected
+                      color: isSelected
                           ? AppColors.PRIMARY_300
                           : AppColors.PRIMARY_500,
                     ),
@@ -130,7 +136,7 @@ class _RideCardState extends State<RideCard> {
                       style: GoogleFonts.montserrat(
                         fontSize: 11.0,
                         fontWeight: FontWeight.w300,
-                        color: widget.rideModel.isSelected
+                        color: isSelected
                             ? AppColors.PRIMARY_300
                             : AppColors.PRIMARY_500,
                       ),
@@ -145,23 +151,23 @@ class _RideCardState extends State<RideCard> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    "\N " + widget.rideModel.price,
+                    "\N " + widget.rideModel.totalFare.toString(),
                     style: GoogleFonts.montserrat(
                       fontSize: 16.0,
                       fontWeight: FontWeight.bold,
                       color: false
-                          // widget.rideModel.isSelected
+                          //isSelected
                           ? AppColors.PRIMARY_300
                           : AppColors.PRIMARY_500,
                     ),
                   ),
                   SizedBox(height: 5.0),
                   Text(
-                    widget.rideModel.time,
+                    widget.rideModel.destination.toString(),
                     style: GoogleFonts.montserrat(
                       fontSize: 9.0,
                       fontWeight: FontWeight.w500,
-                      color: widget.rideModel.isSelected
+                      color: isSelected
                           ? AppColors.PRIMARY_300
                           : AppColors.PRIMARY_500,
                     ),

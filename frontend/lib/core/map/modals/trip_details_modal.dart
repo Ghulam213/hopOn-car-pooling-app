@@ -1,27 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hop_on/core/auth/widgets/login_button.dart';
+import 'package:provider/provider.dart';
 
 import '../../../Utils/colors.dart';
 import '../../../Utils/image_path.dart';
 import '../../../config/sizeconfig/size_config.dart';
+import '../viewmodel/map_view_model.dart';
 import '../widgets/ride_details.dart';
 import 'confirm_trip_modal.dart';
 
-buildTripDetails(BuildContext context) {
+buildTripDetails(BuildContext context, String source, String destination) {
   final SizeConfig _config = SizeConfig();
+
+  final MapViewModel mapViewModel =
+      Provider.of<MapViewModel>(context, listen: false);
 
   Navigator.pop(context);
   showModalBottomSheet(
       isDismissible: false,
       isScrollControlled: true,
       elevation: 0,
-      backgroundColor: AppColors.PRIMARY_500,
+      backgroundColor: Colors.white,
       clipBehavior: Clip.hardEdge,
       context: context,
       builder: (context) {
         return Container(
-          padding: EdgeInsets.only(top: 7),
+          padding: const EdgeInsets.only(top: 7),
           height: _config.uiHeightPx / 2.5,
           width: _config.uiWidthPx * 1,
           decoration: const BoxDecoration(
@@ -36,11 +42,11 @@ buildTripDetails(BuildContext context) {
                 Container(
                     width: 80,
                     height: 2.875,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(80)),
                       color: AppColors.PRIMARY_500,
                     )),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 Text(
                   "Trip Details",
                   style: GoogleFonts.montserrat(
@@ -48,14 +54,7 @@ buildTripDetails(BuildContext context) {
                     fontWeight: FontWeight.w500,
                     color: AppColors.FONT_GRAY,
                   ),
-                ),
-                Text(
-                  "Your Trip information",
-                  style: GoogleFonts.montserrat(
-                    fontSize: 11.0,
-                    fontWeight: FontWeight.w300,
-                    color: AppColors.FONT_GRAY,
-                  ),
+        
                 ),
                 const SizedBox(height: 10),
                 const DotWidget(
@@ -93,18 +92,25 @@ buildTripDetails(BuildContext context) {
                   child: Container(
                     height: 50,
                     width: _config.uiWidthPx * 1,
-                    decoration: BoxDecoration(
-                      color: AppColors.green7,
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: InkWell(
-                      onTap: () {
+                    child: LoginButton(
+                      text: "Confirm",
+                      // onPress: () {
+                      //   // TO DO:  Update from real values
+                      //   mapViewModel.findRides(
+                      //       source: '72.988149,33.642838',
+                      //       destination: '73.087289,33.664512');
+                      // }
+
+                      onPress: () {
+                        mapViewModel.findRides(
+                            source: '72.988149,33.642838',
+                            destination: '73.087289,33.664512');
                         Navigator.pop(context);
                         showModalBottomSheet(
                             isDismissible: false,
                             isScrollControlled: true,
                             elevation: 0,
-                            backgroundColor: AppColors.PRIMARY_500,
+                            backgroundColor: Colors.white,
                             clipBehavior: Clip.hardEdge,
                             context: context,
                             builder: (context) {
@@ -137,7 +143,7 @@ buildTripDetails(BuildContext context) {
                                         style: GoogleFonts.montserrat(
                                           fontSize: 20.0,
                                           fontWeight: FontWeight.w500,
-                                          color: AppColors.FONT_GRAY,
+                                          color: AppColors.PRIMARY_500,
                                         ),
                                       ),
                                       DotWidget(
@@ -154,7 +160,8 @@ buildTripDetails(BuildContext context) {
                                           height: 40,
                                           width: _config.uiWidthPx * 1,
                                           decoration: BoxDecoration(
-                                            color: AppColors.FONT_GRAY,
+                                            color: AppColors.PRIMARY_500
+                                                .withOpacity(0.2),
                                             borderRadius:
                                                 BorderRadius.circular(8.0),
                                           ),
@@ -184,19 +191,8 @@ buildTripDetails(BuildContext context) {
                               );
                             });
                       },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Confirm",
-                            style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
                     ),
+                  
                   ),
                 ),
               ],
@@ -240,7 +236,7 @@ Widget tripdetails(
                   style: GoogleFonts.montserrat(
                     fontSize: 12.0,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.FONT_GRAY.withOpacity(0.7),
+                    color: AppColors.PRIMARY_500,
                   ),
                 ),
                 SizedBox(height: 10),
@@ -281,7 +277,7 @@ Widget tripdetails(
                     height: 16,
                     width: 16,
                   ),
-                  SizedBox(width: 4),
+                  const SizedBox(width: 4),
                   Text(
                     eDistance,
                     style: GoogleFonts.montserrat(

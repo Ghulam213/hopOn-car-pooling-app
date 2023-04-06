@@ -47,6 +47,14 @@ num getDurationFromSharedPrefs(int index) {
   return duration;
 }
 
+List<LatLng>? convertListToListLatLng(List<List<double>>? input) {
+  if (input == null) {
+    return null;
+  }
+  return input.map((point) => LatLng(point[1], point[0])).toList();
+}
+
+
 
 extension OnPressed on Widget {
   Widget ripple(Function onPressed,
