@@ -1,22 +1,18 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
-import 'dart:io';
-import 'dart:math';
-import 'dart:typed_data';
+import 'dart:async';
 
 import 'package:animate_do/animate_do.dart';
-import 'package:flutter/foundation.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hop_on/Utils/colors.dart';
 import 'package:hop_on/core/map/modals/search_rides_modal.dart';
-import 'package:hop_on/core/map/screens/search_page.dart';
+import 'package:hop_on/core/map/models/direction.dart';
+
 import 'package:hop_on/core/registration/screens/registration_modal.dart';
-// import 'package:latlng/latlng.dart';
-import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:provider/provider.dart';
-import '../../../Utils/helpers.dart';
-import 'package:latlong2/latlong.dart' as latLng;
+
 // import 'package:latlng/latlng.dart' as latLng;
 import '../../../config/sizeconfig/size_config.dart';
 import '../../widgets/drawer.dart';
@@ -30,167 +26,115 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
-
-  late CameraPosition _initialCameraPosition;
-  late MapboxMapController controller;
-  late List<CameraPosition> _kRestaurantsList;
-  List<Map> carouselData = [];
-  LatLng initLatLng = LatLng(72.9914673283913, 33.64333419508494);
-  // getLatLngFromSharedPrefs();
-
-  Line? _selectedLine;
   String? source;
   String? destination;
-  int _lineCount = 0;
-  final Random _rnd = new Random();
+  Completer<GoogleMapController> _controller = Completer();
 
-// Carousel related
-  int pageIndex = 0;
-  bool accessed = false;
-  late List<Widget> carouselItems;
-  List<Marker> _markers = [];
-  List<_MarkerState> _markerStates = [];
+  final Set<Marker> _markers = {};
+  final Set<Polyline> _polyline = {};
 
-  final List<LatLng> polyLineArray = const [
-    LatLng(33.684714, 73.048045),
-    LatLng(33.673281, 73.026413),
-    LatLng(33.663012, 73.006765),
-    LatLng(33.652757, 72.987332),
-    LatLng(33.648144, 72.978459),
-    LatLng(33.647678, 72.978431),
-    LatLng(33.645952, 72.979731),
-    LatLng(33.64621, 72.981138),
-    LatLng(33.645655, 72.985249),
-    LatLng(33.64582, 72.985731),
-    LatLng(33.645435, 72.985988),
-    LatLng(33.645182, 72.985556),
-    LatLng(33.645509, 72.985208)
-  ];
+  static const LatLng _center = const LatLng(33.642838, 72.98814);
+
+  void _onMapCreated(GoogleMapController controller) {
+    _controller.complete(controller);
+  }
+
+  LatLng _lastMapPosition = _center;
+
+  void _onCameraMove(CameraPosition position) {
+    _lastMapPosition = position.target;
+  }
+
+  final List<LatLng> polyLineArray = [];
+  // = const [
+  //   LatLng(33.684714, 73.048045),
+  //   LatLng(33.673281, 73.026413),
+  //   LatLng(33.663012, 73.006765),
+  //   LatLng(33.652757, 72.987332),
+  //   LatLng(33.648144, 72.978459),
+  //   LatLng(33.647678, 72.978431),
+  //   LatLng(33.645952, 72.979731),
+  //   LatLng(33.64621, 72.981138),
+  //   LatLng(33.645655, 72.985249),
+  //   LatLng(33.64582, 72.985731),
+  //   LatLng(33.645435, 72.985988),
+  //   LatLng(33.645182, 72.985556),
+  //   LatLng(33.645509, 72.985208)
+  // ];
 
   @override
   void initState() {
     super.initState();
-    _initialCameraPosition =
-        CameraPosition(target: LatLng(73.048010, 33.684757), zoom: 15);
   }
 
-  _onMapCreated(MapboxMapController controller) async {
-    this.controller = controller;
+  void _onAddMarkerButtonPressed() async {
+    LatLng origin = LatLng(33.684714, 73.048045);
+    LatLng dest = LatLng(33.645509, 72.985208);
+
+    Dio _dio = Dio();
+    final direction = await _dio.post(
+        "https://maps.googleapis.com/maps/api/directions/json?",
+        queryParameters: {
+          'origin': '${origin.latitude},${origin.longitude}',
+          'destination': '${dest.latitude},${dest.longitude}',
+          'key': "AIzaSyDP192QwnB-tR8NfjGT3vZCrE-mnkmGFbo"
+        });
 
 
-    controller.onLineTapped.add(_onLineTapped);
-    controller.addListener(() {
-      if (controller.isCameraMoving) {
-        _updateMarkerPosition();
-      }
+    final result = direction.data as Map<String, dynamic>;
+    debugPrint(result.toString());
+    //   if (direction.data.points.isNotEmpty) {
+    //   direction.data.points.forEach((PointLatLng point) {
+    //     polyLineArray.add(LatLng(point.latitude, point.longitude));
+    //   });
+    // }
+    debugPrint(Directions.fromMap(result).polylinePoints.toString());
+
+    Directions.fromMap(result).polylinePoints.forEach((PointLatLng point) {
+      polyLineArray.add(LatLng(point.latitude, point.longitude));
     });
-  }
 
-  _onLineTapped(Line line) async {
-    
-    await _updateSelectedLine(
-      const LineOptions(lineColor: "#000000"),
-    );
-    setState(() {
-      _selectedLine = line;
-    });
-    await _updateSelectedLine(
-      const LineOptions(
-        lineColor: "#3676EC",
+
+    _markers.add(Marker(
+// This marker id can be anything that uniquely identifies each marker.
+      markerId: MarkerId(_lastMapPosition.toString()),
+      position: _center,
+
+      icon: await BitmapDescriptor.fromAssetImage(
+          ImageConfiguration(size: Size(18, 18)), 'assets/images/car_ios.png'),
+
+      infoWindow: const InfoWindow(
+        title: "ride starting",
       ),
-    );
-  }
+    ));
 
-  _updateSelectedLine(LineOptions changes) async {
-    if (_selectedLine != null) controller.updateLine(_selectedLine!, changes);
-  }
+    _polyline.add(Polyline(
+      polylineId: PolylineId(_lastMapPosition.toString()),
+      visible: true,
+      points: polyLineArray,
+      color: Colors.red,
+    ));
 
-  _onStyleLoadedCallback(MapViewModel model) async {
-
-    model.findRides(
-        source: '72.988149,33.642838', destination: '73.087289,33.664512');
-
-
-  }
-
-  onRideRequested(MapViewModel model) async {
-if (model.availableRides.isNotEmpty) {
-      await controller.addLine(
-        LineOptions(
-            geometry: polyLineArray,
-//convertListToListLatLng(model.availableRides[0].polygonPoints),
-            lineColor: "#3676EC",
-            lineWidth: 4.0,
-            lineOpacity: 0.9,
-            draggable: false),
-      );
-      setState(() {
-        _markers.add(Marker(
-            _rnd.nextInt(100000).toString(),
-            LatLng(double.parse('33.684757'), double.parse('73.048020')),
-            Point(820.966796875, 675.681884765625),
-            _addMarkerStates));
-      });
-    }
-  }
-    
-  Future<void> addImageFromAsset(String name, String assetName) async {
-    final ByteData bytes = await rootBundle.load(assetName);
-    final Uint8List list = bytes.buffer.asUint8List();
-    return controller!.addImage(name, list);
-  }
-
-// void _add() {
-//     controller.addLine(
-//       const LineOptions(
-//           geometry: [
-//             LatLng(73.047884, 33.684419),
-//             LatLng(73.044814, 33.685522)
-//           ],
-//           lineColor: "#89CFF0",
-//           lineWidth: 14.0,
-//           lineOpacity: 0.9,
-//           draggable: false),
+// _controller.animateCamera(
+//       CameraUpdate.newCameraPosition(
+//         CameraPosition(
+//           target: LatLng(
+//             _deviceLocation!.latitude,
+//             _deviceLocation!.longitude,
+//           ),
+//           bearing: _deviceLocation!.heading,
+//           tilt: 30,
+//           zoom: 17,
+//         ),
+//       ),
 //     );
-//     setState(() {
-//       _lineCount += 1;
-//     });
-//   }
-
-  void _addMarkerStates(_MarkerState markerState) {
-    _markerStates.add(markerState);
   }
 
-  void _onMapLongClickCallback(Point<double> point, LatLng coordinates) {
-    _addMarker(point, coordinates);
-  }
-
-  void _onCameraIdleCallback() {
-    _updateMarkerPosition();
-  }
-
-  void _updateMarkerPosition() {
-    final coordinates = <LatLng>[];
-
-    for (final markerState in _markerStates) {
-      coordinates.add(markerState.getCoordinate());
+  Future<void> _handlePressButton() async {
+    try {} catch (e) {
+      return;
     }
-
-    controller.toScreenLocationBatch(coordinates).then((points) {
-      _markerStates.asMap().forEach((i, value) {
-        _markerStates[i].updatePosition(points[i]);
-      });
-    });
   }
-
-  void _addMarker(Point<double> point, LatLng coordinates) {
-    setState(() {
-      _markers.add(Marker(_rnd.nextInt(100000).toString(), coordinates, point,
-          _addMarkerStates));
-    });
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -226,8 +170,8 @@ if (model.availableRides.isNotEmpty) {
                         );
                       });
                 },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10.0),
                   child: Text(
                     'Register as a Driver',
                     style: TextStyle(
@@ -247,39 +191,26 @@ if (model.availableRides.isNotEmpty) {
               duration: const Duration(milliseconds: 1500),
               child: SizedBox(
                 height: MediaQuery.of(context).size.height * 1,
-                child: MapboxMap(
-                  accessToken:
-                      'pk.eyJ1IjoiaG9wb25hcHAiLCJhIjoiY2xkbHl0Ynp5MDRjMzNua2J6ZTVxYTdoayJ9.aszB3q-5-dPp3fYIn05O6g',
-                  initialCameraPosition: _initialCameraPosition,
+                child: GoogleMap(
                   onMapCreated: _onMapCreated,
-                  onMapLongClick: _onMapLongClickCallback,
-                  onCameraIdle: _onCameraIdleCallback,
-                  myLocationEnabled: true,
-                  myLocationTrackingMode: MyLocationTrackingMode.TrackingGPS,
-                  minMaxZoomPreference: const MinMaxZoomPreference(14, 17),
-                  onStyleLoadedCallback: () =>
-                      _onStyleLoadedCallback(mapViewModel),
+                  compassEnabled: false,
+                  markers: _markers,
+                  polylines: _polyline,
+                  onCameraMove: _onCameraMove,
+                  initialCameraPosition: CameraPosition(
+                    target: _center,
+                    zoom: 18.0,
+                  ),
                 ),
               ),
             ),
-            // Marker(
-            //     _rnd.nextInt(100000).toString(),
-            //     LatLng(double.parse('33.64333419508494'),
-            //         double.parse('72.9914673283913')),
-            //     Point(720.966796875, 575.681884765625),
-            //     _addMarkerStates),
-            IgnorePointer(
-                ignoring: true,
-                child: Stack(
-                  children: _markers,
-                )),
             Positioned(
                 bottom: 0,
                 child: Column(
                   children: [
                     FadeInUp(
                         delay: const Duration(milliseconds: 1000),
-                        duration: const Duration(milliseconds: 2000),
+                        duration: const Duration(milliseconds: 1000),
                         child: AnimatedContainer(
                             curve: Curves.easeInOut,
                             duration: const Duration(milliseconds: 100),
@@ -303,7 +234,7 @@ if (model.availableRides.isNotEmpty) {
                                             onCloseTap: () {},
                                             onErrorOccurred: (String) {},
                                             onRideRequest: () {
-                                              onRideRequested(mapViewModel);
+                                              // onRideRequested(mapViewModel);
                                             },
                                           ),
                                         ],
@@ -314,80 +245,12 @@ if (model.availableRides.isNotEmpty) {
           ],
         ),
       ),
-     
+      floatingActionButton: FloatingActionButton(
+        onPressed: _onAddMarkerButtonPressed,
+        materialTapTargetSize: MaterialTapTargetSize.padded,
+        backgroundColor: Colors.green,
+        child: const Icon(Icons.add_location, size: 36.0),
+      ),
     );
-  }
-}
-
-class Marker extends StatefulWidget {
-  final Point _initialPosition;
-  final LatLng _coordinate;
-  final void Function(_MarkerState) _addMarkerState;
-
-  Marker(
-      String key, this._coordinate, this._initialPosition, this._addMarkerState)
-      : super(key: Key(key));
-
-  @override
-  State<StatefulWidget> createState() {
-    final state = _MarkerState(_initialPosition);
-    _addMarkerState(state);
-    return state;
-  }
-}
-
-class _MarkerState extends State with TickerProviderStateMixin {
-  final _iconSize = 35.0;
-
-  Point _position;
-
-  late AnimationController _controller;
-  late Animation<double> _animation;
-
-  _MarkerState(this._position);
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(seconds: 2),
-      vsync: this,
-    )..repeat(reverse: true);
-    _animation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.elasticOut,
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    var ratio = 1.0;
-
-    //web does not support Platform._operatingSystem
-    if (!kIsWeb) {
-      // iOS returns logical pixel while Android returns screen pixel
-      ratio = Platform.isIOS ? 1.0 : MediaQuery.of(context).devicePixelRatio;
-    }
-
-    return Positioned(
-        left: _position.x / ratio - _iconSize / 2,
-        top: _position.y / ratio - _iconSize / 2,
-        child: Image.asset('assets/images/car_ios.png', height: _iconSize));
-  }
-
-  void updatePosition(Point<num> point) {
-    setState(() {
-      _position = point;
-    });
-  }
-
-  LatLng getCoordinate() {
-    return (widget as Marker)._coordinate;
   }
 }

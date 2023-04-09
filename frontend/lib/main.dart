@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:hop_on/core/auth/screens/auth_screen.dart';
 import 'package:hop_on/core/map/screens/home.dart';
 import 'package:hop_on/core/registration/viewmodel/registration_viewmodel.dart';
+import 'package:latlong2/latlong.dart';
 import 'core/map/viewmodel/map_view_model.dart';
 import 'core/profile/viewmodel/profile_viewmodel.dart';
 import 'firebase_options.dart';
@@ -20,7 +21,6 @@ import 'package:hop_on/core/auth/provider/login_store.dart';
 import 'package:hop_on/core/onboarding/screens/splash_screen.dart';
 import 'package:hop_on/utils/colors.dart';
 import 'package:location/location.dart';
-import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -132,7 +132,6 @@ class _AppState extends State<App> with WidgetsBindingObserver {
             supportedLocales: const [Locale('en', ''), Locale('de', '')],
 
             key: GlobalVariable.scaffoldKey,
-            // onGenerateRoute: RouteGenerator.generateRoute,
             title: 'hopOn',
             navigatorKey: Get.key,
             debugShowCheckedModeBanner: false,
@@ -144,7 +143,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
                     height: size.height,
                     width: size.width,
                     allowFontScaling: true);
-                return const MapScreen();
+                return MapScreen();
               },
             ),
           ),

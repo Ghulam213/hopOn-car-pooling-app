@@ -25,13 +25,13 @@ class RideData {
   static List<Ride> rideDetails = <Ride>[
     Ride(
       source: "Umer Zia",
-      totalFare: 3000,
+      totalFare: 350,
       rideStartedAt: "09: 38 am",
       rideId: '1',
     ),
     Ride(
       source: "Rydr Regular",
-      totalFare: 5000,
+      totalFare: 500,
       rideStartedAt: "10: 45 am",
       rideId: '2',
     ),

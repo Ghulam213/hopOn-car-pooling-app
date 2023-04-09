@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:geocode/geocode.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hop_on/Utils/helpers.dart';
 import 'package:hop_on/core/auth/widgets/login_button.dart';
@@ -35,6 +38,16 @@ class _SearchRidesModalState extends State<SearchRidesModal> {
   final TextEditingController currentController = TextEditingController();
   final TextEditingController destinationController = TextEditingController();
 
+  Timer? _debounce;
+
+  void autoCompleteSearch(String value) async {
+    GeoCode geoCode = GeoCode(apiKey: "126435123870473308801x22127");
+
+    Coordinates coordinates = await geoCode.forwardGeocoding(address: value);
+    print("Latitude: ${coordinates.latitude}");
+    print("Longitude: ${coordinates.longitude}");
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -62,140 +75,137 @@ class _SearchRidesModalState extends State<SearchRidesModal> {
                     topRight: Radius.circular(15),
                   ),
                 ),
-                child: pickLocation(context, _config, currentController,
-                    destinationController, widget.onRideRequest),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      children: [
+                        Container(
+                            width: 80,
+                            height: 2.875,
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(80)),
+                              color: AppColors.PRIMARY_500.withOpacity(0.5),
+                            )),
+                        const SizedBox(height: 40),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(top: 12.0),
+                                child: SvgPicture.asset(ImagesAsset.side,
+                                    colorFilter: const ColorFilter.mode(
+                                        AppColors.PRIMARY_500,
+                                        BlendMode.srcIn)),
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  CustomPlaceTextWidget(
+                                    hintText: "Current location",
+                                    onSubmitted: (value) {},
+                                    controlelr: currentController,
+                                    prefix: PrefixIcon1(),
+                                    config: _config,
+                                  ),
+                                  const SizedBox(height: 5.0),
+                                  CustomPlaceTextWidget(
+                                    hintText: "Your destination",
+                                    onSubmitted: (value) {},
+                                    controlelr: destinationController,
+                                    prefix: const PrefixIcon2(),
+                                    config: _config,
+                                  ),
+                                  const SizedBox(height: 20),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 30),
+                                    child: SizedBox(
+                                      height: _config.uiHeightPx * 0.06,
+                                      width: _config.uiWidthPx - 100,
+                                      child: LoginButton(
+                                        text: 'Search',
+                                        onPress: () {
+                                          autoCompleteSearch(
+                                              currentController.text);
+                                          Future.delayed(
+                                              const Duration(seconds: 2), () {
+                                            autoCompleteSearch(
+                                                destinationController.text);
+                                          });
+                                          buildTripDetails(
+                                              context,
+                                              currentController.text,
+                                              destinationController.text,
+                                              widget.onRideRequest);
+                                        },
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        SizedBox(
+                          height: 60,
+                          width: 60,
+                          child: SvgPicture.asset(
+                            ImagesAsset.hopOn,
+                            colorFilter: const ColorFilter.mode(
+                                AppColors.PRIMARY_500, BlendMode.srcIn),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Container(
+                          height: 70,
+                          width: _config.uiWidthPx * 1,
+                          decoration: const BoxDecoration(
+                            color: AppColors.PRIMARY_500,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(10),
+                              topRight: Radius.circular(10),
+                            ),
+                          ),
+                          child: InkWell(
+                              child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    SvgPicture.asset(ImagesAsset.globe,
+                                        colorFilter: const ColorFilter.mode(
+                                            Colors.white, BlendMode.srcIn)),
+                                    const SizedBox(width: 5),
+                                    Text(
+                                      "Search on Map",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium!
+                                          .copyWith(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.white),
+                                    )
+                                  ]),
+                              onTap: () {
+                                Navigator.pop(context);
+                              }),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
               );
             });
       }),
     );
   }
-}
-
-Widget pickLocation(
-    BuildContext context,
-    SizeConfig _config,
-    TextEditingController controller1,
-    TextEditingController controller2,
-    Function() onRideRequest) {
-  return Column(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      Column(
-        children: [
-          Container(
-              width: 80,
-              height: 2.875,
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(Radius.circular(80)),
-                color: AppColors.PRIMARY_500.withOpacity(0.5),
-              )),
-          const SizedBox(height: 40),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 12.0),
-                  child: SvgPicture.asset(ImagesAsset.side,
-                      colorFilter: const ColorFilter.mode(
-                          AppColors.PRIMARY_500, BlendMode.srcIn)),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    CustomPlaceTextWidget(
-                      hintText: "Current location",
-                      // onSubmitted: (_) {
-                      //   buildTripDetails(
-                      //       context, controller1.text, controller2.text);
-                      // },
-                      controlelr: controller1,
-                      prefix: PrefixIcon1(),
-                      config: _config,
-                    ),
-                    const SizedBox(height: 5.0),
-                    CustomPlaceTextWidget(
-                      hintText: "Your destination",
-                      // onSubmitted: (_) {
-                      //   buildTripDetails(
-                      //       context, controller1.text, controller2.text);
-                      // },
-                      controlelr: controller2,
-                      prefix: const PrefixIcon2(),
-                      config: _config,
-                    ),
-                    const SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 30),
-                      child: SizedBox(
-                        height: _config.uiHeightPx * 0.06,
-                        width: _config.uiWidthPx - 100,
-                        child: LoginButton(
-                          text: 'Search ',
-                          onPress: () {
-                
-                            buildTripDetails(
-                                context, controller1.text,
-                                controller2.text, onRideRequest);
-                          },
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-      Column(
-        children: [
-          SizedBox(
-            height: 60,
-            width: 60,
-            child: SvgPicture.asset(
-              ImagesAsset.hopOn,
-              colorFilter: const ColorFilter.mode(
-                  AppColors.PRIMARY_500, BlendMode.srcIn),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Container(
-            height: 70,
-            width: _config.uiWidthPx * 1,
-            decoration: const BoxDecoration(
-              color: AppColors.PRIMARY_500,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(10),
-                topRight: Radius.circular(10),
-              ),
-            ),
-            child: InkWell(
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(ImagesAsset.globe,
-                          colorFilter: const ColorFilter.mode(
-                              Colors.white, BlendMode.srcIn)),
-                      const SizedBox(width: 5),
-                      Text(
-                        "Search on Map",
-                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white),
-                      )
-                    ]),
-                onTap: () {
-                  Navigator.pop(context);
-                }),
-          ),
-        ],
-      )
-    ],
-  );
 }
 
 class CustomPlaceTextWidget extends StatelessWidget {
