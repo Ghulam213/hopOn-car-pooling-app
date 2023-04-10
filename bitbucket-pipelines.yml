@@ -28,12 +28,14 @@ pipelines:
         deployment: staging
         script:
           - echo "Your deployment to staging script goes here..."
+          - cd frontend
     - step:
         name: 'Deployment to Production'
         deployment: production
         trigger: 'manual'
         script:
           - echo "Your deployment to production script goes here..."
+          - cd frontend
           
   pull-requests:
      '***':
@@ -41,6 +43,7 @@ pipelines:
           max-time: 120
           size: "2x"
           script:
+            - cd frontend
             - flutter pub get
             - flutter analyze
             - flutter build apk
