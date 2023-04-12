@@ -36,3 +36,5 @@ List<Map> restaurants = [
     },
   },
 ];
+
+enum CurrentModeEnum { driver, passenger }
