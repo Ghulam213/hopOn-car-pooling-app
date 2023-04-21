@@ -14,6 +14,8 @@ import 'package:mobx/mobx.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../Utils/constants.dart';
+
 part 'login_store.g.dart';
 
 class LoginStore = LoginStoreBase with _$LoginStore;
@@ -44,6 +46,9 @@ abstract class LoginStoreBase with Store {
   late bool isOtpDone = false;
 
   @observable
+  bool isDriver = false;
+
+  @observable
   GlobalKey<ScaffoldState> otpScaffoldKey = GlobalKey<ScaffoldState>();
 
   @observable
@@ -71,7 +76,7 @@ abstract class LoginStoreBase with Store {
                 HttpHeaders.contentTypeHeader: "application/json",
               },
             ));
- 
+
         isPhoneLoading = false;
 
         if (response.statusCode == 200 || response.statusCode == 201) {
@@ -83,6 +88,12 @@ abstract class LoginStoreBase with Store {
               'refreshToken', response.data['data']['refreshToken'] as String);
           prefs.setString(
               'profileID', response.data['data']['userId'] as String);
+          // TO DO : update checking mode
+
+          isDriver = true;
+          prefs.setString(
+              'userMode', CurrentModeEnum.driver.toString() as String);
+          // 'userMode', response.data['data']['currentMode'] as String);
 
           Future.delayed(const Duration(milliseconds: 1), () {
             Navigator.of(context).push(
@@ -228,11 +239,13 @@ abstract class LoginStoreBase with Store {
         prefs.setString(
             'currentMode', response.data['data']['currentMode'] as String);
         prefs.setString('profileID', response.data['data']['id'] as String);
-        prefs.setString('driverId',
+        prefs.setString(
+            'driverId',
             response.data['data']['driverId']
                 ? response.data['data']['driverId']
                 : '');
-        prefs.setString('passengerId',
+        prefs.setString(
+            'passengerId',
             response.data['data']['passengerId']
                 ? response.data['data']['passengerId']
                 : '');

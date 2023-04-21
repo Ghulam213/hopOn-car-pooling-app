@@ -17,7 +17,7 @@ class Directions {
 
   factory Directions.fromMap(Map<String, dynamic> map) {
     // Get route information
-    final data = Map<String, dynamic>.from(map['routes'][0]);
+    final data = Map<String, dynamic>.from(map['routes']?[0]);
 
     //Bounds
     final northeast = data['bounds']['northeast'];
