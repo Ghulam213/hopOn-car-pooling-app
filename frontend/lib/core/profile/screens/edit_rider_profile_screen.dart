@@ -29,7 +29,7 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  final SizeConfig _config = SizeConfig();
+  final SizeConfig config = SizeConfig();
 
   final TextEditingController _fNameController = TextEditingController();
   final TextEditingController _lNameController = TextEditingController();
@@ -81,7 +81,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         child: Column(
           children: [
             SizedBox(
-              height: _config.uiHeightPx * 0.5,
+              height: config.uiHeightPx * 0.5,
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
@@ -96,7 +96,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
                     SizedBox(
-                      height: _config.sh(5).toDouble(),
+                      height: config.sh(5).toDouble(),
                     ),
                     EditProfileTextField(
                         textEditingController: _fNameController,
@@ -109,7 +109,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         },
                         hintText: ''),
                     SizedBox(
-                      height: _config.sh(10).toDouble(),
+                      height: config.sh(10).toDouble(),
                     ),
                     Text(
                       easy.tr("Last Name"),
@@ -120,7 +120,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
                     SizedBox(
-                      height: _config.sh(5).toDouble(),
+                      height: config.sh(5).toDouble(),
                     ),
                     EditProfileTextField(
                         textEditingController: _lNameController,
@@ -137,7 +137,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         },
                         hintText: ''),
                     SizedBox(
-                      height: _config.sh(10).toDouble(),
+                      height: config.sh(10).toDouble(),
                     ),
                     Text(
                       easy.tr("Phone"),
@@ -148,7 +148,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
                     SizedBox(
-                      height: _config.sh(5).toDouble(),
+                      height: config.sh(5).toDouble(),
                     ),
                     SizedBox(child: FutureBuilder(
                       // future: _parsePhoneNumber(),
@@ -215,7 +215,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
                     SizedBox(
-                      height: _config.sh(5).toDouble(),
+                      height: config.sh(5).toDouble(),
                     ),
                     EditProfileTextField(
                         textEditingController: _emailController,
@@ -228,7 +228,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         },
                         hintText: ''),
                     SizedBox(
-                      height: _config.sh(10).toDouble(),
+                      height: config.sh(10).toDouble(),
                     ),
                     Text(
                       easy.tr("Password"),
@@ -239,7 +239,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
                     SizedBox(
-                      height: _config.sh(5).toDouble(),
+                      height: config.sh(5).toDouble(),
                     ),
                     EditProfileTextField(
                         textEditingController: _passwordController,
@@ -252,7 +252,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         },
                         hintText: ''),
                     SizedBox(
-                      height: _config.sh(10).toDouble(),
+                      height: config.sh(10).toDouble(),
                     ),
                     Text(
                       easy.tr("Gender"),
@@ -263,7 +263,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
                     SizedBox(
-                      height: _config.sh(5).toDouble(),
+                      height: config.sh(5).toDouble(),
                     ),
                     EditProfileTextField(
                         textEditingController: _genderController,
@@ -276,7 +276,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         },
                         hintText: ''),
                     SizedBox(
-                      height: _config.sh(10).toDouble(),
+                      height: config.sh(10).toDouble(),
                     ),
                     Text(
                       easy.tr("Age"),
@@ -287,7 +287,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
                     SizedBox(
-                      height: _config.sh(5).toDouble(),
+                      height: config.sh(5).toDouble(),
                     ),
                     EditProfileTextField(
                         textEditingController: _ageController,
@@ -299,12 +299,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           return null;
                         },
                         hintText: ''),
-                    SizedBox(height: _config.sh(10).toDouble()),
+                    SizedBox(height: config.sh(10).toDouble()),
                   ],
                 ),
               ),
             ),
-            SizedBox(height: _config.sh(4).toDouble()),
+            SizedBox(height: config.sh(4).toDouble()),
             InkWell(
               onTap: () {
                 updateProfile(); // TO DO remove
@@ -326,7 +326,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       : AppColors.PRIMARY_300,
                   child: SizedBox(
                       width: SizeConfig.screenWidthDp,
-                      height: _config.sh(40).toDouble(),
+                      height: config.sh(40).toDouble(),
                       child: Center(
                         child: Text(
                           easy.tr("Save"),

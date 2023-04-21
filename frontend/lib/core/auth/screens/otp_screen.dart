@@ -30,7 +30,7 @@ class OtpPage extends StatefulWidget {
 }
 
 class _OtpPageState extends State<OtpPage> {
-  final SizeConfig _config = SizeConfig();
+  final SizeConfig config = SizeConfig();
 
   final viewInsets = EdgeInsets.fromWindowPadding(
       WidgetsBinding.instance!.window.viewInsets,
@@ -196,7 +196,7 @@ class _OtpPageState extends State<OtpPage> {
                     
                       Padding(
                         padding: EdgeInsets.only(
-                            top: 16, bottom: _config.uiHeightPx * 0.075),
+                            top: 16, bottom: config.uiHeightPx * 0.075),
                         child: NumericKeyboard(
                           onKeyboardTap: _onKeyboardTap,
                           textColor: AppColors.PRIMARY_500,

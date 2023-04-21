@@ -18,7 +18,7 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  final SizeConfig _config = SizeConfig();
+  final SizeConfig config = SizeConfig();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
 
@@ -204,8 +204,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 children: [
                   SizedBox(
                       height: (MediaQuery.of(context).viewInsets.bottom > 0.0)
-                          ? (_config.uiHeightPx * 0.10).toDouble()
-                          : (_config.uiHeightPx * 0.15).toDouble()),
+                          ? (config.uiHeightPx * 0.10).toDouble()
+                          : (config.uiHeightPx * 0.15).toDouble()),
                   Text('Your Information',
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                             color: AppColors.PRIMARY_500,

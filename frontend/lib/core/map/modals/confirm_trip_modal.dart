@@ -45,12 +45,12 @@ class _BookingComfirmState extends State<BookingComfirm> {
 
   @override
   Widget build(BuildContext context) {
-    final SizeConfig _config = SizeConfig();
+    final SizeConfig config = SizeConfig();
 
     return Container(
       padding: const EdgeInsets.only(top: 7),
-      height: _config.uiHeightPx / 2.5,
-      width: _config.uiWidthPx * 1,
+      height: config.uiHeightPx / 2.5,
+      width: config.uiWidthPx * 1,
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(

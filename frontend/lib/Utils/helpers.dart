@@ -1,9 +1,6 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../main.dart';
 import 'constants.dart';
 
@@ -22,8 +19,13 @@ void setSharedPrefs(String key, String value) async {
 }
 
 LatLng getLatLngFromSharedPrefs() {
-  return LatLng(sharedPreferences.getDouble('latitude') ?? 33.6844,
-      sharedPreferences.getDouble('longitude') ?? 73.0479);
+
+  return const LatLng(33.6844, 73.0479);
+
+  // TO DO: REPLACE WHEN TESTING ON RERAL DEVICE
+  // return LatLng(
+  //     double.parse(sharedPreferences.getString('latitude') ?? '33.6844'),
+  //     double.parse(sharedPreferences.getString('longitude') ?? '73.0479'));
 }
 
 LatLng getLatLngFromRestaurantData(int index) {

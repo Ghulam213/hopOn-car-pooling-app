@@ -13,18 +13,18 @@ class RiderDetailCard extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<RiderDetailCard> {
-  final SizeConfig _config = SizeConfig();
+  final SizeConfig config = SizeConfig();
 
   @override
   Widget build(BuildContext context) {
     return Container(
       color: AppColors.PRIMARY_500.withOpacity(0.90),
       child: SizedBox(
-        height: _config.uiWidthPx * 0.92,
+        height: config.uiWidthPx * 0.92,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           child: Container(
-              width: _config.uiWidthPx * 0.96,
+              width: config.uiWidthPx * 0.96,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: Colors.grey.shade200,
@@ -74,8 +74,8 @@ class _ProfileScreenState extends State<RiderDetailCard> {
                         color: AppColors.LM_BACKGROUND_BASIC,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      width: _config.uiWidthPx * 0.9,
-                      height: _config.sh(30).toDouble(),
+                      width: config.uiWidthPx * 0.9,
+                      height: config.sh(30).toDouble(),
                       padding: const EdgeInsets.all(8.0),
                       child: Padding(
                         padding: const EdgeInsets.only(left: 8),
@@ -104,8 +104,8 @@ class _ProfileScreenState extends State<RiderDetailCard> {
                       ),
                     ),
                     Container(
-                      width: _config.uiWidthPx * 0.9,
-                      height: _config.sh(30).toDouble(),
+                      width: config.uiWidthPx * 0.9,
+                      height: config.sh(30).toDouble(),
                       decoration: BoxDecoration(
                         color: AppColors.LM_BACKGROUND_BASIC,
                         borderRadius: BorderRadius.circular(10),
@@ -138,8 +138,8 @@ class _ProfileScreenState extends State<RiderDetailCard> {
                       ),
                     ),
                     Container(
-                      width: _config.uiWidthPx * 0.9,
-                      height: _config.sh(30).toDouble(),
+                      width: config.uiWidthPx * 0.9,
+                      height: config.sh(30).toDouble(),
                       decoration: BoxDecoration(
                         color: AppColors.LM_BACKGROUND_BASIC,
                         borderRadius: BorderRadius.circular(10),
@@ -172,8 +172,8 @@ class _ProfileScreenState extends State<RiderDetailCard> {
                       ),
                     ),
                     Container(
-                      width: _config.uiWidthPx * 0.9,
-                      height: _config.sh(30).toDouble(),
+                      width: config.uiWidthPx * 0.9,
+                      height: config.sh(30).toDouble(),
                       decoration: BoxDecoration(
                         color: AppColors.LM_BACKGROUND_BASIC,
                         borderRadius: BorderRadius.circular(10),
@@ -207,8 +207,8 @@ class _ProfileScreenState extends State<RiderDetailCard> {
                       ),
                     ),
                     Container(
-                      width: _config.uiWidthPx * 0.9,
-                      height: _config.sh(30).toDouble(),
+                      width: config.uiWidthPx * 0.9,
+                      height: config.sh(30).toDouble(),
                       decoration: BoxDecoration(
                         color: AppColors.LM_BACKGROUND_BASIC,
                         borderRadius: BorderRadius.circular(10),
@@ -248,8 +248,8 @@ class _ProfileScreenState extends State<RiderDetailCard> {
                         color: AppColors.LM_BACKGROUND_BASIC,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      width: _config.uiWidthPx * 0.9,
-                      height: _config.sh(30).toDouble(),
+                      width: config.uiWidthPx * 0.9,
+                      height: config.sh(30).toDouble(),
                       child: Padding(
                         padding: const EdgeInsets.only(left: 8),
                         child: Align(

@@ -31,7 +31,7 @@ class _ReferenceNumberBottomSheetState extends State<RegistrationModal> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey();
-  final SizeConfig _config = SizeConfig();
+  final SizeConfig config = SizeConfig();
 
   @override
   void initState() {
@@ -52,7 +52,7 @@ class _ReferenceNumberBottomSheetState extends State<RegistrationModal> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                height: _config.sh(120).toDouble(),
+                height: config.sh(120).toDouble(),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 13.0),
@@ -92,7 +92,7 @@ class _ReferenceNumberBottomSheetState extends State<RegistrationModal> {
                   child: Card(
                     child: Container(
                       width: SizeConfig.screenWidthDp,
-                      height: _config.sh(40).toDouble(),
+                      height: config.sh(40).toDouble(),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
                         gradient: const LinearGradient(

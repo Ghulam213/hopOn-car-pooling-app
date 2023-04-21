@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>723503891021-oshgifroul6ke47gkn6bffvdep3f1p7g.apps.googleusercontent.com</string>
+	<string>695184117508-r2ibcbt49lpf6tghatgmouk5hi2vf3sr.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.723503891021-oshgifroul6ke47gkn6bffvdep3f1p7g</string>
+	<string>com.googleusercontent.apps.695184117508-r2ibcbt49lpf6tghatgmouk5hi2vf3sr</string>
 	<key>API_KEY</key>
-	<string>AIzaSyAygE_k0tcc86UO9W3FWUFJYlX-RNBtmqk</string>
+	<string>AIzaSyD4sCsP2qMC8yvNlPwtx2weQwx-f7oZ6HU</string>
 	<key>GCM_SENDER_ID</key>
-	<string>723503891021</string>
+	<string>695184117508</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.example.hopOn</string>
 	<key>PROJECT_ID</key>
-	<string>hopon-e9fb0</string>
+	<string>hopon-3f18b</string>
 	<key>STORAGE_BUCKET</key>
-	<string>hopon-e9fb0.appspot.com</string>
+	<string>hopon-3f18b.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:723503891021:ios:c1755818e0186171c19204</string>
+	<string>1:695184117508:ios:8b334022f1bad71995ca51</string>
 </dict>
 </plist>

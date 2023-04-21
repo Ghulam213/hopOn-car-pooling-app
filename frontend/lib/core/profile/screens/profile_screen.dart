@@ -22,7 +22,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final PageController pageController = PageController();
-  final SizeConfig _config = SizeConfig();
+  final SizeConfig config = SizeConfig();
   bool isEditing = false;
 
   void onEditTapped() {
@@ -38,7 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.PRIMARY_500,
         elevation: 2,
-        leadingWidth: _config.sw(100).toDouble(),
+        leadingWidth: config.sw(100).toDouble(),
         leading: InkWell(
           onTap: () {
             Navigator.of(context).push(
@@ -124,7 +124,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   : AppColors.PRIMARY_500.withOpacity(0.90),
                               child: SizedBox(
                                   width: SizeConfig.screenWidthDp! * 0.65,
-                                  height: _config.sh(40).toDouble(),
+                                  height: config.sh(40).toDouble(),
                                   child: Row(
                                     children: [
                                       Padding(

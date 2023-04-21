@@ -27,7 +27,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final SizeConfig _config = SizeConfig();
+  final SizeConfig config = SizeConfig();
   final _formKey = GlobalKey<FormState>();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -109,8 +109,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               height:
                                   (MediaQuery.of(context).viewInsets.bottom >
                                           0.0)
-                                      ? (_config.uiHeightPx * 0.10).toDouble()
-                                      : (_config.uiHeightPx * 0.25).toDouble()),
+                                      ? (config.uiHeightPx * 0.10).toDouble()
+                                      : (config.uiHeightPx * 0.25).toDouble()),
                           Text('Welcome back',
                               style: Theme.of(context)
                                   .textTheme
@@ -140,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ]),
                               )),
                           SizedBox(
-                            height: _config.sh(80).toDouble(),
+                            height: config.sh(80).toDouble(),
                             width: SizeConfig.screenWidthDp! * 0.94,
                             child: Container(
                               decoration: BoxDecoration(
@@ -176,7 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ]),
                               )),
                           PasswordInput(
-                            config: _config,
+                            config: config,
                             controller: passwordController,
                           ),
                           LoginButton(
@@ -195,8 +195,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                           .viewInsets
                                           .bottom >
                                       0.0)
-                                  ? (_config.uiHeightPx * 0.0375).toDouble()
-                                  : (_config.uiHeightPx * 0.085).toDouble()),
+                                      ? (config.uiHeightPx * 0.0375).toDouble()
+                                      : (config.uiHeightPx * 0.085).toDouble()),
                         ],
                       ),
                     ),
