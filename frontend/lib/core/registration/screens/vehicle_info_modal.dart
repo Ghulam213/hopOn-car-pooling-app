@@ -27,7 +27,7 @@ class _VehicleInfoModalState extends State<VehicleInfoModal> {
 
   final GlobalKey<FormState> _formKey = GlobalKey();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  final SizeConfig _config = SizeConfig();
+  final SizeConfig config = SizeConfig();
 
   @override
   void initState() {
@@ -121,7 +121,7 @@ class _VehicleInfoModalState extends State<VehicleInfoModal> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(
-              height: _config.sh(40).toDouble(),
+              height: config.sh(40).toDouble(),
             ),
             Form(
               key: _formKey,
@@ -143,7 +143,7 @@ class _VehicleInfoModalState extends State<VehicleInfoModal> {
                       ),
                     ),
                     SizedBox(
-                      height: _config.sh(40).toDouble(),
+                      height: config.sh(40).toDouble(),
                     ),
                     CustomImageFormField(
                       label: 'Pick cnic front',
@@ -211,7 +211,7 @@ class _VehicleInfoModalState extends State<VehicleInfoModal> {
           color: AppColors.LM_BACKGROUND_BASIC,
           child:
               // SizedBox(
-              //   height: _config.sh(120).toDouble(),
+              //   height: config.sh(120).toDouble(),
               // ),
               // Padding(
               //   padding: const EdgeInsets.symmetric(horizontal: 13.0),
@@ -225,7 +225,7 @@ class _VehicleInfoModalState extends State<VehicleInfoModal> {
               // ),
 
               Container(
-            width: _config.scaleWidth * 0.9,
+            width: config.scaleWidth * 0.9,
             child: Stepper(
               type: StepperType.vertical,
               currentStep: _activeStepIndex,

@@ -18,7 +18,7 @@ class RideDetails extends StatefulWidget {
 }
 
 class _RideDetailsState extends State<RideDetails> {
-  final SizeConfig _config = SizeConfig();
+  final SizeConfig config = SizeConfig();
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class _RideDetailsState extends State<RideDetails> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
       height: 250,
-      width: _config.uiWidthPx * 1,
+      width: config.uiWidthPx * 1,
       child: ListView(
         physics: NeverScrollableScrollPhysics(),
         scrollDirection: Axis.vertical,

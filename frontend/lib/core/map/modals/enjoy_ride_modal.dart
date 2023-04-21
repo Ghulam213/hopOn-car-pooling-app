@@ -32,14 +32,14 @@
 // }
 
 // class _EnjoyRideState extends State<EnjoyRide> {
-//   final SizeConfig _config = SizeConfig();
+//   final SizeConfig config = SizeConfig();
 
 //   @override
 //   Widget build(BuildContext context) {
 //     return Container(
 //       padding: const EdgeInsets.only(top: 7),
-//       height: _config.uiHeightPx / 1.8,
-//       width: _config.uiWidthPx * 1,
+//       height: config.uiHeightPx / 1.8,
+//       width: config.uiWidthPx * 1,
 //       decoration: const BoxDecoration(
 //         color: Colors.white,
 //         borderRadius: BorderRadius.only(
@@ -351,7 +351,7 @@
 //               padding: EdgeInsets.symmetric(horizontal: 50),
 //               child: Container(
 //                 height: 40,
-//                 width: _config.uiWidthPx * 1,
+//                 width: config.uiWidthPx * 1,
 //                 decoration: BoxDecoration(
 //                   color: AppColors.red1,
 //                   borderRadius: BorderRadius.circular(8.0),

@@ -13,7 +13,7 @@ import 'confirm_trip_modal.dart';
 
 buildTripDetails(BuildContext context, String source, String destination,
     Function onRideRequest) {
-  final SizeConfig _config = SizeConfig();
+  final SizeConfig config = SizeConfig();
 
   final MapViewModel mapViewModel =
       Provider.of<MapViewModel>(context, listen: false);
@@ -29,8 +29,8 @@ buildTripDetails(BuildContext context, String source, String destination,
       builder: (context) {
         return Container(
           padding: const EdgeInsets.only(top: 7),
-          height: _config.uiHeightPx / 2.5,
-          width: _config.uiWidthPx * 1,
+          height: config.uiHeightPx / 2.5,
+          width: config.uiWidthPx * 1,
           decoration: const BoxDecoration(
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(15),
@@ -91,7 +91,7 @@ buildTripDetails(BuildContext context, String source, String destination,
                   padding: const EdgeInsets.symmetric(horizontal: 30),
                   child: Container(
                     height: 50,
-                    width: _config.uiWidthPx * 1,
+                    width: config.uiWidthPx * 1,
                     child: LoginButton(
                       text: "Confirm",
                       // onPress: () {
@@ -120,8 +120,8 @@ buildTripDetails(BuildContext context, String source, String destination,
                                 return Container(
                                   padding:
                                       const EdgeInsets.only(top: 7, bottom: 10),
-                                  height: _config.uiHeightPx / 1.5,
-                                  width: _config.uiWidthPx * 1,
+                                  height: config.uiHeightPx / 1.5,
+                                  width: config.uiWidthPx * 1,
                                   decoration: const BoxDecoration(
                                     borderRadius: BorderRadius.only(
                                       topLeft: Radius.circular(15),
@@ -162,7 +162,7 @@ buildTripDetails(BuildContext context, String source, String destination,
                                       //       horizontal: 50),
                                       //   child: Container(
                                       //     height: 40,
-                                      //     width: _config.uiWidthPx * 1,
+                                      //     width: config.uiWidthPx * 1,
                                       //     decoration: BoxDecoration(
                                       //     color: AppColors.PRIMARY_500,
 

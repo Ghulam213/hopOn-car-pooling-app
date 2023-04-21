@@ -30,7 +30,7 @@ class SearchRidesModal extends StatefulWidget {
 }
 
 class _SearchRidesModalState extends State<SearchRidesModal> {
-  final SizeConfig _config = SizeConfig();
+  final SizeConfig config = SizeConfig();
 
   @override
   void initState() {
@@ -53,7 +53,7 @@ class _SearchRidesModalState extends State<SearchRidesModal> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: _config.uiWidthPx * 0.8,
+      width: config.uiWidthPx * 0.8,
       child: const LoginButton(
         text: "Looking for a Ride ?",
         isLoading: false,
@@ -68,8 +68,8 @@ class _SearchRidesModalState extends State<SearchRidesModal> {
             builder: (context) {
               return Container(
                 padding: const EdgeInsets.only(top: 7),
-                height: _config.uiHeightPx / 1.5,
-                width: _config.uiWidthPx * 1,
+                height: config.uiHeightPx / 1.5,
+                width: config.uiWidthPx * 1,
                 decoration: const BoxDecoration(
                   color: AppColors.LM_BACKGROUND_BASIC,
                   borderRadius: BorderRadius.only(
@@ -111,7 +111,7 @@ class _SearchRidesModalState extends State<SearchRidesModal> {
                                     onSubmitted: (value) {},
                                     controlelr: currentController,
                                     prefix: PrefixIcon1(),
-                                    config: _config,
+                                    config: config,
                                   ),
                                   const SizedBox(height: 5.0),
                                   CustomPlaceTextWidget(
@@ -119,14 +119,14 @@ class _SearchRidesModalState extends State<SearchRidesModal> {
                                     onSubmitted: (value) {},
                                     controlelr: destinationController,
                                     prefix: const PrefixIcon2(),
-                                    config: _config,
+                                    config: config,
                                   ),
                                   const SizedBox(height: 20),
                                   Padding(
                                     padding: const EdgeInsets.only(left: 30),
                                     child: SizedBox(
-                                      height: _config.uiHeightPx * 0.06,
-                                      width: _config.uiWidthPx - 100,
+                                      height: config.uiHeightPx * 0.06,
+                                      width: config.uiWidthPx - 100,
                                       child: LoginButton(
                                         text: 'Search',
                                         onPress: () {
@@ -167,7 +167,7 @@ class _SearchRidesModalState extends State<SearchRidesModal> {
                         const SizedBox(height: 10),
                         Container(
                           height: 70,
-                          width: _config.uiWidthPx * 1,
+                          width: config.uiWidthPx * 1,
                           decoration: const BoxDecoration(
                             color: AppColors.PRIMARY_500,
                             borderRadius: BorderRadius.only(

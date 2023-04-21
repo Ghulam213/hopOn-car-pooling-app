@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:geocode/geocode.dart';
 import 'package:hop_on/Utils/helpers.dart';
 import 'package:hop_on/core/auth/widgets/login_button.dart';
 import '../../../Utils/colors.dart';
@@ -18,11 +17,11 @@ class StartRideModal extends StatefulWidget {
       : super(key: key);
 
   @override
-  _StartRideModalState createState() => _StartRideModalState();
+  StartRideModalState createState() => StartRideModalState();
 }
 
-class _StartRideModalState extends State<StartRideModal> {
-  final SizeConfig _config = SizeConfig();
+class StartRideModalState extends State<StartRideModal> {
+  final SizeConfig config = SizeConfig();
 
   @override
   void initState() {
@@ -35,7 +34,7 @@ class _StartRideModalState extends State<StartRideModal> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: _config.uiWidthPx * 0.7,
+      width: config.uiWidthPx * 0.7,
       child: const LoginButton(
         text: "Start a Ride ?",
         isLoading: false,
@@ -50,8 +49,8 @@ class _StartRideModalState extends State<StartRideModal> {
             builder: (context) {
               return Container(
                 padding: const EdgeInsets.only(top: 7),
-                height: _config.uiHeightPx / 1.5,
-                width: _config.uiWidthPx * 1,
+                height: config.uiHeightPx / 1.5,
+                width: config.uiWidthPx * 1,
                 decoration: const BoxDecoration(
                   color: AppColors.LM_BACKGROUND_BASIC,
                   borderRadius: BorderRadius.only(
@@ -93,7 +92,7 @@ class _StartRideModalState extends State<StartRideModal> {
                                     onSubmitted: (value) {},
                                     controlelr: currentController,
                                     prefix: PrefixIcon1(),
-                                    config: _config,
+                                    config: config,
                                   ),
                                   const SizedBox(height: 5.0),
                                   CustomPlaceTextWidget(
@@ -101,14 +100,14 @@ class _StartRideModalState extends State<StartRideModal> {
                                     onSubmitted: (value) {},
                                     controlelr: destinationController,
                                     prefix: const PrefixIcon2(),
-                                    config: _config,
+                                    config: config,
                                   ),
                                   const SizedBox(height: 20),
                                   Padding(
                                     padding: const EdgeInsets.only(left: 30),
                                     child: SizedBox(
-                                      height: _config.uiHeightPx * 0.06,
-                                      width: _config.uiWidthPx - 100,
+                                      height: config.uiHeightPx * 0.06,
+                                      width: config.uiWidthPx - 100,
                                       child: LoginButton(
                                         text: 'Start',
                                         onPress: () {

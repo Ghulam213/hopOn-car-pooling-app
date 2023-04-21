@@ -14,7 +14,7 @@ class AppDrawer extends StatefulWidget {
 }
 
 class _AppDrawerState extends State<AppDrawer> {
-  final SizeConfig _config = SizeConfig();
+  final SizeConfig config = SizeConfig();
   bool isDriver = false;
 
   @override
@@ -79,8 +79,8 @@ class _AppDrawerState extends State<AppDrawer> {
                       children: [
                         Center(
                           child: SizedBox(
-                            width: _config.sw(30).toDouble(),
-                            height: _config.sh(65).toDouble(),
+                            width: config.sw(30).toDouble(),
+                            height: config.sh(65).toDouble(),
                             child: FittedBox(
                               fit: BoxFit.fitHeight,
                               child: Switch.adaptive(

@@ -28,7 +28,7 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  final SizeConfig _config = SizeConfig();
+  final SizeConfig config = SizeConfig();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController controller = TextEditingController();
 
@@ -51,8 +51,8 @@ class _AuthScreenState extends State<AuthScreen> {
                 children: <Widget>[
                   SizedBox(
                       height: (MediaQuery.of(context).viewInsets.bottom > 0.0)
-                          ? (_config.uiHeightPx * 0.10).toDouble()
-                          : (_config.uiHeightPx * 0.20).toDouble()),
+                          ? (config.uiHeightPx * 0.10).toDouble()
+                          : (config.uiHeightPx * 0.20).toDouble()),
                   Lottie.asset(
                     "assets/animations/waiting.json",
                   ),
@@ -93,8 +93,8 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                   SizedBox(
                       height: (MediaQuery.of(context).viewInsets.bottom > 0.0)
-                          ? (_config.uiHeightPx * 0.0375).toDouble()
-                          : (_config.uiHeightPx * 0.085).toDouble()),
+                          ? (config.uiHeightPx * 0.0375).toDouble()
+                          : (config.uiHeightPx * 0.085).toDouble()),
                 ],
               ),
             ),

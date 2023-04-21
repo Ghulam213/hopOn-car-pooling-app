@@ -2,23 +2,17 @@
 import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:hop_on/core/auth/screens/auth_screen.dart';
 import 'package:hop_on/core/map/screens/home.dart';
 import 'package:hop_on/core/registration/viewmodel/registration_viewmodel.dart';
-import 'package:latlong2/latlong.dart';
 import 'core/map/viewmodel/map_view_model.dart';
 import 'core/profile/viewmodel/profile_viewmodel.dart';
-import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hop_on/Utils/helpers.dart';
 import 'package:hop_on/config/network/network_config.dart';
-import 'package:hop_on/config/routes/routes.dart';
 import 'package:hop_on/config/sizeconfig/size_config.dart';
 import 'package:hop_on/core/auth/provider/login_store.dart';
-import 'package:hop_on/core/onboarding/screens/splash_screen.dart';
 import 'package:hop_on/utils/colors.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
@@ -67,27 +61,25 @@ Future<void> main() async {
 
 initializeLocationAndSave() async {
   sharedPreferences = await SharedPreferences.getInstance();
-  Location _location = Location();
-  bool? _serviceEnabled;
-  PermissionStatus? _permissionGranted;
+  Location loc = Location();
+  bool? serviceEnabled;
+  PermissionStatus? permissionGranted;
 
-  _serviceEnabled = await _location.serviceEnabled();
-  if (!_serviceEnabled) {
-    _serviceEnabled = await _location.requestService();
+  serviceEnabled = await loc.serviceEnabled();
+  if (!serviceEnabled) {
+    serviceEnabled = await loc.requestService();
   }
 
-  _permissionGranted = await _location.hasPermission();
-  if (_permissionGranted == PermissionStatus.denied) {
-    _permissionGranted = await _location.requestPermission();
+  permissionGranted = await loc.hasPermission();
+  if (permissionGranted == PermissionStatus.denied) {
+    permissionGranted = await loc.requestPermission();
   }
-
-// Get capture the current user location
-  LocationData _locationData = await _location.getLocation();
-  LatLng currentLatLng =
-      LatLng(_locationData.latitude!, _locationData.longitude!);
+  
+  LocationData locationData = await loc.getLocation();
 
 // Store the user location in sharedPreferences
-  setSharedPrefs('currentLatLong', currentLatLng.toString());
+  setSharedPrefs('latitude', locationData.latitude.toString());
+  setSharedPrefs('longitude', locationData.longitude.toString());
 }
 
 class App extends StatefulWidget {
