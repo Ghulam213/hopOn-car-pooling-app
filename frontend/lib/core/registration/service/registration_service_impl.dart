@@ -28,7 +28,7 @@ class RegistrationServiceImpl extends RegistrationService {
       String? vehicleRegImage}) async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final String? id = prefs.getString("profileID");
+      final String? id = prefs.getString("userID");
 
       final body = {
         "userId": id,
@@ -44,7 +44,6 @@ class RegistrationServiceImpl extends RegistrationService {
           "vehiclePhoto": vehiclePhoto,
           "vehicleRegImage": vehicleRegImage,
         }
- 
       };
 
       debugPrint(body.toString());
@@ -56,8 +55,7 @@ class RegistrationServiceImpl extends RegistrationService {
           }));
       debugPrint(response.toString());
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final DriverInfoResponse driverResponse =
-            DriverInfoResponse.fromJson(response.data as Map<String, dynamic>);
+        final DriverInfoResponse driverResponse = DriverInfoResponse.fromJson(response.data as Map<String, dynamic>);
         log(response.data.toString());
         final SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -69,8 +67,7 @@ class RegistrationServiceImpl extends RegistrationService {
     } catch (e) {
       if (e is DioError) {
         if (e.response != null) {
-          throw AppErrors.processErrorJson(
-              e.response?.data as Map<String, dynamic>);
+          throw AppErrors.processErrorJson(e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";
@@ -86,16 +83,14 @@ class RegistrationServiceImpl extends RegistrationService {
   Future<DriverInfoResponse> getDriver() async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final String? id = prefs.getString("profileID");
+      final String? id = prefs.getString("userID");
 
-      debugPrint('profileID');
+      debugPrint('userID');
       debugPrint(id);
 
-      final Response response =
-          await dio.get('/driver', queryParameters: {'userId': id});
+      final Response response = await dio.get('/driver', queryParameters: {'userId': id});
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final DriverInfoResponse driverResponse =
-            DriverInfoResponse.fromJson(response.data as Map<String, dynamic>);
+        final DriverInfoResponse driverResponse = DriverInfoResponse.fromJson(response.data as Map<String, dynamic>);
         log(response.data.toString());
         final SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -109,8 +104,7 @@ class RegistrationServiceImpl extends RegistrationService {
     } catch (e) {
       if (e is DioError) {
         if (e.response != null) {
-          throw AppErrors.processErrorJson(
-              e.response?.data as Map<String, dynamic>);
+          throw AppErrors.processErrorJson(e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";
@@ -126,12 +120,11 @@ class RegistrationServiceImpl extends RegistrationService {
   Future<DriverInfoResponse> updateDriverInfo(String? userId) async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final String? id = prefs.getString("profileID");
+      final String? id = prefs.getString("userID");
 
       final Response response = await dio.get('/user/$id');
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final DriverInfoResponse driverResponse =
-            DriverInfoResponse.fromJson(response.data as Map<String, dynamic>);
+        final DriverInfoResponse driverResponse = DriverInfoResponse.fromJson(response.data as Map<String, dynamic>);
         log(response.data.toString());
         final SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -145,8 +138,7 @@ class RegistrationServiceImpl extends RegistrationService {
     } catch (e) {
       if (e is DioError) {
         if (e.response != null) {
-          throw AppErrors.processErrorJson(
-              e.response?.data as Map<String, dynamic>);
+          throw AppErrors.processErrorJson(e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";
@@ -162,12 +154,11 @@ class RegistrationServiceImpl extends RegistrationService {
   Future<DriverInfoResponse> searchDriver(String? userId) async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final String? id = prefs.getString("profileID");
+      final String? id = prefs.getString("userID");
 
       final Response response = await dio.get('/user/$id');
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final DriverInfoResponse driverResponse =
-            DriverInfoResponse.fromJson(response.data as Map<String, dynamic>);
+        final DriverInfoResponse driverResponse = DriverInfoResponse.fromJson(response.data as Map<String, dynamic>);
         log(response.data.toString());
         final SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -181,8 +172,7 @@ class RegistrationServiceImpl extends RegistrationService {
     } catch (e) {
       if (e is DioError) {
         if (e.response != null) {
-          throw AppErrors.processErrorJson(
-              e.response?.data as Map<String, dynamic>);
+          throw AppErrors.processErrorJson(e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";

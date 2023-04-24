@@ -1,6 +1,6 @@
 import { Module, CacheModule, CacheStore } from '@nestjs/common';
 import { ConfigModule, ConfigType } from '@nestjs/config';
-import { S3, CognitoIdentityServiceProvider } from 'aws-sdk';
+import { S3, CognitoIdentityServiceProvider, SNS } from 'aws-sdk';
 import { AwsSdkModule } from 'nest-aws-sdk';
 import { AppController } from 'src/app.controller';
 import { AuthModule } from 'src/auth';
@@ -36,7 +36,7 @@ const redisStore = require('cache-manager-redis-store').redisStore;
         imports: [ConfigModule],
         inject: [applicationConfig.KEY],
       },
-      services: [S3, CognitoIdentityServiceProvider],
+      services: [S3, CognitoIdentityServiceProvider, SNS],
     }),
     ConsoleModule,
     ImportModule,

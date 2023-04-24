@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
@@ -11,10 +13,7 @@ import 'package:hop_on/config/network/network_config.dart';
 import 'package:hop_on/core/auth/screens/otp_screen.dart';
 import 'package:hop_on/core/map/screens/home.dart';
 import 'package:mobx/mobx.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../../Utils/constants.dart';
 
 part 'login_store.g.dart';
 
@@ -61,64 +60,43 @@ abstract class LoginStoreBase with Store {
 
   // PHONE SIGN IN
   @action
-  Future<void> phoneLogin(
-      BuildContext context, String phone, String pass) async {
+  Future<void> phoneLogin(BuildContext context, String phone, String pass) async {
     final body = {"phone": phone, "password": pass};
 
-    final prefs = await SharedPreferences.getInstance();
     if (phone != '') {
       try {
         isPhoneLoading = true;
-        final Response response = await dio.post('/login',
-            data: jsonEncode(body),
-            options: Options(
-              headers: {
-                HttpHeaders.contentTypeHeader: "application/json",
-              },
-            ));
+        final Response response = await dio.post(
+          '/login',
+          data: jsonEncode(body),
+          options: Options(
+            headers: {
+              HttpHeaders.contentTypeHeader: "application/json",
+            },
+          ),
+        );
 
         isPhoneLoading = false;
 
         if (response.statusCode == 200 || response.statusCode == 201) {
           isPhoneDone = true;
-
-          prefs.setString(
-              'accessToken', response.data['data']['accessToken'] as String);
-          prefs.setString(
-              'refreshToken', response.data['data']['refreshToken'] as String);
-          prefs.setString(
-              'profileID', response.data['data']['userId'] as String);
-          // TO DO : update checking mode
-
-          isDriver = true;
-          prefs.setString(
-              'userMode', CurrentModeEnum.driver.toString() as String);
-          // 'userMode', response.data['data']['currentMode'] as String);
-
+          await _storeUserData(response.data);
           Future.delayed(const Duration(milliseconds: 1), () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                  builder: (_) => OtpPage(
-                        phoneNumber: phone,
-                        otpmode: 'login',
-                      )),
+                builder: (_) => OtpPage(
+                  phoneNumber: phone,
+                  otpmode: 'login',
+                ),
+              ),
             );
           });
         } else {
           debugPrint(response.toString());
           final String errorMsg = response.statusMessage as String;
-
           debugPrint(errorMsg.toString());
-
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            duration: const Duration(seconds: 3),
-            behavior: SnackBarBehavior.fixed,
-            backgroundColor: Colors.white,
-            content: Text(errorMsg,
-                style: const TextStyle(color: Colors.red, fontSize: 15.0)),
-          ));
-          AppErrors.processErrorJson(
-              response.data['data'] as Map<String, dynamic>);
+          _showSnackBar(context, errorMsg);
+          AppErrors.processErrorJson(response.data['data'] as Map<String, dynamic>);
         }
       } on DioError catch (e) {
         debugPrint("phoneLogin. $e");
@@ -130,59 +108,49 @@ abstract class LoginStoreBase with Store {
           AppErrors.processErrorJson(e.response!.data as Map<String, dynamic>);
         } else {
           // Something happened in setting up or sending the request that triggered an Error
-
           log(e.message);
         }
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.fixed,
-        backgroundColor: Colors.white,
-        content: Text(tr("Please provide a phone number"),
-            style: const TextStyle(color: Colors.red, fontSize: 15.0)),
-      ));
+      _showSnackBar(
+        context,
+        tr("Please provide a phone number"),
+      );
     }
   }
 
   // OTP VERIFICATION
   @action
-  Future<void> validateOtpAndLogin(
-      BuildContext context, String smsCode, String phone) async {
+  Future<void> validateOtpAndLogin(BuildContext context, String smsCode, String phone) async {
     final body = {"phone": phone, "code": smsCode};
 
     try {
       isOtpLoading = true;
       isUserInfoLoading = true;
-      final Response response = await dio.post('/verify-register',
-          data: jsonEncode(body),
-          options: Options(headers: {
+      final Response response = await dio.post(
+        '/verify-register',
+        data: jsonEncode(body),
+        options: Options(
+          headers: {
             HttpHeaders.contentTypeHeader: "application/json",
-          }));
+          },
+        ),
+      );
 
       isOtpLoading = false;
       final result = response.data['data'] as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         log(response.data['data'].toString());
-        // await _storeUserData(response.data['data']);
-
+        await _storeUserData(response.data);
         isUserInfoLoading = false;
-
         onOtpSuccessful(context, result);
 
         //NOTE: This line only allows branch users to enter the Accept App
         // await limitEntry(response, context, result);
       } else {
         final String errorMsg = response.data['data']["message"] as String;
-
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          duration: const Duration(seconds: 3),
-          behavior: SnackBarBehavior.fixed,
-          backgroundColor: Colors.white,
-          content: Text(errorMsg,
-              style: const TextStyle(color: Colors.red, fontSize: 15.0)),
-        ));
+        _showSnackBar(context, errorMsg);
       }
     } on DioError catch (e) {
       log("validateOtpAndLogin. $e");
@@ -194,7 +162,6 @@ abstract class LoginStoreBase with Store {
         AppErrors.processErrorJson(e.response!.data as Map<String, dynamic>);
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-
         log(e.message);
       }
     }
@@ -202,8 +169,14 @@ abstract class LoginStoreBase with Store {
 
   // USER SIGNUP
   @action
-  Future<void> registerUser(BuildContext context, String password, String phone,
-      String email, String firstName, String lastName) async {
+  Future<void> registerUser(
+    BuildContext context,
+    String password,
+    String phone,
+    String email,
+    String firstName,
+    String lastName,
+  ) async {
     log("registerUser");
 
     final prefs = await SharedPreferences.getInstance();
@@ -222,60 +195,42 @@ abstract class LoginStoreBase with Store {
     try {
       isOtpLoading = true;
       isUserInfoLoading = true;
-      final Response response = await dio.post('/register',
-          data: jsonEncode(body),
-          options: Options(headers: {
+      final Response response = await dio.post(
+        '/register',
+        data: jsonEncode(body),
+        options: Options(
+          headers: {
             HttpHeaders.contentTypeHeader: "application/json",
-          }));
+          },
+        ),
+      );
 
       isOtpLoading = false;
-      // final result = response.data['data'] as Map<String, dynamic>;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         log(response.data['data'].toString());
         // await _storeUserData(response.data['data']);
         debugPrint(response.data['data']['id']);
         prefs.setString('userEmail', response.data['data']['email'] as String);
-        prefs.setString(
-            'currentMode', response.data['data']['currentMode'] as String);
-        prefs.setString('profileID', response.data['data']['id'] as String);
-        prefs.setString(
-            'driverId',
-            response.data['data']['driverId']
-                ? response.data['data']['driverId']
-                : '');
-        prefs.setString(
-            'passengerId',
-            response.data['data']['passengerId']
-                ? response.data['data']['passengerId']
-                : '');
+        prefs.setString('currentMode', response.data['data']['currentMode'] as String);
+        prefs.setString('userID', response.data['data']['id'] as String);
+        prefs.setString('userPhoneNo', response.data['data']['phoneNo'] as String);
 
-        prefs.setString(
-            'profileID',
-            response.data['data'].id
-                ? response.data['data'].id.toString()
-                : '');
         isUserInfoLoading = false;
         Future.delayed(const Duration(milliseconds: 1), () {
           Navigator.of(context).push(
             MaterialPageRoute(
-                builder: (_) => OtpPage(
-                      phoneNumber: phone,
-                      otpmode: 'signup',
-                    )),
+              builder: (_) => OtpPage(
+                phoneNumber: phone,
+                otpmode: 'signup',
+              ),
+            ),
           );
         });
         // onOtpSuccessful(context, result);
       } else {
         final String errorMsg = response.statusMessage as String;
-
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          duration: const Duration(seconds: 3),
-          behavior: SnackBarBehavior.fixed,
-          backgroundColor: Colors.white,
-          content: Text(errorMsg,
-              style: const TextStyle(color: Colors.red, fontSize: 15.0)),
-        ));
+        _showSnackBar(context, errorMsg);
       }
     } on DioError catch (e) {
       log("registerUser. $e");
@@ -287,26 +242,19 @@ abstract class LoginStoreBase with Store {
         AppErrors.processErrorJson(e.response!.data as Map<String, dynamic>);
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-
         log(e.message);
       }
     }
   }
 
-  Future<void> onOtpSuccessful(
-      BuildContext context, Map<String, dynamic> response) async {
+  Future<void> onOtpSuccessful(BuildContext context, Map<String, dynamic> response) async {
     isOtpDone = true;
-
-    final Map<String, dynamic> result = response;
-
-    // final locale = result["data"]["locale"] as String;
-    // log(locale);
-    // context.setLocale(Locale(locale, ''));
-
     Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const MapScreen()),
-        (Route<dynamic> route) => false);
-
+      MaterialPageRoute(
+        builder: (_) => const MapScreen(),
+      ),
+      (Route<dynamic> route) => false,
+    );
     isOtpLoading = false;
   }
 
@@ -314,35 +262,21 @@ abstract class LoginStoreBase with Store {
   Future<void> _storeUserData(responseData) async {
     final prefs = await SharedPreferences.getInstance();
 
-    final Map<String, dynamic> userAuth =
-        responseData['data'] as Map<String, dynamic>;
+    final Map<String, dynamic> userAuth = responseData['data'] as Map<String, dynamic>;
 
-    final String authToken = userAuth['auth_token'] as String;
-    final String userName = (userAuth['user']['name'] ?? '') as String;
-    final String userType = userAuth['user_type'] as String;
-    final int userID = userAuth['user_id'] as int;
-    final String userContact = (userAuth['email'] ?? '') as String;
-    final int userAuthID = userAuth['id'] as int;
+    prefs.setString('accessToken', userAuth['accessToken'] as String);
+    prefs.setString('refreshToken', userAuth['refreshToken'] as String);
+    prefs.setString('userID', userAuth['userId'] as String);
+    prefs.setString('userMode', userAuth['user']['currentMode'] as String);
+    prefs.setString("user", jsonEncode(userAuth['user']));
 
-    prefs.setString('userAuthID', json.encode(userAuthID));
-    prefs.setString('user', json.encode(userAuth));
-    prefs.setString('authToken', authToken);
-    prefs.setString('userName', userName);
-    prefs.setString('userType', userType);
-    prefs.setString('userID', userID.toString());
-    prefs.setString('userContact', userContact);
-    if (userType == 'BusinessBranchUser') {
-      final int branchID = userAuth['user']['business_branch_id'] as int;
-      prefs.setString('branchID', branchID.toString());
-      log('--- in login store branchID = $branchID');
+    if (userAuth['user']['currentMode'] == 'DRIVER') {
+      isDriver = true;
+      prefs.setString("driverID", userAuth['driverId'] as String);
+    } else {
+      isDriver = false;
+      prefs.setString("passengerID", userAuth['passengerId'] as String);
     }
-    log(prefs.getString('userAuthID').toString());
-    log(prefs.getString('user').toString());
-    log(prefs.getString('authToken').toString());
-    log(prefs.getString('userName').toString());
-    log("user type${prefs.getString('userType')}");
-    log(prefs.getString('userID').toString());
-    log(prefs.getString('userContact').toString());
   }
 
   // logging out user
@@ -353,14 +287,12 @@ abstract class LoginStoreBase with Store {
 
     try {
       await FirebaseMessaging.instance.deleteToken();
-
       await prefs.clear();
     } on DioError catch (e) {
       if (e.response != null) {
         _showSnackBar(context, "error while logging out");
 
-        throw AppErrors.processErrorJson(
-            e.response!.data as Map<String, dynamic>);
+        throw AppErrors.processErrorJson(e.response!.data as Map<String, dynamic>);
       }
       {
         // Something happened in setting up or sending the request that triggered an Error
@@ -371,60 +303,20 @@ abstract class LoginStoreBase with Store {
     Navigator.of(context).pushReplacementNamed('/');
   }
 
-  // sending user selected locale language
-  Future<void> sendUserLanguage(
-    BuildContext context,
-    String locale,
-  ) async {
-    log("Locale language: $locale");
-
-    final body = {
-      "locale": locale,
-    };
-
-    try {
-      final Response response = await dio.put(
-        '/locales?locale=$locale',
-        data: jsonEncode(body),
-      );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-      } else {
-        final String errorMsg = response.data['data']["message"] as String;
-
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          duration: const Duration(seconds: 3),
-          behavior: SnackBarBehavior.fixed,
-          backgroundColor: Colors.white,
-          content: Text(errorMsg,
-              style: const TextStyle(color: Colors.red, fontSize: 15.0)),
-        ));
-      }
-    } on DioError catch (e) {
-      if (e.response != null) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          duration: const Duration(seconds: 3),
-          behavior: SnackBarBehavior.fixed,
-          backgroundColor: Colors.white,
-          content: Text(e.response!.data["message"]!.toString(),
-              style: const TextStyle(color: Colors.red, fontSize: 15.0)),
-        ));
-
-        throw AppErrors.processErrorJson(
-            e.response!.data as Map<String, dynamic>);
-      } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        log(e.message);
-      }
-    }
-  }
-
   void _showSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
         duration: const Duration(seconds: 3),
         behavior: SnackBarBehavior.fixed,
         backgroundColor: Colors.white,
-        content: Text(message,
-            style: const TextStyle(color: Colors.red, fontSize: 15.0))));
+        content: Text(
+          message,
+          style: const TextStyle(
+            color: Colors.red,
+            fontSize: 15.0,
+          ),
+        ),
+      ),
+    );
   }
 }

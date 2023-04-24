@@ -31,13 +31,12 @@ class ProfileViewModel extends ChangeNotifier {
   String currentMode = '';
 
   Future<void> loadLocalDetails() async {
-    final Map<String, String> details =
-        await ProfileServiceImpl().getStoredProfile();
+    final Map<String, String> details = await ProfileServiceImpl().getStoredProfile();
 
     // name = details["profileName"]!;
     // email = details["profileEmail"]!;
     // phone = details["profileNumber"]!;
-    // id = details["profileID"]!;
+    // id = details["userID"]!;
     // placeHolderName = details["placeHolderName"]!;
 
     notifyListeners();
@@ -62,10 +61,8 @@ class ProfileViewModel extends ChangeNotifier {
       currentCity = getProfileResource.modelResponse!.data!.currentCity!;
       gender = getProfileResource.modelResponse!.data!.gender!.toString();
       birthDate = getProfileResource.modelResponse!.data!.birthDate.toString();
-      profilePic =
-          getProfileResource.modelResponse!.data!.profilePic!.toString();
-      currentMode =
-          getProfileResource.modelResponse!.data!.currentMode!.toString();
+      profilePic = getProfileResource.modelResponse!.data!.profilePic!.toString();
+      currentMode = getProfileResource.modelResponse!.data!.currentMode!.toString();
 
       notifyListeners();
     } catch (e) {
@@ -125,10 +122,8 @@ class ProfileViewModel extends ChangeNotifier {
       currentCity = getProfileResource.modelResponse!.data!.currentCity!;
       gender = getProfileResource.modelResponse!.data!.gender!.toString();
       birthDate = getProfileResource.modelResponse!.data!.birthDate.toString();
-      profilePic =
-          getProfileResource.modelResponse!.data!.profilePic!.toString();
-      currentMode =
-          getProfileResource.modelResponse!.data!.currentMode!.toString();
+      profilePic = getProfileResource.modelResponse!.data!.profilePic!.toString();
+      currentMode = getProfileResource.modelResponse!.data!.currentMode!.toString();
 
       notifyListeners();
     } catch (e) {

@@ -44,4 +44,11 @@ export class CreateDriverVehicleDto implements Omit<Prisma.VehicleCreateInput, '
   @IsString()
   @IsDefined()
   vehicleRegImage: string;
+
+  @ApiProperty()
+  @Trim()
+  @IsNotEmpty()
+  @IsString()
+  @IsDefined()
+  vehicleRegNo: string;
 }

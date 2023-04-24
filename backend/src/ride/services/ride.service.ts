@@ -1,6 +1,15 @@
 import { Inject, Injectable, CACHE_MANAGER } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
-import { Device, Driver, PasengerRideStatusEnum, PassengersOnRide, Prisma, Ride, RideStatusEnum } from '@prisma/client';
+import {
+  Device,
+  Driver,
+  GenderEnum,
+  PasengerRideStatusEnum,
+  PassengersOnRide,
+  Prisma,
+  Ride,
+  RideStatusEnum,
+} from '@prisma/client';
 import { NotificationNotSentException } from 'src/library/exception/notificationNotSentException';
 import { applicationConfig } from 'src/config';
 import { DriverService } from 'src/driver/services';
@@ -16,7 +25,8 @@ import {
   RideRequestDto,
 } from 'src/ride/dtos';
 import { Cache } from 'cache-manager';
-import { RideCacheModel } from 'src/ride/models';
+import { RideCacheModel, RideForPassengersModel } from 'src/ride/models';
+import { RideNotificationTypeEnum } from 'src/ride/enums';
 
 @Injectable()
 export class RideService {
@@ -156,7 +166,7 @@ export class RideService {
     return true;
   }
 
-  async findRidesForPassenger(passengerData: FindRidesForPassengerDto) {
+  async findRidesForPassenger(passengerData: FindRidesForPassengerDto): Promise<RideForPassengersModel[]> {
     const pasengerDestination = UtilityService.stringToCoordinates(passengerData.destination);
     const pasengerSource = UtilityService.stringToCoordinates(passengerData.source);
     const rides = await this.prisma.ride.findMany({
@@ -195,7 +205,33 @@ export class RideService {
         return isDestinationsWithinThreshold && isPassengerOnDriverRouter && isPassengerWithinThresholdOfDriver;
       }),
     );
-    return rides.filter((_, index) => promisesResults[index]);
+
+    // TODO: Calculate fare
+    // TODO: Calculate ETA
+    const filteredRides = rides.filter((_, index) => promisesResults[index]);
+    const ridesForPassenger = await Promise.all(
+      filteredRides.map(async (ride) => {
+        const alreadySeatedPassengerCount = await this.prisma.passengersOnRide.count({ where: { rideId: ride.id } });
+        const driver = await this.prisma.driver.findUnique({
+          where: { id: ride.driverId },
+          include: { user: true, vehicles: true },
+        });
+        return {
+          id: ride.id,
+          driverId: ride.driverId,
+          driverName: `${driver?.user.firstName} ${driver?.user.lastName}`,
+          driverGender: GenderEnum.FEMALE,
+          driverRating: 0,
+          alreadySeatedPassengerCount,
+          vehicleName: `${driver?.vehicles[0].vehicleBrand} ${driver?.vehicles[0].vehicleModel}`,
+          vehicleRegNo: driver?.vehicles[0].vehicleRegNo,
+          fare: 0,
+          ETA: 0,
+        };
+      }),
+    );
+
+    return ridesForPassenger;
   }
 
   async createPassengerRide(data: PassengerRideCreateDto) {
@@ -220,17 +256,18 @@ export class RideService {
     });
   }
 
-  private async isPassengerAvailableForRide(rideId: string) {
-    const passengerRide = await this.prisma.passengersOnRide.findUnique({
+  private async isPassengerAvailableForRide(rideId: string, passengerId: string) {
+    const passengerRide = await this.prisma.passengersOnRide.findFirst({
       where: {
-        id: rideId,
+        rideId,
+        passengerId,
       },
     });
 
-    if (!passengerRide) {
+    if (passengerRide) {
       throw new PassengerNotFoundException({
         variables: {
-          id: rideId,
+          id: passengerId,
         },
       });
     }
@@ -289,7 +326,7 @@ export class RideService {
   }
 
   async requestRide(rideRequestData: RideRequestDto): Promise<true> {
-    const { rideId, passengerId } = rideRequestData;
+    const { rideId, passengerId, passengerName } = rideRequestData;
 
     const ride = await this.findRide({ id: rideId }, { driver: true });
     const passenger = await this.prisma.passenger.findUnique({ where: { id: passengerId } });
@@ -310,7 +347,9 @@ export class RideService {
     await this.notificationService.publishMessageToDeviceArn(
       {
         subject: 'Request Ride',
-        message: { ...rideRequestData, ...ride },
+        body: `${passengerName} has requested a ride`,
+        type: RideNotificationTypeEnum.RIDE_REQUEST,
+        data: { ...rideRequestData },
       },
       deviceArn.token,
     );
@@ -319,15 +358,15 @@ export class RideService {
   }
 
   async requestRideAccept(data: RideRequestDto): Promise<true> {
-    const { rideId, passengerId, source, destination, distance } = data;
+    const { rideId, passengerId, driverName, passengerSource, passengerDestination, distance } = data;
 
-    await this.isPassengerAvailableForRide(data.rideId);
+    await this.isPassengerAvailableForRide(data.rideId, passengerId);
 
     await this.createPassengerRide({
       rideId,
       passengerId,
-      source,
-      destination,
+      source: passengerSource,
+      destination: passengerDestination,
       distance,
     });
 
@@ -335,8 +374,10 @@ export class RideService {
 
     await this.notificationService.publishMessageToDeviceArn(
       {
-        subject: 'Request Ride Accept',
-        message: { ...data },
+        subject: 'Request Ride Accepted',
+        body: `Your ride request has been accepted by ${driverName}`,
+        type: RideNotificationTypeEnum.RIDE_ACCEPTED,
+        data: { ...data },
       },
       deviceArn.token,
     );
@@ -345,16 +386,18 @@ export class RideService {
   }
 
   async requestRideReject(data: RideRequestDto): Promise<true> {
-    const { rideId, passengerId } = data;
+    const { rideId, passengerId, driverName } = data;
 
-    await this.isPassengerAvailableForRide(rideId);
+    await this.isPassengerAvailableForRide(rideId, passengerId);
 
     const deviceArn = await this.findDeviceArnForPassenger(passengerId);
 
     await this.notificationService.publishMessageToDeviceArn(
       {
-        subject: 'Request Ride Reject',
-        message: { ...data },
+        subject: 'Request Ride Rejected',
+        body: `Your ride request has been rejected by ${driverName}`,
+        type: RideNotificationTypeEnum.RIDE_REJECTED,
+        data: { ...data },
       },
       deviceArn.token,
     );

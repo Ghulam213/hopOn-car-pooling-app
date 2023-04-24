@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { UserEntity } from 'src/user/entities';
 
 export class SessionModel {
   @ApiProperty()
@@ -9,6 +10,9 @@ export class SessionModel {
 
   @ApiProperty()
   userId: string;
+
+  @ApiProperty()
+  user: UserEntity;
 
   @ApiProperty()
   driverId?: string;
