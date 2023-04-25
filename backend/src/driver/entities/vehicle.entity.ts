@@ -25,6 +25,9 @@ export class VehicleEntity implements Vehicle {
   vehicleRegImage: string;
 
   @ApiProperty()
+  vehicleRegNo: string;
+
+  @ApiProperty()
   driverId: string;
 
   @ApiProperty({ type: () => DriverEntity })

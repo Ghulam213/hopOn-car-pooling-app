@@ -15,6 +15,6 @@ const defaultMessage = 'Notification not sent to user with id: {{id}}';
 
 export class NotificationNotSentException extends InternalServerErrorException {
   constructor(error: NotificationNotSentExceptionInterface, description?: string) {
-    super(prepareError(defaultMessage, ErrorCodeEnum.PASSENGER_NOT_FOUND, error), description);
+    super(prepareError(defaultMessage, ErrorCodeEnum.NOTIFICATION_NOT_SENT, error), description);
   }
 }

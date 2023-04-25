@@ -37,13 +37,13 @@ dependencies:
   dio:  ^4.0.6
   equatable: ^2.0.5
   easy_localization: ^3.0.0
-  firebase_core: ^2.4.1
-  firebase_messaging: ^14.2.1
+  firebase_core: ^2.10.0
+  firebase_messaging: ^14.4.1
   flutter_svg: ^2.0.4
   fluttertoast: ^8.0.9
   flutter_polyline_points: ^1.0.0
   flutter_launcher_icons: ^0.11.0
-  flutter_local_notifications: ^13.0.0
+  flutter_local_notifications: ^9.2.0
   flutter_mobx: ^2.0.6+5
 
   get: ^4.6.5 # Plugin to help navigating thorogh the screens
@@ -63,6 +63,7 @@ dependencies:
   shared_preferences: ^2.0.17
   sentry_flutter: ^6.4.0
   cupertino_icons: ^1.0.2
+  overlay_support: ^2.1.0
 
 dev_dependencies:
   flutter_test:
@@ -90,9 +91,9 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/
-    - assets/images/logo.svg
-    - assets/images/wave.svg
+    - assets/animations/
+    - assets/images/
+    - assets/translations/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

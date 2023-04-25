@@ -1,2 +1,2 @@
-id,vehicleType,vehicleBrand,vehicleModel,vehicleColor,vehiclePhoto,vehicleRegImage,driverId
-ae195a93-efec-420e-9667-0bb883c338ac,CAR,Toyota,Corolla,White,https://s3.amazonaws.com/vehicle-photos/ae195a93-efec-420e-9667-0bb883c338ac.jpg,https://s3.amazonaws.com/vehicle-photos/ae195a93-efec-420e-9667-0bb883c338ac.jpg,e0d89a2b-f8da-441a-8182-bc4bb4f945e7
+id,vehicleType,vehicleBrand,vehicleModel,vehicleColor,vehiclePhoto,vehicleRegImage,vehicleRegNo,driverId
+ae195a93-efec-420e-9667-0bb883c338ac,CAR,Toyota,Corolla,White,https://s3.amazonaws.com/vehicle-photos/ae195a93-efec-420e-9667-0bb883c338ac.jpg,https://s3.amazonaws.com/vehicle-photos/ae195a93-efec-420e-9667-0bb883c338ac.jpg,AUC-201,e0d89a2b-f8da-441a-8182-bc4bb4f945e7

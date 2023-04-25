@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { User, Prisma, Device } from '@prisma/client';
 import { UserAlreadyExistsException, UserNotFoundException } from 'src/library/exception';
+import { NotificationService } from 'src/library/services';
 import { PrismaService } from 'src/prisma/services';
 import { RegisterUserDeviceDto } from 'src/user/dtos';
 import { UserPageModel } from 'src/user/models';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private notificationService: NotificationService) {}
 
   async findUser(
     userWhereUniqueInput: Prisma.UserWhereUniqueInput,
@@ -99,22 +100,31 @@ export class UserService {
   }
 
   async registerUserDevice(registerUserDevice: RegisterUserDeviceDto): Promise<Device> {
-    const { userId, ...restOfData } = registerUserDevice;
-    return this.prisma.device.upsert({
-      create: {
-        ...restOfData,
-        user: {
-          connect: {
-            id: userId,
+    const { userId, token, deviceType } = registerUserDevice;
+    try {
+      const ep = await this.notificationService.createApplicationPlatformEndpoint(token);
+
+      return this.prisma.device.upsert({
+        create: {
+          token: ep.EndpointArn,
+          deviceType,
+          user: {
+            connect: {
+              id: userId,
+            },
           },
         },
-      },
-      update: {
-        ...restOfData,
-      },
-      where: {
-        userId,
-      },
-    });
+        update: {
+          token: ep.EndpointArn,
+          deviceType,
+        },
+        where: {
+          userId,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 }

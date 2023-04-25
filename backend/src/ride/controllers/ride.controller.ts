@@ -11,7 +11,7 @@ import {
   RideRequestDto,
   RideUpdateDto,
 } from 'src/ride/dtos';
-import { RideCacheModel } from 'src/ride/models';
+import { RideCacheModel, RideForPassengersModel } from 'src/ride/models';
 
 @Controller()
 @ApiTags('ride')
@@ -22,21 +22,18 @@ import { RideCacheModel } from 'src/ride/models';
 export class RideController {
   constructor(private readonly rideService: RideService) {}
 
-  
   @Get('/ride/:id')
   @ApiOkResponse({ type: RideEntity })
   async getRideById(@Param('id', ParseUUIDStringPipe) id: string): Promise<RideEntity> {
     return this.rideService.findRide({ id });
   }
 
-  
   @Post('/ride')
   @ApiOkResponse({ type: RideEntity })
   async createRide(@Body() rideCreateData: RideCreateDto): Promise<RideEntity> {
     return this.rideService.createRide(rideCreateData);
   }
 
-  
   @Put('ride/:id')
   @ApiOkResponse({ type: RideEntity })
   async updateRide(@Param('id', ParseUUIDStringPipe) id: string, @Body() rideData: RideUpdateDto): Promise<RideEntity> {
@@ -46,36 +43,33 @@ export class RideController {
     });
   }
 
-  
   @Delete('ride/:id')
   @ApiOkResponse({ type: RideEntity })
   async deleteRide(@Param('id', ParseUUIDStringPipe) id: string): Promise<RideEntity> {
     return this.rideService.deleteRide({ id });
   }
 
-  
   @Get('ride-for-passenger')
-  @ApiOkResponse({ type: RideEntity, isArray: true })
-  async getRidesForPassenger(@Query() rideForPassengerData: FindRidesForPassengerDto): Promise<RideEntity[]> {
+  @ApiOkResponse({ type: RideForPassengersModel, isArray: true })
+  async getRidesForPassenger(
+    @Query() rideForPassengerData: FindRidesForPassengerDto,
+  ): Promise<RideForPassengersModel[]> {
     return this.rideService.findRidesForPassenger(rideForPassengerData);
   }
 
-  
-  @Post('request')
+  @Post('ride/request')
   @ApiOkResponse({ type: Boolean })
   async requestForRide(@Body() rideRequestData: RideRequestDto): Promise<true> {
     return this.rideService.requestRide(rideRequestData);
   }
 
-  
-  @Post('accept-request')
+  @Post('ride/accept-request')
   @ApiOkResponse({ type: Boolean })
   async accpetRideRequest(@Body() rideRequestData: RideRequestDto): Promise<true> {
     return this.rideService.requestRideAccept(rideRequestData);
   }
 
-  
-  @Post('reject-request')
+  @Post('ride/reject-request')
   @ApiOkResponse({ type: Boolean })
   async rejectRideRequest(@Body() rideRequestData: RideRequestDto): Promise<true> {
     return this.rideService.requestRideReject(rideRequestData);

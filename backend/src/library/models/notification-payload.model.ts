@@ -5,5 +5,11 @@ export class NotificationPayloadModel<T> {
   subject: string;
 
   @ApiProperty()
-  message: T;
+  body: string;
+
+  @ApiProperty()
+  type: string;
+
+  @ApiProperty()
+  data: T;
 }

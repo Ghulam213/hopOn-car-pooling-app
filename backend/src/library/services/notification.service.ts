@@ -3,6 +3,7 @@ import { SNS } from 'aws-sdk';
 import { applicationConfig } from 'src/config';
 import { ConfigType } from '@nestjs/config';
 import { NotificationPayloadModel } from 'src/library/models';
+import { InjectAwsService } from 'nest-aws-sdk';
 
 /*
  * This service for handling notifications via AWS SNS.
@@ -17,18 +18,12 @@ import { NotificationPayloadModel } from 'src/library/models';
 type TopicType = 'marketing';
 @Injectable()
 export class NotificationService {
-  private sns: SNS;
-
   constructor(
     @Inject(applicationConfig.KEY)
     private readonly appConfig: ConfigType<typeof applicationConfig>,
-  ) {
-    this.sns = new SNS({
-      region: this.appConfig.awsRegion,
-      accessKeyId: this.appConfig.awsAccessKeyId,
-      secretAccessKey: this.appConfig.awsSecretAccessKey,
-    });
-  }
+    @InjectAwsService(SNS)
+    private readonly sns: SNS,
+  ) {}
 
   public getTopicArnFromTopicType(topicType: TopicType) {
     switch (topicType) {
@@ -39,7 +34,7 @@ export class NotificationService {
 
   async publishMessageToTopic<T>(payload: NotificationPayloadModel<T>, topicType: TopicType) {
     const params = {
-      Message: JSON.stringify(payload.message),
+      Message: JSON.stringify(payload.data),
       Subject: payload.subject,
       TopicArn: this.getTopicArnFromTopicType(topicType),
     };
@@ -49,9 +44,21 @@ export class NotificationService {
 
   async publishMessageToDeviceArn<T>(payload: NotificationPayloadModel<T>, deviceArn: string) {
     const params = {
-      Message: JSON.stringify(payload.message),
+      Message: JSON.stringify({
+        GCM: JSON.stringify({
+          notification: {
+            title: payload.subject,
+            body: payload.body,
+          },
+          data: {
+            type: payload.type,
+            ...payload.data,
+          },
+        }),
+      }),
       Subject: payload.subject,
       TargetArn: deviceArn,
+      MessageStructure: 'json',
     };
 
     return this.sns.publish(params).promise();
@@ -62,7 +69,6 @@ export class NotificationService {
       PlatformApplicationArn: this.appConfig.awsSnsPlatformApplicationArn,
       Token: deviceToken,
     };
-
     return this.sns.createPlatformEndpoint(params).promise();
   }
 

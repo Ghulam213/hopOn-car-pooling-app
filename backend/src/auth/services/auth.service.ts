@@ -111,7 +111,7 @@ export class AuthService {
   async login(credentials: LoginDto): Promise<SessionModel> {
     const user = await this.prismaService.user.findUnique({
       where: { phone: credentials.phone },
-      include: { driver: true, passenger: true }
+      include: { driver: true, passenger: true },
     });
 
     if (!user) {
@@ -143,15 +143,21 @@ export class AuthService {
     }
   }
 
-  private async processLogin(user: User & { driver?: Driver, passenger?: Passenger }): Promise<SessionModel> {
+  private async processLogin(user: User & { driver?: Driver; passenger?: Passenger }): Promise<SessionModel> {
     const refreshToken = await this.createRefreshToken(user);
     const accessToken = await this.createAccessToken(user);
+    const userEntity = { ...user };
+    delete userEntity.password;
+    delete userEntity.driver;
 
     return {
       accessToken,
       refreshToken,
       userId: user.id,
-      ...(user.currentMode === CurrentModeEnum.DRIVER ? {driverId: user.driver?.id} : { passengerId: user.passenger?.id })
+      user: userEntity,
+      ...(user.currentMode === CurrentModeEnum.DRIVER
+        ? { driverId: user.driver?.id }
+        : { passengerId: user.passenger?.id }),
     };
   }
 
@@ -205,29 +211,4 @@ export class AuthService {
       throw new UnauthorizedException({ variables: { message: 'This action is unauthorized' } });
     }
   }
-
-  // private async sendConfirmationEmail(user: UserEntity): Promise<void> {
-  //   const confirmMailToken = await this.platformUserClientService.createUserValidateEmailToken({
-  //     userToken: { userId: user.roqIdentifier },
-  //   });
-  //   const { email, locale, firstName, lastName } = user;
-  //   const confirmMailPayload: MailSendDto = {
-  //     subject: 'Confirm Email',
-  //     mailType: MailTypeEnum.CONFIRM_MAIL,
-  //     entities: [{ uuid: user.roqIdentifier, type: 'user' }],
-  //     directlyInjectedVariables: JSON.stringify({ ...omit(user, 'password'), token: confirmMailToken.token }),
-  //     recipients: {
-  //       nonUsers: [
-  //         {
-  //           email,
-  //           locale,
-  //           firstName,
-  //           lastName,
-  //         },
-  //       ],
-  //       allUsers: false,
-  //     },
-  //   };
-  //   await this.platformMailClientService.sendMail(confirmMailPayload);
-  // }
 }

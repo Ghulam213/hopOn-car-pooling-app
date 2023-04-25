@@ -86,6 +86,7 @@ model Vehicle {
   vehicleColor    String
   vehiclePhoto    String
   vehicleRegImage String
+  vehicleRegNo    String
   driver          Driver          @relation(fields: [driverId], references: [id])
   driverId        String
   createdAt       DateTime        @default(now())

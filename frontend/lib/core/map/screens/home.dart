@@ -61,13 +61,11 @@ class _MapScreenState extends State<MapScreen> {
     LatLng dest = const LatLng(33.645509, 72.985208);
     try {
       Dio dio = Dio();
-      final direction = await dio.post(
-          "https://maps.googleapis.com/maps/api/directions/json?",
-          queryParameters: {
-            'origin': '${src.latitude},${src.longitude}',
-            'destination': '${dest.latitude},${dest.longitude}',
-            'key': "AIzaSyDP192QwnB-tR8NfjGT3vZCrE-mnkmGFbo"
-          });
+      final direction = await dio.post("https://maps.googleapis.com/maps/api/directions/json?", queryParameters: {
+        'origin': '${src.latitude},${src.longitude}',
+        'destination': '${dest.latitude},${dest.longitude}',
+        'key': "AIzaSyDP192QwnB-tR8NfjGT3vZCrE-mnkmGFbo"
+      });
 
       final result = direction.data as Map<String, dynamic>;
       debugPrint("result.toString()");
@@ -89,8 +87,7 @@ class _MapScreenState extends State<MapScreen> {
         position: _center,
 
         icon: await BitmapDescriptor.fromAssetImage(
-            const ImageConfiguration(size: Size(18, 18)),
-            'assets/images/car_ios.png'),
+            const ImageConfiguration(size: Size(18, 18)), 'assets/images/car_ios.png'),
 
         infoWindow: const InfoWindow(
           title: "ride starting",
@@ -129,129 +126,130 @@ class _MapScreenState extends State<MapScreen> {
 
     return Consumer<LoginStore>(builder: (context, loginStore, _) {
       return Observer(
-          builder: (_) => (Scaffold(
-                appBar: AppBar(
-                  backgroundColor: AppColors.PRIMARY_300,
-                  toolbarHeight: config.uiHeightPx * 0.06,
-                  actions: [
-                    Padding(
-                      padding: const EdgeInsets.all(3.0),
-                      child: TextButton(
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                AppColors.PRIMARY_500),
-                            shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  side: const BorderSide(
-                                      color: AppColors.PRIMARY_500)),
-                            ),
-                          ),
-                          onPressed: () async {
-                            await showModalBottomSheet(
-                                context: context,
-                                isScrollControlled: true,
-                                useRootNavigator: true,
-                                builder: (context) {
-                                  return RegistrationModal(
-                                    onCloseTap: () {},
-                                    onErrorOccurred: (String) {},
-                                  );
-                                });
-                          },
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10.0),
-                            child: Text(
-                              'Register as a Driver',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                          )),
-                    )
-                  ],
-                ),
-                drawer: const AppDrawer(
-                  width: 250,
-                ),
-                body: SafeArea(
-                  child: Stack(
-                    children: [
-                      FadeIn(
-                        duration: const Duration(milliseconds: 1500),
-                        child: SizedBox(
-                          height: MediaQuery.of(context).size.height * 1,
-                          child: GoogleMap(
-                            onMapCreated: _onMapCreated,
-                            compassEnabled: false,
-                            myLocationButtonEnabled: false,
-                            zoomControlsEnabled: true,
-                            zoomGesturesEnabled: true,
-                            markers: _markers,
-                            polylines: _polyline,
-                            onCameraMove: _onCameraMove,
-                            initialCameraPosition: CameraPosition(
-                              target: _center,
-                              zoom: 16.0,
-                            ),
-                          ),
-                        ),
-                      ),
-                      showModals(config, loginStore)
-                    ],
+        builder: (_) => (Scaffold(
+          appBar: AppBar(
+            backgroundColor: AppColors.PRIMARY_300,
+            toolbarHeight: config.uiHeightPx * 0.06,
+            actions: [
+              Padding(
+                padding: const EdgeInsets.all(3.0),
+                child: TextButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(AppColors.PRIMARY_500),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8), side: const BorderSide(color: AppColors.PRIMARY_500)),
+                    ),
+                  ),
+                  onPressed: () async {
+                    await showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      useRootNavigator: true,
+                      builder: (context) {
+                        return RegistrationModal(
+                          onCloseTap: () {},
+                          onErrorOccurred: (String) {},
+                        );
+                      },
+                    );
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Text(
+                      'Register as a Driver',
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w400),
+                    ),
                   ),
                 ),
-              )));
+              )
+            ],
+          ),
+          drawer: const AppDrawer(
+            width: 250,
+          ),
+          body: SafeArea(
+            child: Stack(
+              children: [
+                FadeIn(
+                  duration: const Duration(milliseconds: 1500),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 1,
+                    child: GoogleMap(
+                      onMapCreated: _onMapCreated,
+                      compassEnabled: false,
+                      myLocationButtonEnabled: false,
+                      zoomControlsEnabled: true,
+                      zoomGesturesEnabled: true,
+                      markers: _markers,
+                      polylines: _polyline,
+                      onCameraMove: _onCameraMove,
+                      initialCameraPosition: CameraPosition(
+                        target: _center,
+                        zoom: 16.0,
+                      ),
+                    ),
+                  ),
+                ),
+                showModals(config, loginStore)
+              ],
+            ),
+          ),
+        )),
+      );
     });
   }
 
   Widget showModals(SizeConfig config, LoginStore loginStore) {
     return Positioned(
-        bottom: 0,
-        child: Column(
-          children: [
-            FadeInUp(
-              delay: const Duration(milliseconds: 1000),
-              duration: const Duration(milliseconds: 1000),
-              child: AnimatedContainer(
-                curve: Curves.easeInOut,
-                duration: const Duration(milliseconds: 100),
-                alignment: Alignment.bottomCenter,
-                height: config.uiHeightPx * 0.2,
-                width: config.uiWidthPx * 1,
-                decoration: const BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(25.0),
-                        topRight: Radius.circular(25.0))),
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      SingleChildScrollView(
-                          scrollDirection: Axis.vertical,
-                          child: Column(
-                            children: [
-                              InkWell(
-                                child: loginStore.isDriver
-                                    ? SearchRidesModal(
-                                        onCloseTap: () {},
-                                        onErrorOccurred: (String) {},
-                                        onRideRequest: () {},
-                                      )
-                                    : StartRideModal(
-                                        onRideStarted:
-                                            (String curLoc, String dest) {
-                                          _drawRoute(curLoc, dest);
-                                        },
-                                      ),
-                              ),
-                            ],
-                          )),
-                    ]),
+      bottom: 0,
+      child: Column(
+        children: [
+          FadeInUp(
+            delay: const Duration(milliseconds: 1000),
+            duration: const Duration(milliseconds: 1000),
+            child: AnimatedContainer(
+              curve: Curves.easeInOut,
+              duration: const Duration(milliseconds: 100),
+              alignment: Alignment.bottomCenter,
+              height: config.uiHeightPx * 0.2,
+              width: config.uiWidthPx * 1,
+              decoration: const BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(25.0),
+                  topRight: Radius.circular(25.0),
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: Column(
+                      children: [
+                        InkWell(
+                          child: loginStore.isDriver
+                              ? SearchRidesModal(
+                                  onCloseTap: () {},
+                                  onErrorOccurred: (String) {},
+                                  onRideRequest: () {},
+                                )
+                              : StartRideModal(
+                                  onRideStarted: (String curLoc, String dest) {
+                                    _drawRoute(curLoc, dest);
+                                  },
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 }

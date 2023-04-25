@@ -13,20 +13,17 @@ class ProfileServiceImpl extends ProfileService {
   Future<UserInfoResponse> getProfile() async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final String? id = prefs.getString("profileID");
+      final String? id = prefs.getString("userID");
 
       final Response response = await dio.get('user/$id');
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final UserInfoResponse profileResponse =
-            UserInfoResponse.fromJson(response.data as Map<String, dynamic>);
+        final UserInfoResponse profileResponse = UserInfoResponse.fromJson(response.data as Map<String, dynamic>);
         log(response.data.toString());
         final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-        await prefs.setString(
-            "profileEmail", profileResponse.data!.email.toString());
+        await prefs.setString("profileEmail", profileResponse.data!.email.toString());
         await prefs.setString("profileNumber", profileResponse.data!.phone!);
-        await prefs.setString(
-            "profileID", profileResponse.data!.id!.toString());
+        await prefs.setString("userID", profileResponse.data!.id!.toString());
 
         return profileResponse;
       } else {
@@ -35,8 +32,7 @@ class ProfileServiceImpl extends ProfileService {
     } catch (e) {
       if (e is DioError) {
         if (e.response != null) {
-          throw AppErrors.processErrorJson(
-              e.response?.data as Map<String, dynamic>);
+          throw AppErrors.processErrorJson(e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";
@@ -55,12 +51,12 @@ class ProfileServiceImpl extends ProfileService {
     final String? name = prefs.getString("profileName");
     final String? email = prefs.getString("profileEmail");
     final String? number = prefs.getString("profileNumber");
-    final String? id = prefs.getString("profileID");
+    final String? id = prefs.getString("userID");
 
     data["profileName"] = name ?? "";
     data["profileEmail"] = email ?? "";
     data["profileNumber"] = number ?? "";
-    data["profileID"] = id ?? "";
+    data["userID"] = id ?? "";
 
     return data;
   }
@@ -113,12 +109,9 @@ class ProfileServiceImpl extends ProfileService {
 
         final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-        await prefs.setString(
-            "profileEmail", updateOrderStatusResponse.data!.email.toString());
-        await prefs.setString(
-            "profileNumber", updateOrderStatusResponse.data!.phone!);
-        await prefs.setString(
-            "profileID", updateOrderStatusResponse.data!.id!.toString());
+        await prefs.setString("profileEmail", updateOrderStatusResponse.data!.email.toString());
+        await prefs.setString("profileNumber", updateOrderStatusResponse.data!.phone!);
+        await prefs.setString("userID", updateOrderStatusResponse.data!.id!.toString());
 
         return updateOrderStatusResponse;
       } else {
@@ -128,8 +121,7 @@ class ProfileServiceImpl extends ProfileService {
     } catch (e) {
       if (e is DioError) {
         if (e.response != null) {
-          throw AppErrors.processErrorJson(
-              e.response?.data as Map<String, dynamic>);
+          throw AppErrors.processErrorJson(e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";
