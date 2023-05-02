@@ -35,12 +35,12 @@ class WithNotificationsState extends State<WithNotifications> {
       onNotificationReceived: (NotificationDataModel notification) {
         notificationsConfig[notification.type]!(context, notification);
 
-        setState(() {
-          notifications.add(notification);
-        });
+        // setState(() {
+        //   notifications.add(notification);
+        // });
       },
     );
-    notificationService.registerNotification();
+    // notificationService.registerNotification();
   }
 
   @override

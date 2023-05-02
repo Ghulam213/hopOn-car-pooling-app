@@ -1,8 +1,14 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:hop_on/Utils/constants.dart';
 import 'package:hop_on/core/map/models/map_response.dart';
 
 import '../../../config/network/resources.dart';
 import '../domain/map_service.dart';
+import '../models/create_ride_response.dart';
+import '../models/direction.dart';
 import '../models/ride.dart';
 import '../service/map_service_impl.dart';
 
@@ -27,6 +33,7 @@ class MapViewModel extends ChangeNotifier {
   String rideStartedAt = '';
   String rideEndedAt = '';
   List<List<double>>? polygonPoints;
+  final List<LatLng> polyLineArray = [];
 
   final List<Ride> availableRides = [];
 
@@ -49,7 +56,7 @@ class MapViewModel extends ChangeNotifier {
         availableRides.addAll(response.data!);
         notifyListeners();
       }
-     
+
       debugPrint(availableRides.toString());
       // rideId = findRidesResource.modelResponse!.data!.rideId.toString();
       // driverId = findRidesResource.modelResponse!.data!.driverId.toString();
@@ -70,7 +77,6 @@ class MapViewModel extends ChangeNotifier {
       // rideEndedAt =
       //     findRidesResource.modelResponse!.data!.rideEndedAt.toString();
       // polygonPoints = findRidesResource.modelResponse!.data!.polygonPoints;
-
     } catch (e) {
       findRidesResource = Resource.failed(e.toString());
       notifyListeners();
@@ -106,4 +112,84 @@ class MapViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Resource<CreateRideResponse> createRideResource = Resource.idle();
+
+  Future<void> createRide({
+    String? source,
+    String? destination,
+    String? currentLocation,
+    num? totalDistance,
+    String? city,
+    List<LatLng>? polygonPoints,
+  }) async {
+    try {
+      createRideResource = Resource.loading();
+      notifyListeners();
+
+      final CreateRideResponse response = await _mapService.createRide(
+          currentLocation: currentLocation,
+          source: source,
+          destination: destination,
+          totalDistance: totalDistance,
+          city: city,
+          polygonPoints: polygonPoints);
+
+      createRideResource = Resource.success(response);
+
+      debugPrint(createRideResource.modelResponse!.data!.city.toString());
+      notifyListeners();
+    } catch (e) {
+      createRideResource = Resource.failed(e.toString());
+      notifyListeners();
+    }
+  }
+
+  Future<void> getDirections({
+    String? source,
+    String? destination,
+  }) async {
+    try {
+      notifyListeners();
+
+      Dio dio = Dio();
+      final direction = await dio.post(
+          'https://maps.googleapis.com/maps/api/directions/json?',
+          queryParameters: {
+            'origin': source,
+            'destination': destination,
+            'key': googleMapApiToken
+          });
+
+      final result = direction.data as Map<String, dynamic>;
+
+      Directions.fromMap(result).polylinePoints.forEach((PointLatLng point) {
+        polyLineArray.add(LatLng(point.latitude, point.longitude));
+      });
+      notifyListeners();
+    } catch (e) {
+      notifyListeners();
+    }
+  }
+
+  Future<void> findRupdateDriverLocides({
+    String? rideId,
+    String? entityId,
+    String? currentLocation,
+  }) async {
+    try {
+      requestRideResource = Resource.loading();
+      notifyListeners();
+
+      await _mapService.updateDriverLoc(
+        rideId: rideId,
+        entityId: entityId,
+      );
+
+      notifyListeners();
+    } catch (e) {
+      requestRideResource = Resource.failed(e.toString());
+      notifyListeners();
+    }
+}
 }

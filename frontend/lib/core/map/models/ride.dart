@@ -1,5 +1,6 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
-import 'package:latlong2/latlong.dart';
 
 class Ride {
   final String? rideId;
@@ -14,7 +15,7 @@ class Ride {
   final String? rideStartedAt;
   final String? rideEndedAt;
 
-  final List<List<double>>? polygonPoints;
+  final List<dynamic>? polygonPoints;
 
   Ride({
     this.rideId,
@@ -33,10 +34,9 @@ class Ride {
 
   factory Ride.fromJson(Map<String, dynamic> json) {
 
-    List<dynamic> points = json['polygonPoints'] as List<dynamic>;
-    List<List<double>>? polygonPoints =
-        points.map((point) => List<double>.from(point)).toList();
-
+    List<dynamic> points = jsonDecode(json['polygonPoints']);
+    // dynamic? polygonPoints =
+    //     points.map((point) => List<double>.from(point)).toList();
     return Ride(
       rideId: json['id'] as String?,
       driverId: json['driverId'] as String?,
@@ -49,7 +49,7 @@ class Ride {
       city: json['city'] as String?,
       rideStartedAt: json['rideStartedAt'] as String?,
       rideEndedAt: json['rideEndedAt'] as String?,
-      polygonPoints: polygonPoints,
+      polygonPoints: points,
     );
   }
 
@@ -75,12 +75,10 @@ class Coordinates {
   Coordinates({required this.data});
 
   factory Coordinates.fromJson(Map<String, dynamic> json) {
-
     debugPrint('HERRRRR');
 
     return Coordinates(
         data: List<List<double>>.from(json['polygonPoints'].map(
-            (list) => List<double>.from(list.map((item) => item.toDouble()))))
-    );
+            (list) => List<double>.from(list.map((item) => item.toDouble())))));
   }
 }
