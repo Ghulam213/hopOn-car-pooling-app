@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../Utils/colors.dart';
 
 class EditProfileTextField extends StatelessWidget {
@@ -57,7 +58,7 @@ class EditProfileTextField extends StatelessWidget {
             borderRadius: BorderRadius.circular(5),
           ),
           errorBorder: OutlineInputBorder(
-            borderSide: BorderSide(
+            borderSide: const BorderSide(
               color: AppColors.red1,
             ),
             borderRadius: BorderRadius.circular(5),

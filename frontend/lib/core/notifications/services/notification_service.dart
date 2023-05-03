@@ -1,7 +1,6 @@
 // ignore_for_file: avoid_print
 
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hop_on/core/notifications/models/notification_datamodel.dart';
 
@@ -35,7 +34,6 @@ class NotificationService {
       attachBackgroundNotificationHandler();
     } catch (e) {
       isNotificationRegistered = false;
-      debugPrint("Error: $e");
     }
   }
 

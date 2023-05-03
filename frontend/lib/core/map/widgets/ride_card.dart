@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hop_on/Utils/helpers.dart';
+
 import '../../../Utils/colors.dart';
 import '../../../Utils/image_path.dart';
 import '../modals/confirm_trip_modal.dart';
 import '../models/ride.dart';
-import '../models/ride_mock_data.dart';
 
 class RideCard extends StatefulWidget {
   final Ride rideModel;
@@ -29,7 +29,6 @@ class _RideCardState extends State<RideCard> {
   Widget build(BuildContext context) {
     return InkWell(
       onLongPress: () {
-        debugPrint(isSelected.toString());
         setState(() {
           isSelected = !isSelected;
         });
@@ -116,7 +115,7 @@ class _RideCardState extends State<RideCard> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                  
                 ],
               ),
@@ -127,7 +126,7 @@ class _RideCardState extends State<RideCard> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    "\Rs. " + widget.rideModel.totalFare.toString(),
+                    "\Rs. ${widget.rideModel.totalFare}",
                     style: GoogleFonts.montserrat(
                       fontSize: 16.0,
                       fontWeight: FontWeight.bold,
@@ -135,7 +134,7 @@ class _RideCardState extends State<RideCard> {
                           : AppColors.PRIMARY_500,
                     ),
                   ),
-                  SizedBox(height: 5.0),
+                  const SizedBox(height: 5.0),
                   Text(
                     widget.rideModel.destination.toString(),
                     style: GoogleFonts.montserrat(

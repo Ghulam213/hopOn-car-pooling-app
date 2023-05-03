@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hop_on/Utils/constants.dart';
 import 'package:hop_on/core/map/models/map_response.dart';
@@ -9,7 +8,8 @@ import '../../../config/network/resources.dart';
 import '../domain/map_service.dart';
 import '../models/create_ride_response.dart';
 import '../models/direction.dart';
-import '../models/ride.dart';
+import '../models/ride_for_passenger.dart';
+import '../models/ride_for_passenger_response.dart';
 import '../service/map_service_impl.dart';
 
 class MapViewModel extends ChangeNotifier {
@@ -18,8 +18,6 @@ class MapViewModel extends ChangeNotifier {
   MapViewModel() {
     _mapService = MapServiceImpl();
   }
-
-  Resource<MapResponse> findRidesResource = Resource.idle();
 
   String rideId = '';
   String driverId = '';
@@ -32,10 +30,10 @@ class MapViewModel extends ChangeNotifier {
   String city = '';
   String rideStartedAt = '';
   String rideEndedAt = '';
-  List<List<double>>? polygonPoints;
   final List<LatLng> polyLineArray = [];
+  final List<RideForPassenger> availableRides = [];
 
-  final List<Ride> availableRides = [];
+  Resource<RideForPassengerResponse> findRidesResource = Resource.idle();
 
   Future<void> findRides({
     String? source,
@@ -45,19 +43,20 @@ class MapViewModel extends ChangeNotifier {
       findRidesResource = Resource.loading();
       notifyListeners();
 
-      final MapResponse response = await _mapService.findRides(
+      final RideForPassengerResponse response = await _mapService.findRides(
         source: source,
         destination: destination,
       );
 
       findRidesResource = Resource.success(response);
-
+    
       if (response.data != null) {
-        availableRides.addAll(response.data!);
+        debugPrint(findRidesResource.modelResponse!.data!.toString());
+        findRidesResource.modelResponse!.data!.forEach((value) {
+          availableRides.add(value);
+        });
         notifyListeners();
       }
-
-      debugPrint(availableRides.toString());
       // rideId = findRidesResource.modelResponse!.data!.rideId.toString();
       // driverId = findRidesResource.modelResponse!.data!.driverId.toString();
       // source = findRidesResource.modelResponse!.data!.source.toString();
@@ -137,7 +136,7 @@ class MapViewModel extends ChangeNotifier {
 
       createRideResource = Resource.success(response);
 
-      debugPrint(createRideResource.modelResponse!.data!.city.toString());
+      createRideResource.modelResponse!.data!.city.toString();
       notifyListeners();
     } catch (e) {
       createRideResource = Resource.failed(e.toString());
@@ -163,18 +162,27 @@ class MapViewModel extends ChangeNotifier {
 
       final result = direction.data as Map<String, dynamic>;
 
-      Directions.fromMap(result).polylinePoints.forEach((PointLatLng point) {
+      for (var point in Directions.fromMap(result).polylinePoints) {
         polyLineArray.add(LatLng(point.latitude, point.longitude));
-      });
+      }
+
+      createRide(
+        source: '33.6618931, 73.0857944',
+        destination: '33.7099656, 73.0527963',
+        currentLocation: '33.6618931,73.0857944',
+        totalDistance: 100,
+        city: 'Islamabad',
+        polygonPoints: polyLineArray,
+      );
+
       notifyListeners();
     } catch (e) {
       notifyListeners();
     }
   }
 
-  Future<void> findRupdateDriverLocides({
+  Future<void> updateDriverLoc({
     String? rideId,
-    String? entityId,
     String? currentLocation,
   }) async {
     try {
@@ -183,7 +191,7 @@ class MapViewModel extends ChangeNotifier {
 
       await _mapService.updateDriverLoc(
         rideId: rideId,
-        entityId: entityId,
+        currentLocation: currentLocation,
       );
 
       notifyListeners();
@@ -191,5 +199,5 @@ class MapViewModel extends ChangeNotifier {
       requestRideResource = Resource.failed(e.toString());
       notifyListeners();
     }
-}
+  }
 }

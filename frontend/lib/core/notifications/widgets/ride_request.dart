@@ -1,4 +1,3 @@
-import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:hop_on/config/sizeconfig/size_config.dart';
 import 'package:hop_on/core/notifications/models/notification_datamodel.dart';

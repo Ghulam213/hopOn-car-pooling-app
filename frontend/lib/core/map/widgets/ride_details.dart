@@ -4,7 +4,6 @@ import 'package:hop_on/core/map/widgets/ride_card.dart';
 import 'package:provider/provider.dart';
 
 import '../../../config/sizeconfig/size_config.dart';
-import '../models/ride.dart';
 import '../viewmodel/map_view_model.dart';
 
 class RideDetails extends StatefulWidget {
@@ -31,7 +30,7 @@ class _RideDetailsState extends State<RideDetails> {
       height: 250,
       width: config.uiWidthPx * 1,
       child: ListView(
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         scrollDirection: Axis.vertical,
         children: RideData.rideDetails
             .map((rideDetails) =>

@@ -40,6 +40,8 @@
 	<string>This app requires your location while using the app</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Allow access to photo library to upload files</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app needs access to location when in the background</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>

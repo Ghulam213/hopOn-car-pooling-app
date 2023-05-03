@@ -1,11 +1,11 @@
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hop_on/core/map/models/map_response.dart';
 
 import '../models/create_ride_response.dart';
+import '../models/ride_for_passenger_response.dart';
 
 
 abstract class MapService {
-  Future<MapResponse> findRides({
+  Future<RideForPassengerResponse> findRides({
     String? source,
     String? destination,
   });
@@ -28,7 +28,7 @@ abstract class MapService {
 
   Future<void> updateDriverLoc({
     String? rideId,
-    String? entityId,
+    String? currentLocation,
   });
 
 }

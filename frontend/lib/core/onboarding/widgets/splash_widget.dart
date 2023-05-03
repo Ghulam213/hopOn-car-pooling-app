@@ -1,7 +1,7 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:hop_on/Utils/colors.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:hop_on/Utils/colors.dart';
+
 import '../../../config/sizeconfig/size_config.dart';
 
 class SplashWidget extends StatefulWidget {
@@ -34,17 +34,14 @@ class _SplashWidgetState extends State<SplashWidget> {
                   width: SizeConfig.screenWidthDp! - 120,
                   height: SizeConfig().sh(100).toDouble(),
                   child: Center(
-                    child: SvgPicture.asset(
-                      "assets/images/logo.svg",
-                      width: SizeConfig.screenWidthDp! - 120,
-                      height: SizeConfig().sh(100).toDouble(),
-                        color: AppColors.PRIMARY_500
-                    ),
+                    child: SvgPicture.asset("assets/images/logo.svg",
+                        width: SizeConfig.screenWidthDp! - 120,
+                        height: SizeConfig().sh(100).toDouble(),
+                        color: AppColors.PRIMARY_500),
                   ),
                 ),
               ),
             ),
-
             Positioned(
                 right: 0,
                 left: 0,
@@ -54,15 +51,7 @@ class _SplashWidgetState extends State<SplashWidget> {
                   height: SizeConfig().sh(100).toDouble(),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                    
-                      // Text(
-                      //   context.locale.toString() == 'en' ? "en" : "ur",
-                      //   style: const TextStyle(
-                      //       color: AppColors.LM_FONT_SECONDARY_GREY8,
-                      //       fontSize: 15),
-                      // ),
-                    ],
+                    children: const [],
                   ),
                 ))
           ],

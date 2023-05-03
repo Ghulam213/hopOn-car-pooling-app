@@ -9,7 +9,6 @@ import '../../../Utils/image_path.dart';
 import '../../../config/sizeconfig/size_config.dart';
 import '../viewmodel/map_view_model.dart';
 import '../widgets/ride_details.dart';
-import 'confirm_trip_modal.dart';
 
 buildTripDetails(BuildContext context, String source, String destination,
     Function onRideRequest) {
@@ -37,7 +36,10 @@ buildTripDetails(BuildContext context, String source, String destination,
               topRight: Radius.circular(15),
             ),
           ),
-          child: Container(
+
+            child: mapViewModel.availableRides.isNotEmpty
+                ? Container(
+          
             child: Column(
               children: [
                 Container(
@@ -89,24 +91,14 @@ buildTripDetails(BuildContext context, String source, String destination,
                 const SizedBox(height: 25),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: Container(
+                          child: SizedBox(
                     height: 50,
                     width: config.uiWidthPx * 1,
                     child: LoginButton(
-                      text: "Confirm",
-                      // onPress: () {
-                      //   // TO DO:  Update from real values
-                      //   mapViewModel.findRides(
-                      //       source: '72.988149,33.642838',
-                      //       destination: '73.087289,33.664512');
-                      // }
-
+                              text: "Confirm",
                       onPress: () {
-                        // mapViewModel.findRides(
-                        //     source: '72.988149,33.642838',
-                        //     destination: '73.087289,33.664512');
-                        onRideRequest();
-
+                                //   mapViewModel.requestRide(source: ,rideId: ,destination: ,distance: );
+                       
                         Future.delayed(const Duration(seconds: 1), () {
                           Navigator.pop(context);
                           showModalBottomSheet(
@@ -154,9 +146,9 @@ buildTripDetails(BuildContext context, String source, String destination,
                                         dashWidth: 2.0,
                                       ),
                                       const SizedBox(height: 10),
-                                      RideDetails(),
+                                              const RideDetails(),
 
-                                      Spacer(),
+                                              const Spacer(),
                                       // Padding(
                                       //   padding: EdgeInsets.symmetric(
                                       //       horizontal: 50),
@@ -202,7 +194,8 @@ buildTripDetails(BuildContext context, String source, String destination,
                 ),
               ],
             ),
-          ),
+                  )
+                : const Text('No Rides Found')
         );
       });
 }
@@ -233,7 +226,7 @@ Widget tripdetails(
                         AppColors.PRIMARY_500, BlendMode.srcIn)),
               ],
             ),
-            SizedBox(width: 5),
+            const SizedBox(width: 5),
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,

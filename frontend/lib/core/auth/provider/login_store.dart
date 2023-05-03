@@ -92,15 +92,15 @@ abstract class LoginStoreBase with Store {
             );
           });
         } else {
-          debugPrint(response.toString());
+   
           final String errorMsg = response.statusMessage as String;
-          debugPrint(errorMsg.toString());
+
           _showSnackBar(context, errorMsg);
           AppErrors.processErrorJson(response.data['data'] as Map<String, dynamic>);
         }
       } on DioError catch (e) {
         debugPrint("phoneLogin. $e");
-        log('${e.error}');
+
         isPhoneLoading = false;
         if (e.response != null) {
           _showSnackBar(context, '${e.response!.data["message"]?.toString()}');

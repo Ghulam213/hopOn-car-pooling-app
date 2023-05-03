@@ -1,8 +1,9 @@
 import 'dart:async';
-import 'package:hop_on/core/map/modals/trip_details_modal.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hop_on/core/map/modals/trip_details_modal.dart';
+
 import '../../../Utils/colors.dart';
 import '../../../Utils/image_path.dart';
 import '../../../config/sizeconfig/size_config.dart';
@@ -18,7 +19,7 @@ buildConfirmTrip(BuildContext context) {
       clipBehavior: Clip.hardEdge,
       context: context,
       builder: (context) {
-        return BookingComfirm();
+        return const BookingComfirm();
       });
 }
 
@@ -35,7 +36,7 @@ class _BookingComfirmState extends State<BookingComfirm> {
   @override
   void initState() {
     setState(() {
-      Future.delayed(Duration(seconds: 8), () {
+      Future.delayed(const Duration(seconds: 8), () {
         Navigator.pop(context);
         buildBookingDetails(context);
       });

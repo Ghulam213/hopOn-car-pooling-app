@@ -2,26 +2,25 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:geocode/geocode.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:hop_on/Utils/helpers.dart';
 import 'package:hop_on/core/auth/widgets/login_button.dart';
 import 'package:hop_on/core/map/modals/trip_details_modal.dart';
+import 'package:provider/provider.dart';
+
 import '../../../Utils/colors.dart';
 import '../../../Utils/image_path.dart';
 import '../../../config/sizeconfig/size_config.dart';
 import '../../widgets/custom_text_field.dart';
 import '../../widgets/textfield_icons.dart';
+import '../viewmodel/map_view_model.dart';
 
 class SearchRidesModal extends StatefulWidget {
-  final Function() onCloseTap;
-  final Function(String) onErrorOccurred;
+
   final Function() onRideRequest;
 
   const SearchRidesModal(
       {Key? key,
-      required this.onCloseTap,
-      required this.onErrorOccurred,
       required this.onRideRequest})
       : super(key: key);
 
@@ -40,18 +39,27 @@ class _SearchRidesModalState extends State<SearchRidesModal> {
   final TextEditingController currentController = TextEditingController();
   final TextEditingController destinationController = TextEditingController();
 
+  final source = '';
+  final destination = '';
+
   Timer? _debounce;
 
-  void autoCompleteSearch(String value) async {
-    GeoCode geoCode = GeoCode(apiKey: "126435123870473308801x22127");
+  Future<String?> autoCompleteSearch(String value) async {
+    if (value != '') {
+      try {
+        List<Location> locations = await locationFromAddress(value);
 
-    Coordinates coordinates = await geoCode.forwardGeocoding(address: value);
-    print("Latitude: ${coordinates.latitude}");
-    print("Longitude: ${coordinates.longitude}");
+        return '${locations[0].latitude.toString()},${locations[0].longitude.toString()}';
+      } catch (e) {
+        debugPrint(e.toString());
+      }
+    }
+    return null;
   }
 
   @override
   Widget build(BuildContext context) {
+    final MapViewModel mapViewModel = context.watch<MapViewModel>();
     return SizedBox(
       width: config.uiWidthPx * 0.8,
       child: const LoginButton(
@@ -129,14 +137,21 @@ class _SearchRidesModalState extends State<SearchRidesModal> {
                                       width: config.uiWidthPx - 100,
                                       child: LoginButton(
                                         text: 'Search',
-                                        onPress: () {
-                                          autoCompleteSearch(
-                                              currentController.text);
-                                          Future.delayed(
-                                              const Duration(seconds: 2), () {
+                                        onPress: () async {
+                                          var src = await Future.wait([
                                             autoCompleteSearch(
-                                                destinationController.text);
-                                          });
+                                                currentController.text),
+                                            autoCompleteSearch(
+                                                destinationController.text)
+                                          ]);
+
+                                          if (src.isNotEmpty) {
+                                            mapViewModel.findRides(
+                                                source: src[0].toString(),
+                                                destination: src[1].toString());
+                                          }
+                                          if (!context.mounted) return;
+
                                           buildTripDetails(
                                               context,
                                               currentController.text,
@@ -209,5 +224,3 @@ class _SearchRidesModalState extends State<SearchRidesModal> {
     );
   }
 }
-
-

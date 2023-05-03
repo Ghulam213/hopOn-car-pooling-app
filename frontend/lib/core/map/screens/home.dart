@@ -7,7 +7,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hop_on/Utils/colors.dart';
 import 'package:hop_on/core/map/modals/driver_start_ride_modal.dart';
 import 'package:hop_on/core/map/modals/search_rides_modal.dart';
-
 import 'package:hop_on/core/registration/screens/registration_modal.dart';
 import 'package:provider/provider.dart';
 
@@ -25,8 +24,7 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  String? source;
-  String? destination;
+ 
   final Completer<GoogleMapController> _controller = Completer();
 
   final Set<Marker> _markers = {};
@@ -50,11 +48,10 @@ class _MapScreenState extends State<MapScreen> {
 
   void _drawRoute(
       String? source, String? destination, MapViewModel viewModel) async {
-    final GoogleMapController mapController = await _controller.future;
 
     // Note: update will real cords when not testing
-    LatLng src = const LatLng(33.684714, 73.048045);
-    LatLng dest = const LatLng(33.645509, 72.985208);
+    LatLng src = const LatLng(33.6618931, 73.0857944);
+    LatLng dest = const LatLng(33.7099656, 73.0527963);
 
     viewModel.getDirections(
         source: '${src.latitude},${src.longitude}',
@@ -80,14 +77,18 @@ class _MapScreenState extends State<MapScreen> {
       color: Colors.red,
     ));
 
-    viewModel.createRide(
-      source: src.toString(),
-      destination: dest.toString(),
-      currentLocation: '33.684714,73.048045',
-      totalDistance: 100,
-      city: 'Islamabad',
-      polygonPoints: viewModel.polyLineArray,
-    );
+    // viewModel.createRide(
+    //   source: '33.6618931, 73.0857944',
+    //   destination: '33.7099656, 73.0527963',
+    //   currentLocation: '33.6618931,73.0857944',
+    //   totalDistance: 100,
+    //   city: 'Islamabad',
+    //   polygonPoints: viewModel.polyLineArray,
+    // );
+
+    viewModel.updateDriverLoc(
+        rideId: '62660ffb-abbd-4c36-b3d6-e0941587c291',
+        currentLocation: '33.684714,73.048045');
   }
 
   @override
@@ -204,11 +205,11 @@ class _MapScreenState extends State<MapScreen> {
                     child: Column(
                       children: [
                         InkWell(
-                          child: loginStore.isDriver
-                              ? SearchRidesModal(
-                                  onCloseTap: () {},
-                                  onErrorOccurred: (String) {},
-                                  onRideRequest: () {},
+                          child: !loginStore.isDriver
+                              ? SearchRidesModal(                               
+                                  onRideRequest: () {
+                                    // viewModel.requestRide(source: ,rideId: ,destination: ,distance: );
+                                  },
                                 )
                               : StartRideModal(
                                   onRideStarted: (String curLoc, String dest) {

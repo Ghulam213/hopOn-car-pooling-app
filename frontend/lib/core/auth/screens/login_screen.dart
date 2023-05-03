@@ -3,17 +3,16 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:android_sms_retriever/android_sms_retriever.dart';
+import 'package:easy_localization/easy_localization.dart' as ez;
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:hop_on/Utils/colors.dart';
-
 import 'package:hop_on/config/sizeconfig/size_config.dart';
 import 'package:hop_on/core/auth/provider/login_store.dart';
 import 'package:hop_on/core/auth/widgets/country_picker.dart';
 import 'package:hop_on/core/auth/widgets/login_button.dart';
-import 'package:easy_localization/easy_localization.dart' as ez;
-import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import '../widgets/loader.dart';
 

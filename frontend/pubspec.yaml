@@ -45,10 +45,10 @@ dependencies:
   flutter_launcher_icons: ^0.11.0
   flutter_local_notifications: ^9.2.0
   flutter_mobx: ^2.0.6+5
-
+  permission_handler: ^10.2.0
   get: ^4.6.5 # Plugin to help navigating thorogh the screens
   google_fonts: ^3.0.1
-  geocode: 1.0.2
+  geocoding: ^2.1.0
   google_maps_flutter: ^2.2.5
   http: ^0.13.4
   file_picker: ^5.2.5

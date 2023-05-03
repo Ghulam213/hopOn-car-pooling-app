@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 
 class Ride {
   final String? rideId;
@@ -71,12 +70,9 @@ class Ride {
 
 class Coordinates {
   List<List<double>> data;
-
   Coordinates({required this.data});
-
+  
   factory Coordinates.fromJson(Map<String, dynamic> json) {
-    debugPrint('HERRRRR');
-
     return Coordinates(
         data: List<List<double>>.from(json['polygonPoints'].map(
             (list) => List<double>.from(list.map((item) => item.toDouble())))));

@@ -61,7 +61,7 @@ class SuffixNow1 extends StatelessWidget {
 }
 
 class PrefixIcon1 extends StatelessWidget {
-  PrefixIcon1({
+  const PrefixIcon1({
     Key? key,
   }) : super(key: key);
 

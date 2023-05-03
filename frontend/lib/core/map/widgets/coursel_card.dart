@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../Utils/colors.dart';
 import '../../../Utils/constants.dart';
 
@@ -28,12 +29,12 @@ Widget carouselCard(int index, num distance, num duration) {
                   children: [
                     Column(
                       children: [
-                        Align(
+                        const Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
                             'Distance',
                             style:
-                                const TextStyle(color: AppColors.PRIMARY_500),
+                                TextStyle(color: AppColors.PRIMARY_500),
                           ),
                         ),
                         const SizedBox(height: 5),
@@ -50,12 +51,12 @@ Widget carouselCard(int index, num distance, num duration) {
                     const SizedBox(width: 10),
                     Column(
                       children: [
-                        Align(
+                        const Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
                             'Travel Time',
                             style:
-                                const TextStyle(color: AppColors.PRIMARY_500),
+                                TextStyle(color: AppColors.PRIMARY_500),
                           ),
                         ),
                         const SizedBox(height: 5),

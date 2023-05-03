@@ -3,7 +3,7 @@ import 'package:hop_on/core/map/models/ride.dart';
 class CreateRideResponse {
   int? statusCode;
   String? error;
-  dynamic? data;
+  dynamic data;
 
   CreateRideResponse({this.statusCode, this.error, this.data});
 

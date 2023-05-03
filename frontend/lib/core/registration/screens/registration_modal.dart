@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:hop_on/core/map/screens/search_page.dart';
 import 'package:hop_on/core/registration/screens/vehicle_info_modal.dart';
 
 import '../../../Utils/colors.dart';
@@ -14,7 +13,7 @@ class RegistrationModal extends StatefulWidget {
   final Function() onCloseTap;
   final Function(String) onErrorOccurred;
 
-  RegistrationModal(
+  const RegistrationModal(
       {Key? key,
       // required this.onStatusChangedCompleted,
       required this.onCloseTap,

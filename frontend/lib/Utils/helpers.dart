@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 import '../main.dart';
 import 'constants.dart';
 
@@ -22,7 +23,7 @@ LatLng getLatLngFromSharedPrefs() {
 
   return const LatLng(33.6844, 73.0479);
 
-  // TO DO: REPLACE WHEN TESTING ON RERAL DEVICE
+  // TO DO: REPLACE WHEN TESTING ON REAL DEVICE
   // return LatLng(
   //     double.parse(sharedPreferences.getString('latitude') ?? '33.6844'),
   //     double.parse(sharedPreferences.getString('longitude') ?? '73.0479'));

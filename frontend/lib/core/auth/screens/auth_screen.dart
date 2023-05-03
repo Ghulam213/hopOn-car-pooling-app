@@ -1,22 +1,15 @@
 // ignore_for_file: prefer_const_constructors
+import 'package:easy_localization/easy_localization.dart' as ez;
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:hop_on/Utils/colors.dart';
-
 import 'package:hop_on/config/sizeconfig/size_config.dart';
 import 'package:hop_on/core/auth/provider/login_store.dart';
 import 'package:hop_on/core/auth/screens/login_screen.dart';
 import 'package:hop_on/core/auth/screens/signup_screen.dart';
-
 import 'package:hop_on/core/auth/widgets/login_button.dart';
-import 'package:easy_localization/easy_localization.dart' as ez;
-import 'package:hop_on/core/map/screens/home.dart';
-import 'package:hop_on/core/profile/screens/profile_screen.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
-import '../widgets/loader.dart';
-import 'otp_screen.dart';
 
 class AuthScreen extends StatefulWidget {
   static const routeName = '/authScreen';
