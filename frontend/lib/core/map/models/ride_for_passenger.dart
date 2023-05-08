@@ -7,6 +7,8 @@ class RideForPassenger {
   final String? driverGender;
   final String? vehicleName;
   final String? vehicleRegNo;
+  String? source;
+  String? destination;
   final num? alreadySeatedPassengerCount;
   final num? fare;
   final num? ETA;
@@ -21,6 +23,8 @@ class RideForPassenger {
     this.vehicleRegNo,
     this.alreadySeatedPassengerCount,
     this.fare,
+    this.source,
+    this.destination,
     this.ETA,
     this.driverRating,
   });
@@ -32,6 +36,8 @@ class RideForPassenger {
       driverName: json['driverName'] as String?,
       driverGender: json['driverGender'] as String?,
       vehicleName: json['vehicleName'] as String?,
+      source: json['source'] as String?,
+      destination: json['destination'] as String?,
       vehicleRegNo: json['vehicleRegNo'] as String?,
       alreadySeatedPassengerCount: json['alreadySeatedPassengerCount'] as num?,
       fare: json['fare'] as num?,

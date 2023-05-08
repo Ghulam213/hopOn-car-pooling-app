@@ -1,13 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hop_on/Utils/constants.dart';
-import 'package:hop_on/core/map/models/map_response.dart';
 
 import '../../../config/network/resources.dart';
 import '../domain/map_service.dart';
 import '../models/create_ride_response.dart';
 import '../models/direction.dart';
+import '../models/request_ride_response.dart';
 import '../models/ride_for_passenger.dart';
 import '../models/ride_for_passenger_response.dart';
 import '../service/map_service_impl.dart';
@@ -30,8 +31,12 @@ class MapViewModel extends ChangeNotifier {
   String city = '';
   String rideStartedAt = '';
   String rideEndedAt = '';
-  final List<LatLng> polyLineArray = [];
-  final List<RideForPassenger> availableRides = [];
+  
+  final List<LatLng> _polyLineArray = [];
+  final List<RideForPassenger> _availableRides = [];
+
+  List<LatLng> get polyLineArray => _polyLineArray;
+  List<RideForPassenger> get availableRides => _availableRides;
 
   Resource<RideForPassengerResponse> findRidesResource = Resource.idle();
 
@@ -49,61 +54,67 @@ class MapViewModel extends ChangeNotifier {
       );
 
       findRidesResource = Resource.success(response);
-    
+
       if (response.data != null) {
-        debugPrint(findRidesResource.modelResponse!.data!.toString());
-        findRidesResource.modelResponse!.data!.forEach((value) {
-          availableRides.add(value);
+        _availableRides.removeWhere((RideForPassenger datum) {
+          return _availableRides.contains(datum);
         });
+
+        for (var datum in findRidesResource.modelResponse!.data!) {
+          _availableRides.add(datum);
+        }
+
+        for (var datum in _availableRides) {
+          {
+            var src = await Future.wait([
+              placemarkFromCoordinates(
+                  double.parse(datum.source!.split(',')[0]),
+                  double.parse(datum.source!.split(',')[1])),
+              placemarkFromCoordinates(
+                  double.parse(datum.destination!.split(',')[0]),
+                  double.parse(datum.destination!.split(',')[1]))
+            ]);
+
+            datum.source = src[0].map((placemark) => placemark.name).toString();
+            datum.destination =
+                src[1].map((placemark) => placemark.name).toString();
+          }
+        }
+        debugPrint("findRides");
+        debugPrint(_availableRides.toString());
         notifyListeners();
       }
-      // rideId = findRidesResource.modelResponse!.data!.rideId.toString();
-      // driverId = findRidesResource.modelResponse!.data!.driverId.toString();
-      // source = findRidesResource.modelResponse!.data!.source.toString();
-
-      // destination =
-      //     findRidesResource.modelResponse!.data!.destination.toString();
-      // totalDistance = findRidesResource.modelResponse!.data!.totalDistance;
-      // totalFare = findRidesResource.modelResponse!.data!.totalFare;
-
-      // rideStatus = findRidesResource.modelResponse!.data!.rideStatus.toString();
-      // currentLocation =
-      //     findRidesResource.modelResponse!.data!.currentLocation.toString();
-      // city = findRidesResource.modelResponse!.data!.city.toString();
-
-      // rideStartedAt =
-      //     findRidesResource.modelResponse!.data!.rideStartedAt.toString();
-      // rideEndedAt =
-      //     findRidesResource.modelResponse!.data!.rideEndedAt.toString();
-      // polygonPoints = findRidesResource.modelResponse!.data!.polygonPoints;
     } catch (e) {
       findRidesResource = Resource.failed(e.toString());
       notifyListeners();
     }
   }
 
-  Resource<MapResponse> requestRideResource = Resource.idle();
+  Resource<RequestRideResponse> requestRideResource = Resource.idle();
 
   Future<void> requestRide({
     required String? rideId,
-    required String? source,
-    required String? destination,
+    required String? passengerSource,
+    required String? passengerDestination,
+    required String? driverName,
     required num? distance,
+    required num? fare,
+    required num? ETA,
   }) async {
     try {
       requestRideResource = Resource.loading();
       notifyListeners();
 
-      final MapResponse response = await _mapService.requestRide(
-        rideId: rideId,
-        source: source,
-        destination: destination,
-        distance: distance,
-      );
+      final RequestRideResponse response = await _mapService.requestRide(
+          rideId: rideId,
+          passengerSource: passengerSource,
+          passengerDestination: passengerDestination,
+          driverName: driverName,
+          distance: distance,
+          fare: fare,
+          ETA: ETA);
 
       requestRideResource = Resource.success(response);
-      // id = requestRideResource.modelResponse!.data!.id!.toString();
-      // active = requestRideResource.modelResponse!.data!.active.toString();
 
       notifyListeners();
     } catch (e) {
@@ -136,7 +147,7 @@ class MapViewModel extends ChangeNotifier {
 
       createRideResource = Resource.success(response);
 
-      createRideResource.modelResponse!.data!.city.toString();
+  
       notifyListeners();
     } catch (e) {
       createRideResource = Resource.failed(e.toString());
@@ -163,7 +174,7 @@ class MapViewModel extends ChangeNotifier {
       final result = direction.data as Map<String, dynamic>;
 
       for (var point in Directions.fromMap(result).polylinePoints) {
-        polyLineArray.add(LatLng(point.latitude, point.longitude));
+        _polyLineArray.add(LatLng(point.latitude, point.longitude));
       }
 
       createRide(
@@ -172,7 +183,7 @@ class MapViewModel extends ChangeNotifier {
         currentLocation: '33.6618931,73.0857944',
         totalDistance: 100,
         city: 'Islamabad',
-        polygonPoints: polyLineArray,
+        polygonPoints: _polyLineArray,
       );
 
       notifyListeners();

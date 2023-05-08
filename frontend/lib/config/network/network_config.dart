@@ -6,7 +6,7 @@ class NetworkConfig {
 
   late Dio dio;
 
-  static const _STAGING_URL = "http://localhost:3001";
+  static const _STAGING_URL = "http://10.0.2.2:3001";
   //  "http://10.0.2.2:3001"; // for android
 
   static const _STAGING_URL_IOS = "http://localhost:3001";

@@ -1,19 +1,19 @@
-import { Inject, Injectable, CACHE_MANAGER } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import {
   Device,
   Driver,
-  GenderEnum,
   PasengerRideStatusEnum,
   PassengersOnRide,
   Prisma,
   Ride,
-  RideStatusEnum,
+  RideStatusEnum
 } from '@prisma/client';
-import { NotificationNotSentException } from 'src/library/exception/notificationNotSentException';
+import { Cache } from 'cache-manager';
 import { applicationConfig } from 'src/config';
 import { DriverService } from 'src/driver/services';
 import { PassengerNotFoundException, RideNotAvailableException, RideNotFoundException } from 'src/library/exception';
+import { NotificationNotSentException } from 'src/library/exception/notificationNotSentException';
 import { UtilityService } from 'src/library/services';
 import { NotificationService } from 'src/library/services/notification.service';
 import { PrismaService } from 'src/prisma/services';
@@ -24,9 +24,8 @@ import {
   RideCreateDto,
   RideRequestDto,
 } from 'src/ride/dtos';
-import { Cache } from 'cache-manager';
-import { RideCacheModel, RideForPassengersModel } from 'src/ride/models';
 import { RideNotificationTypeEnum } from 'src/ride/enums';
+import { RideCacheModel, RideForPassengersModel } from 'src/ride/models';
 
 @Injectable()
 export class RideService {
@@ -220,13 +219,15 @@ export class RideService {
           id: ride.id,
           driverId: ride.driverId,
           driverName: `${driver?.user.firstName} ${driver?.user.lastName}`,
-          driverGender: GenderEnum.FEMALE,
+          driverGender: driver.user.gender,
           driverRating: 0,
           alreadySeatedPassengerCount,
           vehicleName: `${driver?.vehicles[0].vehicleBrand} ${driver?.vehicles[0].vehicleModel}`,
           vehicleRegNo: driver?.vehicles[0].vehicleRegNo,
           fare: 0,
           ETA: 0,
+          source: ride.source,
+          destination: ride.source,
         };
       }),
     );

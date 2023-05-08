@@ -15,6 +15,8 @@ import 'package:hop_on/core/map/screens/home.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../Utils/device_info_service.dart';
+
 part 'login_store.g.dart';
 
 class LoginStore = LoginStoreBase with _$LoginStore;
@@ -60,7 +62,8 @@ abstract class LoginStoreBase with Store {
 
   // PHONE SIGN IN
   @action
-  Future<void> phoneLogin(BuildContext context, String phone, String pass) async {
+  Future<void> phoneLogin(
+      BuildContext context, String phone, String pass) async {
     final body = {"phone": phone, "password": pass};
 
     if (phone != '') {
@@ -84,19 +87,16 @@ abstract class LoginStoreBase with Store {
           Future.delayed(const Duration(milliseconds: 1), () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (_) => OtpPage(
-                  phoneNumber: phone,
-                  otpmode: 'login',
-                ),
+                builder: (_) => const MapScreen(),
               ),
             );
           });
         } else {
-   
           final String errorMsg = response.statusMessage as String;
 
           _showSnackBar(context, errorMsg);
-          AppErrors.processErrorJson(response.data['data'] as Map<String, dynamic>);
+          AppErrors.processErrorJson(
+              response.data['data'] as Map<String, dynamic>);
         }
       } on DioError catch (e) {
         debugPrint("phoneLogin. $e");
@@ -121,7 +121,8 @@ abstract class LoginStoreBase with Store {
 
   // OTP VERIFICATION
   @action
-  Future<void> validateOtpAndLogin(BuildContext context, String smsCode, String phone) async {
+  Future<void> validateOtpAndLogin(
+      BuildContext context, String smsCode, String phone) async {
     final body = {"phone": phone, "code": smsCode};
 
     try {
@@ -212,9 +213,11 @@ abstract class LoginStoreBase with Store {
         // await _storeUserData(response.data['data']);
         debugPrint(response.data['data']['id']);
         prefs.setString('userEmail', response.data['data']['email'] as String);
-        prefs.setString('currentMode', response.data['data']['currentMode'] as String);
+        prefs.setString(
+            'currentMode', response.data['data']['currentMode'] as String);
         prefs.setString('userID', response.data['data']['id'] as String);
-        prefs.setString('userPhoneNo', response.data['data']['phoneNo'] as String);
+        prefs.setString(
+            'userPhoneNo', response.data['data']['phoneNo'] as String);
 
         isUserInfoLoading = false;
         Future.delayed(const Duration(milliseconds: 1), () {
@@ -247,7 +250,8 @@ abstract class LoginStoreBase with Store {
     }
   }
 
-  Future<void> onOtpSuccessful(BuildContext context, Map<String, dynamic> response) async {
+  Future<void> onOtpSuccessful(
+      BuildContext context, Map<String, dynamic> response) async {
     isOtpDone = true;
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(
@@ -262,8 +266,16 @@ abstract class LoginStoreBase with Store {
   Future<void> _storeUserData(responseData) async {
     final prefs = await SharedPreferences.getInstance();
 
-    final Map<String, dynamic> userAuth = responseData['data'] as Map<String, dynamic>;
+    final DeviceInformation? deviceInformation =
+        await DeviceInfoService.getDeviceInfo();
 
+    prefs.setString("deviceId", deviceInformation?.uUID.toString() ?? '');
+    prefs.setString("deviceInfo", deviceInformation?.toJson().toString() ?? '');
+
+    final Map<String, dynamic> userAuth =
+        responseData['data'] as Map<String, dynamic>;
+
+    debugPrint(jsonEncode(userAuth['user']).toString());
     prefs.setString('accessToken', userAuth['accessToken'] as String);
     prefs.setString('refreshToken', userAuth['refreshToken'] as String);
     prefs.setString('userID', userAuth['userId'] as String);
@@ -292,7 +304,8 @@ abstract class LoginStoreBase with Store {
       if (e.response != null) {
         _showSnackBar(context, "error while logging out");
 
-        throw AppErrors.processErrorJson(e.response!.data as Map<String, dynamic>);
+        throw AppErrors.processErrorJson(
+            e.response!.data as Map<String, dynamic>);
       }
       {
         // Something happened in setting up or sending the request that triggered an Error

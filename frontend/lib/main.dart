@@ -22,6 +22,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'Utils/device_info_service.dart';
 import 'Utils/styles.dart';
 import 'core/map/viewmodel/map_view_model.dart';
 import 'core/profile/viewmodel/profile_viewmodel.dart';
@@ -57,17 +58,28 @@ Future<void> main() async {
   await EasyLocalization.ensureInitialized();
   NetworkConfig().initNetworkConfig();
   await _initLocationService();
+  await _getDeviceInfo();
   runApp(
     EasyLocalization(
       supportedLocales: const [Locale('en', ''), Locale('de', '')],
-      path: 'assets/translations', // <-- change the path of the translation files
+      path:
+          'assets/translations', // <-- change the path of the translation files
       fallbackLocale: const Locale('en', ''),
       child: const App(),
     ),
   );
 }
 
-   
+Future _getDeviceInfo() async {
+  final prefs = await SharedPreferences.getInstance();
+
+  final DeviceInformation? deviceInformation =
+      await DeviceInfoService.getDeviceInfo();
+  debugPrint('deviceId');
+  debugPrint(deviceInformation?.uUID.toString());
+  prefs.setString("deviceId", deviceInformation?.uUID.toString() ?? '');
+  prefs.setString("deviceInfo", deviceInformation?.toJson().toString() ?? '');
+}
 
 Future _initLocationService() async {
   var location = loc.Location();

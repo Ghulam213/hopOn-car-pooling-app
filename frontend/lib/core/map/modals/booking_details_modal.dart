@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hop_on/core/map/modals/trip_details_modal.dart';
 
 import '../../../Utils/colors.dart';
 import '../../../Utils/image_path.dart';
 import '../../../config/sizeconfig/size_config.dart';
+import '../../widgets/dot_widget.dart';
 
 buildBookingDetails(BuildContext context) {
   showModalBottomSheet(
@@ -32,11 +32,6 @@ class BookingDetials extends StatefulWidget {
 class _BookingDetialsState extends State<BookingDetials> {
   @override
   void initState() {
-    // setState(() {
-    //   Future.delayed(Duration(seconds: 5), () {
-    //     buildEnjoyRide(context);
-    //   });
-    // });
     super.initState();
   }
 

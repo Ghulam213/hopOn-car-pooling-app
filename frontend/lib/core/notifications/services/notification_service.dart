@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hop_on/core/notifications/models/notification_datamodel.dart';
 
@@ -64,7 +65,7 @@ class NotificationService {
   Future<void> getToken() async {
     String? token = await FirebaseMessaging.instance.getToken();
     // TODO: Make a request to the server to save the token
-    print('Device Token: $token');
+    debugPrint('Device Token: $token');
   }
 
   Future<void> requestPermissions() async {

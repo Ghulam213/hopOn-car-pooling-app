@@ -3,7 +3,7 @@ import 'package:hop_on/core/map/models/ride_for_passenger.dart';
 class RideForPassengerResponse {
   int? statusCode;
   String? error;
-  dynamic data;
+  List<RideForPassenger>? data;
 
   RideForPassengerResponse({this.statusCode, this.error, this.data});
 
@@ -18,10 +18,4 @@ class RideForPassengerResponse {
               .toList(),
     );
   }
-
-  Map<String, dynamic> toJson() => {
-        'statusCode': statusCode,
-        'error': error,
-        'data': data?.map((e) => e.toJson()).toList(),
-      };
 }

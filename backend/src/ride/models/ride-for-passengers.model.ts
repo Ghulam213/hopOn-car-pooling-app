@@ -31,4 +31,10 @@ export class RideForPassengersModel {
 
   @ApiProperty()
   ETA: number;
+
+  @ApiProperty()
+  source: string;
+
+  @ApiProperty()
+  destination: string;
 }

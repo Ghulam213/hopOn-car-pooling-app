@@ -50,8 +50,8 @@ class _MapScreenState extends State<MapScreen> {
       String? source, String? destination, MapViewModel viewModel) async {
 
     // Note: update will real cords when not testing
-    LatLng src = const LatLng(33.6618931, 73.0857944);
-    LatLng dest = const LatLng(33.7099656, 73.0527963);
+    LatLng src = const LatLng(33.64333419508494, 72.9914673283913);
+    LatLng dest = const LatLng(33.65879628444844, 73.08346009601216);
 
     viewModel.getDirections(
         source: '${src.latitude},${src.longitude}',
@@ -60,7 +60,7 @@ class _MapScreenState extends State<MapScreen> {
     _markers.add(Marker(
       // This marker id can be anything that uniquely identifies each marker.
       markerId: MarkerId(_lastMapPosition.toString()),
-      position: _center,
+      position: src,
 
       icon: await BitmapDescriptor.fromAssetImage(
           const ImageConfiguration(size: Size(18, 18)),
@@ -77,17 +77,17 @@ class _MapScreenState extends State<MapScreen> {
       color: Colors.red,
     ));
 
-    // viewModel.createRide(
-    //   source: '33.6618931, 73.0857944',
-    //   destination: '33.7099656, 73.0527963',
-    //   currentLocation: '33.6618931,73.0857944',
-    //   totalDistance: 100,
-    //   city: 'Islamabad',
-    //   polygonPoints: viewModel.polyLineArray,
-    // );
+    viewModel.createRide(
+      source: '33.64333419508494, 72.9914673283913',
+      destination: '33.65879628444844, 73.08346009601216',
+      currentLocation: '33.684714,73.048045',
+      totalDistance: 50,
+      city: 'Islamabad',
+      polygonPoints: viewModel.polyLineArray,
+    );
 
     viewModel.updateDriverLoc(
-        rideId: '62660ffb-abbd-4c36-b3d6-e0941587c291',
+        rideId: '148a0a27-ed88-422b-be7f-19a35872f287',
         currentLocation: '33.684714,73.048045');
   }
 
@@ -182,8 +182,8 @@ class _MapScreenState extends State<MapScreen> {
       child: Column(
         children: [
           FadeInUp(
-            delay: const Duration(milliseconds: 1000),
-            duration: const Duration(milliseconds: 1000),
+            delay: const Duration(milliseconds: 200),
+            duration: const Duration(milliseconds: 200),
             child: AnimatedContainer(
               curve: Curves.easeInOut,
               duration: const Duration(milliseconds: 100),
