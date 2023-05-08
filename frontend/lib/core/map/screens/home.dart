@@ -24,14 +24,13 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
- 
   final Completer<GoogleMapController> _controller = Completer();
 
   final Set<Marker> _markers = {};
   final Set<Polyline> _polyline = {};
 
   final LatLng _center = getLatLngFromSharedPrefs();
-  late LatLng _lastMapPosition;
+  LatLng _lastMapPosition = const LatLng(33.64333419508494, 72.9914673283913);
 
   @override
   void initState() {
@@ -48,7 +47,9 @@ class _MapScreenState extends State<MapScreen> {
 
   void _drawRoute(
       String? source, String? destination, MapViewModel viewModel) async {
-
+    debugPrint('_drawRoute');
+    debugPrint(source.toString());
+    debugPrint(source.toString());
     // Note: update will real cords when not testing
     LatLng src = const LatLng(33.64333419508494, 72.9914673283913);
     LatLng dest = const LatLng(33.65879628444844, 73.08346009601216);
@@ -81,13 +82,13 @@ class _MapScreenState extends State<MapScreen> {
       source: '33.64333419508494, 72.9914673283913',
       destination: '33.65879628444844, 73.08346009601216',
       currentLocation: '33.684714,73.048045',
-      totalDistance: 50,
+      totalDistance: 30,
       city: 'Islamabad',
       polygonPoints: viewModel.polyLineArray,
     );
 
     viewModel.updateDriverLoc(
-        rideId: '148a0a27-ed88-422b-be7f-19a35872f287',
+        rideId: 'bd8c17df-5d49-4546-87ae-3073a7408f8[',
         currentLocation: '33.684714,73.048045');
   }
 
@@ -103,41 +104,44 @@ class _MapScreenState extends State<MapScreen> {
             backgroundColor: AppColors.PRIMARY_300,
             toolbarHeight: config.uiHeightPx * 0.06,
             actions: [
-              Padding(
-                padding: const EdgeInsets.all(3.0),
-                child: TextButton(
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(AppColors.PRIMARY_500),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          side: const BorderSide(color: AppColors.PRIMARY_500)),
-                    ),
-                  ),
-                  onPressed: () async {
-                    await showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      useRootNavigator: true,
-                      builder: (context) {
-                        return RegistrationModal(
-                          onCloseTap: () {},
-                          onErrorOccurred: (String) {},
-                        );
-                      },
-                    );
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Text(
-                      'Register as a Driver',
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.w400),
-                    ),
-                  ),
-                ),
-              )
+              !loginStore.isDriver
+                  ? Padding(
+                      padding: const EdgeInsets.all(3.0),
+                      child: TextButton(
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                AppColors.PRIMARY_500),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  side: const BorderSide(
+                                      color: AppColors.PRIMARY_500)),
+                            ),
+                          ),
+                          onPressed: () async {
+                            await showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              useRootNavigator: true,
+                              builder: (context) {
+                                return RegistrationModal(
+                                  onCloseTap: () {},
+                                  onErrorOccurred: (String) {},
+                                );
+                              },
+                            );
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Text(
+                              'Register as a Driver',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                          )))
+                  : const SizedBox(height: 0),
             ],
           ),
           drawer: const AppDrawer(
@@ -206,10 +210,8 @@ class _MapScreenState extends State<MapScreen> {
                       children: [
                         InkWell(
                           child: !loginStore.isDriver
-                              ? SearchRidesModal(                               
-                                  onRideRequest: () {
-                                    // viewModel.requestRide(source: ,rideId: ,destination: ,distance: );
-                                  },
+                              ? SearchRidesModal(
+                                  onRideRequest: () {},
                                 )
                               : StartRideModal(
                                   onRideStarted: (String curLoc, String dest) {

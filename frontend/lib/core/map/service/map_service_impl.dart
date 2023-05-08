@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
+import 'package:hop_on/Utils/helpers.dart';
 import 'package:hop_on/core/map/domain/map_service.dart';
 import 'package:hop_on/core/map/models/request_ride_response.dart';
 import 'package:hop_on/core/map/models/ride_for_passenger_response.dart';
@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../Utils/error.dart';
 import '../../../config/network/network_config.dart';
 import '../models/create_ride_response.dart';
+import '../models/get_ride_location_response.dart';
 
 class MapServiceImpl extends MapService {
   final Dio dio = NetworkConfig().dio;
@@ -28,14 +29,17 @@ class MapServiceImpl extends MapService {
         'destination': destination,
         "city": city ?? 'Islamabad',
       };
+      logger("BranchServiceImpl: findRides() Body: $body");
 
       final Response response =
           await dio.get('/ride-for-passenger', queryParameters: body);
+
+      logger("BranchServiceImpl: findRides() Response: ${response.data}");
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         final RideForPassengerResponse driverResponse =
             RideForPassengerResponse.fromJson(
                 response.data as Map<String, dynamic>);
-
         return driverResponse;
       } else {
         throw AppErrors.processErrorJson(
@@ -67,16 +71,15 @@ class MapServiceImpl extends MapService {
     num? ETA,
   }) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String pessengerId = prefs.getString("passengerId") ??
-        '5ee04f51-0692-48bb-bcbf-de3d88b90dd7';
-    debugPrint('callleeddd');
-    // final String userName = jsonDecode(prefs.getString('user') ?? '').name;
-    // debugPrint(userName.toLowerCase());
 
+    final String user = prefs.getString("user") ?? '';
+    final String pessengerId = prefs.getString("passengerID") ?? '';
+
+                    
     final body = {
       "rideId": rideId,
       "passengerId": pessengerId,
-      "passengerName": 'userName', // TO DO : get name by decoding use
+      "passengerName": jsonDecode(user)['firstName'], 
       "driverName": driverName,
       "passengerSource": passengerSource,
       "passengerDestination": passengerDestination,
@@ -84,18 +87,15 @@ class MapServiceImpl extends MapService {
       "ETA": ETA,
       "fare": fare
     };
-debugPrint('EHEEEE');
-    debugPrint(driverName.toString());
-    debugPrint(rideId.toString());
-    debugPrint(distance.toString());
 
+    logger("BranchServiceImpl: requestRide() Body: $body");
     try {
       final Response response = await dio.post(
         '/ride/request',
         data: jsonEncode(body),
       );
 
-      debugPrint(response.data);
+      logger("BranchServiceImpl: requestRide() Response: ${response.data}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final RequestRideResponse driverResponse =
@@ -139,7 +139,7 @@ debugPrint('EHEEEE');
       final String? driverID = prefs.getString("driverId");
 
       final body = {
-        'driverId': driverID ?? 'e0d89a2b-f8da-441a-8182-bc4bb4f945e7',
+        'driverId': driverID ?? '',
         "source": source,
         'destination': destination,
         'currentLocation': currentLocation,
@@ -148,11 +148,13 @@ debugPrint('EHEEEE');
         'polygonPoints': jsonEncode(polygonPoints)
       };
 
+      logger("BranchServiceImpl: createRide() Body: $body");
       final Response response = await dio.post(
         '/ride',
         data: jsonEncode(body),
       );
 
+      logger("BranchServiceImpl: createRide() Response: $response.data");
       if (response.statusCode == 200 || response.statusCode == 201) {
         final CreateRideResponse driverResponse =
             CreateRideResponse.fromJson(response.data as Map<String, dynamic>);
@@ -177,6 +179,126 @@ debugPrint('EHEEEE');
     }
   }
 
+
+
+  @override
+  Future<RequestRideResponse> acceptRide({
+    String? rideId,
+    String? passengerSource,
+    String? passengerDestination,
+    String? driverName,
+    num? distance,
+    num? fare,
+    num? ETA,
+  }) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    final String user = prefs.getString("user") ?? '';
+    final String pessengerId = prefs.getString("passengerID") ??
+        'fabc32ad-6adb-4213-a910-a584a19c3484';
+
+    final body = {
+      "rideId": rideId,
+      "passengerId": pessengerId,
+      "passengerName": jsonDecode(user)['firstName'],
+      "driverName": driverName,
+      "passengerSource": passengerSource,
+      "passengerDestination": passengerDestination,
+      "distance": distance,
+      "ETA": ETA,
+      "fare": fare
+    };
+    logger("BranchServiceImpl: acceptRide() Body: $body");
+
+    try {
+      final Response response = await dio.post(
+        '/ride/accept-request',
+        data: jsonEncode(body),
+      );
+      logger("BranchServiceImpl: acceptRide() Response: $response.data");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final RequestRideResponse driverResponse =
+            RequestRideResponse.fromJson(response.data as Map<String, dynamic>);
+
+        return driverResponse;
+      } else {
+        throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
+      }
+    } catch (e) {
+      if (e is DioError) {
+        if (e.response != null) {
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
+        } else {
+          if (e.message.contains("SocketException: Failed host lookup")) {
+            throw "No internet connection";
+          }
+        }
+      }
+
+      throw e.toString();
+    }
+  }
+
+  @override
+  Future<RequestRideResponse> rejectRide({
+    String? rideId,
+    String? passengerSource,
+    String? passengerDestination,
+    String? driverName,
+    num? distance,
+    num? fare,
+    num? ETA,
+  }) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    final String user = prefs.getString("user") ?? '';
+    final String pessengerId = prefs.getString("passengerID") ?? '';
+
+    final body = {
+      "rideId": rideId,
+      "passengerId": 'fabc32ad-6adb-4213-a910-a584a19c3484',
+      "passengerName": jsonDecode(user)['firstName'],
+      "driverName": driverName,
+      "passengerSource": passengerSource,
+      "passengerDestination": passengerDestination,
+      "distance": distance,
+      "ETA": ETA,
+      "fare": fare
+    };
+    logger("BranchServiceImpl: rejectRide() Body: $body");
+    try {
+      final Response response = await dio.post(
+        '/ride/reject-request',
+        data: jsonEncode(body),
+      );
+
+      logger("BranchServiceImpl: rejectRide() RAesponse: $response.data");
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final RequestRideResponse driverResponse =
+            RequestRideResponse.fromJson(response.data as Map<String, dynamic>);
+
+        return driverResponse;
+      } else {
+        throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
+      }
+    } catch (e) {
+      if (e is DioError) {
+        if (e.response != null) {
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
+        } else {
+          if (e.message.contains("SocketException: Failed host lookup")) {
+            throw "No internet connection";
+          }
+        }
+      }
+
+      throw e.toString();
+    }
+  }
+
   @override
   Future<void> updateDriverLoc({
     String? rideId,
@@ -192,7 +314,8 @@ debugPrint('EHEEEE');
         "currentLocation": currentLocation
       };
 
-      final Response response = await dio.post(
+      logger("BranchServiceImpl: updateDriverLoc() Body: $body");
+      await dio.post(
         '/ride/driver/current-location',
         data: jsonEncode(body),
       );
@@ -210,4 +333,78 @@ debugPrint('EHEEEE');
       throw e.toString();
     }
   }
+
+  @override
+  Future<void> updatePassengerLoc({
+    String? rideId,
+    String? currentLocation,
+  }) async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? passengerId = prefs.getString("passengerId");
+
+      final body = {
+        "rideId": rideId ?? '62660ffb-abbd-4c36-b3d6-e0941587c291',
+        "entityId": passengerId ?? '5ee04f51-0692-48bb-bcbf-de3d88b90dd7',
+        "currentLocation": currentLocation
+      };
+
+      logger("BranchServiceImpl: updatePassengerLoc() Body: $body");
+      await dio.post(
+        '/ride/passenger/current-location',
+        data: jsonEncode(body),
+      );
+    } catch (e) {
+      if (e is DioError) {
+        if (e.response != null) {
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
+        } else {
+          if (e.message.contains("SocketException: Failed host lookup")) {
+            throw "No internet connection";
+          }
+        }
+      }
+      throw e.toString();
+    }
+  }
+
+  @override
+  Future<GetRideResponse> getRideLocation(
+    String rideId,
+  ) async {
+    try {
+      final body = {
+        "rideId": rideId,
+      };
+
+      logger("BranchServiceImpl: getRideLocation() Body: $body");
+      final Response response = await dio.get(
+        '/ride/$rideId/current-location',
+        queryParameters: body,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final GetRideResponse rideResponse =
+            GetRideResponse.fromJson(response.data as Map<String, dynamic>);
+
+        return rideResponse;
+      } else {
+        throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
+      }
+    } catch (e) {
+      if (e is DioError) {
+        if (e.response != null) {
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
+        } else {
+          if (e.message.contains("SocketException: Failed host lookup")) {
+            throw "No internet connection";
+          }
+        }
+      }
+      throw e.toString();
+    }
+  }
+
 }

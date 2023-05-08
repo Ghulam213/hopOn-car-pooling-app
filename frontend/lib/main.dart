@@ -32,25 +32,6 @@ late SharedPreferences sharedPreferences;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // await SentryFlutter.init(
-  //     (options) => {
-  //           options.attachStacktrace = true,
-  //           // options.sampleRate = 0.5, // send only 50% of the events randomlly
-  //           options.sendDefaultPii = true,
-  //         },
-  //     appRunner: () => {
-  //           EasyLocalization.ensureInitialized(),
-  //           NetworkConfig().initNetworkConfig(),
-  //           SystemChrome.setPreferredOrientations(
-  //               [DeviceOrientation.portraitUp]).then(
-  //             (value) => runApp(EasyLocalization(
-  //                 supportedLocales: const [Locale('en', ''), Locale('ar', '')],
-  //                 path:
-  //                     'assets/translations', // <-- change the path of the translation files
-  //                 fallbackLocale: const Locale('en', ''),
-  //                 child: const App())),
-  //           )
-  //         });
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -72,11 +53,9 @@ Future<void> main() async {
 
 Future _getDeviceInfo() async {
   final prefs = await SharedPreferences.getInstance();
-
+  // prefs.clear();
   final DeviceInformation? deviceInformation =
       await DeviceInfoService.getDeviceInfo();
-  debugPrint('deviceId');
-  debugPrint(deviceInformation?.uUID.toString());
   prefs.setString("deviceId", deviceInformation?.uUID.toString() ?? '');
   prefs.setString("deviceInfo", deviceInformation?.toJson().toString() ?? '');
 }

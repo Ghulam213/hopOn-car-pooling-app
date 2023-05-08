@@ -42,7 +42,6 @@ class _SearchRidesModalState extends State<SearchRidesModal> {
   final source = '';
   final destination = '';
 
-  Timer? _debounce;
 
   Future<String?> autoCompleteSearch(String value) async {
     if (value != '') {
@@ -117,15 +116,15 @@ class _SearchRidesModalState extends State<SearchRidesModal> {
                                   CustomPlaceTextWidget(
                                     hintText: "Current location",
                                     onSubmitted: (value) {},
-                                    controlelr: currentController,
-                                    prefix: PrefixIcon1(),
+                                    controller: currentController,
+                                    prefix: const PrefixIcon1(),
                                     config: config,
                                   ),
                                   const SizedBox(height: 5.0),
                                   CustomPlaceTextWidget(
                                     hintText: "Your destination",
                                     onSubmitted: (value) {},
-                                    controlelr: destinationController,
+                                    controller: destinationController,
                                     prefix: const PrefixIcon2(),
                                     config: config,
                                   ),

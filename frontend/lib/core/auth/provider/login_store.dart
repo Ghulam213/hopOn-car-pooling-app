@@ -12,10 +12,12 @@ import 'package:hop_on/Utils/error.dart';
 import 'package:hop_on/config/network/network_config.dart';
 import 'package:hop_on/core/auth/screens/otp_screen.dart';
 import 'package:hop_on/core/map/screens/home.dart';
+import 'package:hop_on/core/notifications/services/notification_service.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../Utils/device_info_service.dart';
+import '../../../Utils/helpers.dart';
 
 part 'login_store.g.dart';
 
@@ -209,8 +211,6 @@ abstract class LoginStoreBase with Store {
       isOtpLoading = false;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        log(response.data['data'].toString());
-        // await _storeUserData(response.data['data']);
         debugPrint(response.data['data']['id']);
         prefs.setString('userEmail', response.data['data']['email'] as String);
         prefs.setString(
@@ -272,22 +272,49 @@ abstract class LoginStoreBase with Store {
     prefs.setString("deviceId", deviceInformation?.uUID.toString() ?? '');
     prefs.setString("deviceInfo", deviceInformation?.toJson().toString() ?? '');
 
+    NotificationService notificationService = NotificationService(
+      onNotificationReceived: (_) {},
+    );
+
+    String token = await notificationService.getToken();
+
     final Map<String, dynamic> userAuth =
         responseData['data'] as Map<String, dynamic>;
+    debugPrint(userAuth['user'].toString());
 
-    debugPrint(jsonEncode(userAuth['user']).toString());
     prefs.setString('accessToken', userAuth['accessToken'] as String);
     prefs.setString('refreshToken', userAuth['refreshToken'] as String);
     prefs.setString('userID', userAuth['userId'] as String);
     prefs.setString('userMode', userAuth['user']['currentMode'] as String);
     prefs.setString("user", jsonEncode(userAuth['user']));
 
+    logger('CURRENT MODE');
+    logger(userAuth['user']['currentMode']);
     if (userAuth['user']['currentMode'] == 'DRIVER') {
       isDriver = true;
       prefs.setString("driverID", userAuth['driverId'] as String);
     } else {
       isDriver = false;
       prefs.setString("passengerID", userAuth['passengerId'] as String);
+    }
+
+    var body = {
+      "userId": userAuth['userId'] as String,
+      "deviceType": deviceInformation?.toString() ?? '',
+      "token": token
+    };
+
+    try {
+      final response = await dio.post(
+        '/user/device',
+        data: jsonEncode(body),
+      );
+      debugPrint(response.data.toString());
+      if (response.statusCode == 200 || response.statusCode == 201) {}
+
+      log("Response After posting token: ${response.data}");
+    } on DioError catch (e) {
+      log('Sending ddevice data $e');
     }
   }
 
