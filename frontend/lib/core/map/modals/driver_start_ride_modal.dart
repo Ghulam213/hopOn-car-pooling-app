@@ -90,15 +90,15 @@ class StartRideModalState extends State<StartRideModal> {
                                   CustomPlaceTextWidget(
                                     hintText: "Current location",
                                     onSubmitted: (value) {},
-                                    controlelr: currentController,
-                                    prefix: PrefixIcon1(),
+                                    controller: currentController,
+                                    prefix: const PrefixIcon1(),
                                     config: config,
                                   ),
                                   const SizedBox(height: 5.0),
                                   CustomPlaceTextWidget(
                                     hintText: "going where?",
                                     onSubmitted: (value) {},
-                                    controlelr: destinationController,
+                                    controller: destinationController,
                                     prefix: const PrefixIcon2(),
                                     config: config,
                                   ),

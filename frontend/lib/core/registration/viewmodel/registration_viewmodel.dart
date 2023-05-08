@@ -36,7 +36,6 @@ class RegistrationViewModel extends ChangeNotifier {
       getDriverResource = Resource.success(response);
 
       id = getDriverResource.modelResponse!.data!.id!.toString();
-
       active = getDriverResource.modelResponse!.data!.active.toString();
       cnicBack = getDriverResource.modelResponse!.data!.cnicBack.toString();
       cnicFront = getDriverResource.modelResponse!.data!.cnicFront.toString();

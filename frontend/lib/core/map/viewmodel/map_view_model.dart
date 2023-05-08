@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
@@ -8,6 +10,7 @@ import '../../../config/network/resources.dart';
 import '../domain/map_service.dart';
 import '../models/create_ride_response.dart';
 import '../models/direction.dart';
+import '../models/get_ride_location_response.dart';
 import '../models/request_ride_response.dart';
 import '../models/ride_for_passenger.dart';
 import '../models/ride_for_passenger_response.dart';
@@ -31,7 +34,7 @@ class MapViewModel extends ChangeNotifier {
   String city = '';
   String rideStartedAt = '';
   String rideEndedAt = '';
-  
+
   final List<LatLng> _polyLineArray = [];
   final List<RideForPassenger> _availableRides = [];
 
@@ -47,7 +50,7 @@ class MapViewModel extends ChangeNotifier {
     try {
       findRidesResource = Resource.loading();
       notifyListeners();
-
+     
       final RideForPassengerResponse response = await _mapService.findRides(
         source: source,
         destination: destination,
@@ -62,6 +65,8 @@ class MapViewModel extends ChangeNotifier {
 
         for (var datum in findRidesResource.modelResponse!.data!) {
           _availableRides.add(datum);
+
+          log(datum.id.toString());
         }
 
         for (var datum in _availableRides) {
@@ -80,8 +85,7 @@ class MapViewModel extends ChangeNotifier {
                 src[1].map((placemark) => placemark.name).toString();
           }
         }
-        debugPrint("findRides");
-        debugPrint(_availableRides.toString());
+        debugPrint("Available Rides${_availableRides.toString()}");
         notifyListeners();
       }
     } catch (e) {
@@ -147,10 +151,135 @@ class MapViewModel extends ChangeNotifier {
 
       createRideResource = Resource.success(response);
 
-  
       notifyListeners();
     } catch (e) {
       createRideResource = Resource.failed(e.toString());
+      notifyListeners();
+    }
+  }
+
+  Resource<void> acceptRideResource = Resource.idle();
+
+  Future<void> acceptRide({
+    required String? rideId,
+    required String? passengerSource,
+    required String? passengerDestination,
+    required String? driverName,
+    required num? distance,
+    required num? fare,
+    required num? ETA,
+  }) async {
+    try {
+      acceptRideResource = Resource.loading();
+      notifyListeners();
+
+      await _mapService.acceptRide(
+          rideId: rideId,
+          passengerSource: passengerSource,
+          passengerDestination: passengerDestination,
+          driverName: driverName,
+          distance: distance,
+          fare: fare,
+          ETA: ETA);
+
+      notifyListeners();
+    } catch (e) {
+      acceptRideResource = Resource.failed(e.toString());
+      notifyListeners();
+    }
+  }
+
+  Resource<void> rejectRideResource = Resource.idle();
+
+  Future<void> rejectRide({
+    required String? rideId,
+    required String? passengerSource,
+    required String? passengerDestination,
+    required String? driverName,
+    required num? distance,
+    required num? fare,
+    required num? ETA,
+  }) async {
+    try {
+      rejectRideResource = Resource.loading();
+      notifyListeners();
+
+      await _mapService.acceptRide(
+          rideId: rideId,
+          passengerSource: passengerSource,
+          passengerDestination: passengerDestination,
+          driverName: driverName,
+          distance: distance,
+          fare: fare,
+          ETA: ETA);
+
+      notifyListeners();
+    } catch (e) {
+      rejectRideResource = Resource.failed(e.toString());
+      notifyListeners();
+    }
+  }
+
+  Resource<void> updateDriverLocResource = Resource.idle();
+
+  Future<void> updateDriverLoc({
+    String? rideId,
+    String? currentLocation,
+  }) async {
+    try {
+      updateDriverLocResource = Resource.loading();
+      notifyListeners();
+
+      await _mapService.updateDriverLoc(
+        rideId: rideId,
+        currentLocation: currentLocation,
+      );
+
+      notifyListeners();
+    } catch (e) {
+      updateDriverLocResource = Resource.failed(e.toString());
+      notifyListeners();
+    }
+  }
+
+  Resource<void> updatePassengerLocResource = Resource.idle();
+
+  Future<void> updatePassengerLoc({
+    String? rideId,
+    String? currentLocation,
+  }) async {
+    try {
+      updatePassengerLocResource = Resource.loading();
+      notifyListeners();
+
+      await _mapService.updatePassengerLoc(
+        rideId: rideId,
+        currentLocation: currentLocation,
+      );
+
+      notifyListeners();
+    } catch (e) {
+      updatePassengerLocResource = Resource.failed(e.toString());
+      notifyListeners();
+    }
+  }
+
+  Resource<GetRideResponse> getRideLocationResource = Resource.idle();
+
+  Future<void> getRideLocation(
+    String rideId,
+  ) async {
+    try {
+      getRideLocationResource = Resource.loading();
+      notifyListeners();
+
+      final GetRideResponse response =
+          await _mapService.getRideLocation(rideId);
+
+      getRideLocationResource = Resource.success(response);
+      notifyListeners();
+    } catch (e) {
+      getRideLocationResource = Resource.failed(e.toString());
       notifyListeners();
     }
   }
@@ -160,8 +289,7 @@ class MapViewModel extends ChangeNotifier {
     String? destination,
   }) async {
     try {
-      notifyListeners();
-
+        
       Dio dio = Dio();
       final direction = await dio.post(
           'https://maps.googleapis.com/maps/api/directions/json?',
@@ -192,23 +320,4 @@ class MapViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> updateDriverLoc({
-    String? rideId,
-    String? currentLocation,
-  }) async {
-    try {
-      requestRideResource = Resource.loading();
-      notifyListeners();
-
-      await _mapService.updateDriverLoc(
-        rideId: rideId,
-        currentLocation: currentLocation,
-      );
-
-      notifyListeners();
-    } catch (e) {
-      requestRideResource = Resource.failed(e.toString());
-      notifyListeners();
-    }
-  }
 }

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../Utils/error.dart';
+import '../../../Utils/helpers.dart';
 import '../../../config/network/network_config.dart';
 import '../domain/registartion_service.dart';
 import '../models/driver_response.dart';
@@ -46,18 +47,19 @@ class RegistrationServiceImpl extends RegistrationService {
           "vehicleRegImage": vehicleRegImage,
         }
       };
+      logger("BranchServiceImpl: registerDriver() Body: $body");
 
       final Response response = await dio.post('/driver',
           data: jsonEncode(body),
           options: Options(headers: {
             HttpHeaders.contentTypeHeader: "application/json",
           }));
-      debugPrint(response.toString());
+          
+      logger("BranchServiceImpl: registerDriver() Respose: $response.data");
       if (response.statusCode == 200 || response.statusCode == 201) {
         final DriverInfoResponse driverResponse = DriverInfoResponse.fromJson(response.data as Map<String, dynamic>);
         log(response.data.toString());
         final SharedPreferences prefs = await SharedPreferences.getInstance();
-
 
         return driverResponse;
       } else {
@@ -73,7 +75,6 @@ class RegistrationServiceImpl extends RegistrationService {
           }
         }
       }
-
       throw e.toString();
     }
   }
@@ -82,12 +83,14 @@ class RegistrationServiceImpl extends RegistrationService {
   Future<DriverInfoResponse> getDriver() async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final String? id = prefs.getString("userID");
+      final String? id = prefs.getString("driverId");
 
-      final Response response = await dio.get('/driver', queryParameters: {'userId': id});
+      final Response response =
+          await dio.get('/driver/$id', queryParameters: {'id': id});
+      debugPrint(response.data.toString());
       if (response.statusCode == 200 || response.statusCode == 201) {
         final DriverInfoResponse driverResponse = DriverInfoResponse.fromJson(response.data as Map<String, dynamic>);
-        log(response.data.toString());
+     
         final SharedPreferences prefs = await SharedPreferences.getInstance();
 
         await prefs.setString("driverID", driverResponse.data!.id!.toString());
@@ -107,7 +110,6 @@ class RegistrationServiceImpl extends RegistrationService {
           }
         }
       }
-
       throw e.toString();
     }
   }
@@ -140,7 +142,6 @@ class RegistrationServiceImpl extends RegistrationService {
           }
         }
       }
-
       throw e.toString();
     }
   }
@@ -159,7 +160,6 @@ class RegistrationServiceImpl extends RegistrationService {
 
         await prefs.setString("driverID", driverResponse.data!.id!.toString());
 
-        debugPrint("Searching Driver Details");
         return driverResponse;
       } else {
         throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
@@ -174,7 +174,6 @@ class RegistrationServiceImpl extends RegistrationService {
           }
         }
       }
-
       throw e.toString();
     }
   }

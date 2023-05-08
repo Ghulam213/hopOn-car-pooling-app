@@ -1,4 +1,6 @@
+import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -20,7 +22,6 @@ void setSharedPrefs(String key, String value) async {
 }
 
 LatLng getLatLngFromSharedPrefs() {
-
   return const LatLng(33.6844, 73.0479);
 
   // TO DO: REPLACE WHEN TESTING ON REAL DEVICE
@@ -57,8 +58,6 @@ List<LatLng>? convertListToListLatLng(List<List<double>>? input) {
   return input.map((point) => LatLng(point[1], point[0])).toList();
 }
 
-
-
 extension OnPressed on Widget {
   Widget ripple(Function onPressed,
           {BorderRadiusGeometry borderRadius =
@@ -83,6 +82,11 @@ extension OnPressed on Widget {
           )
         ],
       );
+}
+
+void logger(String? message) {
+  // ignore: avoid_print
+  kDebugMode ? print(('$message')) : log('$message');
 }
 
 

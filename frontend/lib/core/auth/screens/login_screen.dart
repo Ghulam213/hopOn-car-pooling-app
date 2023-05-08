@@ -233,6 +233,7 @@ class PasswordInput extends StatelessWidget {
               keyboardType: TextInputType.number,
               cursorColor: AppColors.PRIMARY_500,
               controller: controller,
+              onChanged: (value) {},
               style: Theme.of(context)
                   .textTheme
                   .bodyMedium!

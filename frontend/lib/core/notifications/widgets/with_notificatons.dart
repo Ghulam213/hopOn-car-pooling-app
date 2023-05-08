@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:hop_on/core/notifications/models/notification_datamodel.dart';
 import 'package:hop_on/core/notifications/services/notification_service.dart';
-import 'package:hop_on/core/notifications/widgets/ride_request.dart';
+import 'package:hop_on/core/notifications/widgets/ride_notification_modal.dart';
 
 Map<String, Function(BuildContext, NotificationDataModel)> notificationsConfig = {
   'RIDE_REQUEST': (BuildContext context, NotificationDataModel notification) {
     showModalBottomSheet(
       context: context,
-      builder: (context) => RideRequestModal(notification),
+      builder: (context) => RideNotificationModal(notification),
     );
-
-    // Future.delayed(const Duration(seconds: 45), () {
-    //   Navigator.pop(context);
-    // });
   },
 };
 

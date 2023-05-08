@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:easy_localization/easy_localization.dart' as easy;
 import 'package:flutter/material.dart';
@@ -353,10 +352,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final String age = _ageController.text;
     final String gender = _genderController.text;
 
-    log(fullCode);
+
 
     await profileViewModel.updateProfile(
-      id: profileViewModel.id,
       birthDate: 'birthDate',
       currentCity: 'currentCity',
       currentMode: 'currentMode',

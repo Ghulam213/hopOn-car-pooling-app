@@ -1,7 +1,9 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hop_on/core/map/modals/enjoy_ride_modal.dart';
 import 'package:hop_on/core/map/widgets/ride_card.dart';
 import 'package:provider/provider.dart';
 
@@ -19,7 +21,7 @@ buildTripDetails(BuildContext context, String source, String destination,
 
   Navigator.pop(context);
   showModalBottomSheet(
-      isDismissible: false,
+      isDismissible: true,
       isScrollControlled: true,
       elevation: 5,
       backgroundColor: Colors.white,
@@ -48,7 +50,6 @@ buildTripDetails(BuildContext context, String source, String destination,
               } else {
                 if (viewModel.availableRides.isNotEmpty) {
                   return Column(children: [
-
                     Container(
                         width: 80,
                         height: 2.875,
@@ -79,28 +80,26 @@ buildTripDetails(BuildContext context, String source, String destination,
                             return Column(
                               children: [
                                 tripdetails(
-                                  ImagesAsset.down,
-                                  "Your Current Location",
-                                  viewModel.availableRides[index].source
-                                      .toString(),
-                                  "Estimated Distance",
-                                  ImagesAsset.run,
-                                  viewModel.availableRides[index].ETA
-                                      .toString(),
-                                ),
-                            
-                                
+                                    ImagesAsset.down,
+                                    "Your Current Location",
+                                    viewModel.availableRides[index].source
+                                        .toString(),
+                                    "Estimated Distance",
+                                    ImagesAsset.run,
+                                    viewModel.availableRides[index].ETA
+                                        .toString(),
+                                    config),
                                 const SizedBox(height: 10),
                                 tripdetails(
-                                  ImagesAsset.locate,
-                                  "Your Destination",
-                                  viewModel.availableRides[index].destination
-                                      .toString(),
-                                  "Estimated time",
-                                  ImagesAsset.clock,
-                                  viewModel.availableRides[index].ETA
-                                      .toString(),
-                                ),
+                                    ImagesAsset.locate,
+                                    "Your Destination",
+                                    viewModel.availableRides[index].destination
+                                        .toString(),
+                                    "Estimated time",
+                                    ImagesAsset.clock,
+                                    viewModel.availableRides[index].ETA
+                                        .toString(),
+                                    config),
                                 const SizedBox(height: 10),
                                 Padding(
                                   padding: EdgeInsets.symmetric(
@@ -136,7 +135,21 @@ buildTripDetails(BuildContext context, String source, String destination,
                     ),
                   ]);
                 } else {
-                  return const Text('No Rides Found');
+                  return LoginButton(
+                    text: "buildEnjoyRide",
+                    onPress: () {
+                      Future.delayed(const Duration(milliseconds: 1), () {
+                        Navigator.pop(context);
+                        buildEnjoyRide(context);
+                      });
+                    },
+                  );
+                  // return Center(
+                  //     child: Text(
+                  //   'No Rides Found',
+                  //   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  //       fontSize: 15, height: 1.0, color: AppColors.FONT_GRAY),
+                  // ));
                 }
               }
             }));
@@ -189,22 +202,15 @@ Future<dynamic> showSelectRideModal(BuildContext context, SizeConfig config,
               ),
               const SizedBox(height: 10),
               RideCard(index: index),
-              const Spacer(),                                         
-             
+              const Spacer(),
             ],
           ),
         );
       });
 }
 
-Widget tripdetails(
-  String icon,
-  String locate,
-  String location,
-  String extimated,
-  String eIcon,
-  String eDistance,
-) {
+Widget tripdetails(String icon, String locate, String location,
+    String extimated, String eIcon, String eDistance, SizeConfig config) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 30.0),
     child: Row(
@@ -228,21 +234,33 @@ Widget tripdetails(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  locate,
-                  style: GoogleFonts.montserrat(
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.PRIMARY_500,
+                SizedBox(
+                  width: config.uiWidthPx * 0.5,
+                  child: AutoSizeText(
+                    locate,
+                    maxLines: 1,
+                    minFontSize: 9,
+                    overflow: TextOverflow.clip,
+                    style: GoogleFonts.montserrat(
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.PRIMARY_500,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 10),
-                Text(
-                  location,
-                  style: GoogleFonts.montserrat(
-                    fontSize: 10.0,
-                    fontWeight: FontWeight.w400,
-                    color: const Color(0xFF818181),
+                SizedBox(
+                  width: config.uiWidthPx * 0.5,
+                  child: AutoSizeText(
+                    location,
+                    maxLines: 1,
+                    minFontSize: 9,
+                    overflow: TextOverflow.clip,
+                    style: GoogleFonts.montserrat(
+                      fontSize: 10.0,
+                      fontWeight: FontWeight.w400,
+                      color: const Color(0xFF818181),
+                    ),
                   ),
                 )
               ],

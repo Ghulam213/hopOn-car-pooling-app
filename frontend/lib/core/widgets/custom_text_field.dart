@@ -10,7 +10,7 @@ class CustomPlaceTextWidget extends StatelessWidget {
   final Widget? prefix;
   final String hintText;
   final SizeConfig config;
-  final TextEditingController controlelr;
+  final TextEditingController controller;
 
   const CustomPlaceTextWidget(
       {this.onSubmitted,
@@ -18,7 +18,7 @@ class CustomPlaceTextWidget extends StatelessWidget {
       this.prefix,
       required this.hintText,
       required this.config,
-      required this.controlelr,
+      required this.controller,
       Key? key})
       : super(key: key);
 
@@ -32,7 +32,8 @@ class CustomPlaceTextWidget extends StatelessWidget {
         scrollPadding: const EdgeInsets.symmetric(vertical: 15),
         onSubmitted: onSubmitted,
         readOnly: false,
-        controller: controlelr,
+        
+        controller: controller,
         cursorColor: AppColors.FONT_GRAY,
         keyboardType: TextInputType.streetAddress,
         autofillHints: const [AutofillHints.addressCity],
@@ -68,6 +69,7 @@ class CustomPlaceTextWidget extends StatelessWidget {
                 color: AppColors.PRIMARY_500.withOpacity(0.9),
               ),
         ),
+        onChanged: (value) {},
       ),
     );
   }
