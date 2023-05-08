@@ -12,7 +12,7 @@ class CustomPlaceTextWidget extends StatelessWidget {
   final SizeConfig config;
   final TextEditingController controlelr;
 
-  CustomPlaceTextWidget(
+  const CustomPlaceTextWidget(
       {this.onSubmitted,
       this.suffix,
       this.prefix,

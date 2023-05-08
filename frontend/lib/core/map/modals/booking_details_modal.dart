@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hop_on/core/map/modals/trip_details_modal.dart';
+
 import '../../../Utils/colors.dart';
 import '../../../Utils/image_path.dart';
 import '../../../config/sizeconfig/size_config.dart';
-import 'enjoy_ride_modal.dart';
+import '../../widgets/dot_widget.dart';
 
 buildBookingDetails(BuildContext context) {
   showModalBottomSheet(
@@ -16,7 +16,7 @@ buildBookingDetails(BuildContext context) {
       clipBehavior: Clip.hardEdge,
       context: context,
       builder: (context) {
-        return BookingDetials();
+        return const BookingDetials();
       });
 }
 
@@ -32,11 +32,6 @@ class BookingDetials extends StatefulWidget {
 class _BookingDetialsState extends State<BookingDetials> {
   @override
   void initState() {
-    // setState(() {
-    //   Future.delayed(Duration(seconds: 5), () {
-    //     buildEnjoyRide(context);
-    //   });
-    // });
     super.initState();
   }
 
@@ -230,22 +225,22 @@ class _BookingDetialsState extends State<BookingDetials> {
                   ImagesAsset.time,
                   height: 12,
                   width: 12,
-                  color: Color(0xFF999393),
+                color: const Color(0xFF999393),
                 ),
-                SizedBox(width: 5),
+              const SizedBox(width: 5),
                 Text(
                 "Driver Will Arrive In 5 munites",
                   style: GoogleFonts.montserrat(
                     fontSize: 12.0,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF999393),
+                  color: const Color(0xFF999393),
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 10.0),
+          const SizedBox(height: 10.0),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 50),
+            padding: const EdgeInsets.symmetric(horizontal: 50),
               child: Container(
                 height: 40,
               width: config.uiWidthPx * 1,

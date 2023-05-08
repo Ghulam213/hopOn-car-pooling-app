@@ -7,6 +7,10 @@ class NetworkConfig {
   late Dio dio;
 
   static const _STAGING_URL = "http://10.0.2.2:3001";
+  //  "http://10.0.2.2:3001"; // for android
+
+  static const _STAGING_URL_IOS = "http://localhost:3001";
+
 
   factory NetworkConfig() {
     return _instance;
@@ -21,6 +25,9 @@ class NetworkConfig {
 
     dio = Dio(BaseOptions(
       baseUrl: baseUrl,
+      connectTimeout: 5000,
+      receiveTimeout: 3000,
+
     ))
       ..interceptors.add(DioInterceptior());
   }

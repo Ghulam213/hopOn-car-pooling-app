@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart' as easy;
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 import '../../../Utils/colors.dart';
 import '../../../config/sizeconfig/size_config.dart';
@@ -57,7 +56,7 @@ class _ProfileScreenState extends State<RiderDetailCard> {
                         ],
                       )
                     else
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
@@ -77,13 +76,13 @@ class _ProfileScreenState extends State<RiderDetailCard> {
                       width: config.uiWidthPx * 0.9,
                       height: config.sh(30).toDouble(),
                       padding: const EdgeInsets.all(8.0),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 8),
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 8),
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
                             'Umer',
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppColors.FONT_GRAY,
                               fontWeight: FontWeight.w400,
                               fontSize: 13,
@@ -110,14 +109,14 @@ class _ProfileScreenState extends State<RiderDetailCard> {
                         color: AppColors.LM_BACKGROUND_BASIC,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 8),
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 8),
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
                             'Zia',
                             textDirection: TextDirection.ltr,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppColors.FONT_GRAY,
                               fontWeight: FontWeight.w400,
                               fontSize: 13,
@@ -144,14 +143,14 @@ class _ProfileScreenState extends State<RiderDetailCard> {
                         color: AppColors.LM_BACKGROUND_BASIC,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 8),
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 8),
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
                             'mzia.bese19seecs@seecs.edu.pk',
                             textDirection: TextDirection.ltr,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppColors.FONT_GRAY,
                               fontWeight: FontWeight.w400,
                               fontSize: 13,
@@ -178,14 +177,14 @@ class _ProfileScreenState extends State<RiderDetailCard> {
                         color: AppColors.LM_BACKGROUND_BASIC,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 8),
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 8),
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
                             '+923360555666',
                             textDirection: TextDirection.ltr,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppColors.FONT_GRAY,
                               fontWeight: FontWeight.w400,
                               fontSize: 13,
@@ -213,8 +212,8 @@ class _ProfileScreenState extends State<RiderDetailCard> {
                         color: AppColors.LM_BACKGROUND_BASIC,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 8),
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 8),
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: Align(
@@ -222,7 +221,7 @@ class _ProfileScreenState extends State<RiderDetailCard> {
                             child: Text(
                               'Male',
                               textDirection: TextDirection.ltr,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: AppColors.FONT_GRAY,
                                 fontWeight: FontWeight.w400,
                                 fontSize: 13,
@@ -250,13 +249,13 @@ class _ProfileScreenState extends State<RiderDetailCard> {
                       ),
                       width: config.uiWidthPx * 0.9,
                       height: config.sh(30).toDouble(),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 8),
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 8),
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
                             '23',
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppColors.FONT_GRAY,
                               fontWeight: FontWeight.w400,
                               fontSize: 13,
@@ -265,7 +264,7 @@ class _ProfileScreenState extends State<RiderDetailCard> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                   ],
                 ),
               )),

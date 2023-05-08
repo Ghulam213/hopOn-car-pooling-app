@@ -39,7 +39,8 @@ List<Map> restaurants = [
 
 enum CurrentModeEnum { driver, passenger }
 
-
+String googleMapApiToken =
+    'AIzaSyDP192QwnB-tR8NfjGT3vZCrE-mnkmGFbo'; // TO DO: remove and move to .env
   // = const [
   //   LatLng(33.684714, 73.048045),
   //   LatLng(33.673281, 73.026413),

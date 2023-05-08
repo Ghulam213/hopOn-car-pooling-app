@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart' as easy;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hop_on/core/map/screens/home.dart';
-import 'package:hop_on/main.dart';
 
 import '../../../Utils/colors.dart';
 import '../../../config/sizeconfig/size_config.dart';
@@ -42,10 +41,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         leading: InkWell(
           onTap: () {
             Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => MapScreen()),
+              MaterialPageRoute(builder: (_) => const MapScreen()),
             );
           },
-          child: Padding(
+          child: const Padding(
             padding: EdgeInsets.only(left: 10, right: 10),
             child: Icon(
               Icons.arrow_back,
@@ -106,7 +105,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 else
                   Column(
                     children: [
-                      RiderDetailCard(),
+                      const RiderDetailCard(),
                       Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
@@ -127,8 +126,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   height: config.sh(40).toDouble(),
                                   child: Row(
                                     children: [
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
+                                      const Padding(
+                                        padding: EdgeInsets.symmetric(
                                             horizontal: 10),
                                         child: Icon(
                                           Icons.edit,

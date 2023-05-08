@@ -1,4 +1,4 @@
 id,coginitoId,email,firstName,lastName,password,phone,locale,timezone,currentCity,gender,birthDate,profilePic,optedInAt:boolean,active:boolean,verified:boolean,currentMode
-5ee04f51-0692-48bb-bcbf-de3d88b90dd7,3267e22b-115e-445f-adb1-2049d70d257f,user1@hopon.com,Ainne,Hales,$2b$10$VTuWc0kxvSXy6ImnqWpqK.qtfOMFsIup6rYn.P/3Q/V0dxtrWBoca,+923360011224,en,pk,Islamabad,FEMALE,2023-04-02T20:34:46.411Z,"",true,true,true,PASSENGER
+5ee04f51-0692-48bb-bcbf-de3d88b90dd7,3267e22b-115e-445f-adb1-2049d70d257f,0,Ainne,Hales,$2b$10$VTuWc0kxvSXy6ImnqWpqK.qtfOMFsIup6rYn.P/3Q/V0dxtrWBoca,+923360555666,en,pk,Islamabad,FEMALE,2023-04-02T20:34:46.411Z,"",true,true,true,PASSENGER
 bd8c17df-5d49-4546-87ae-3073a7408f83,8eab763d-f4f6-4910-a382-a2ebb0289b70,user2@hopon.com,John,Doe,$2b$10$VTuWc0kxvSXy6ImnqWpqK.qtfOMFsIup6rYn.P/3Q/V0dxtrWBoca,+923360011225,en,pk,Islamabad,MALE,2023-04-02T20:34:46.411Z,"",true,true,true,DRIVER
 0997b793-f58d-4ef6-93b2-668072f30f47,74df273d-48f8-49da-b779-bb900da68b6c,user3@hopon.com,John,Harris,$2b$10$VTuWc0kxvSXy6ImnqWpqK.qtfOMFsIup6rYn.P/3Q/V0dxtrWBoca,+923360011226,en,pk,Islamabad,MALE,2023-04-02T20:34:46.411Z,"",true,true,true,DRIVER

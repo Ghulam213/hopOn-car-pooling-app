@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../../Utils/colors.dart';
 import '../../../config/network/resources.dart';
 import '../../../config/sizeconfig/size_config.dart';
@@ -14,7 +15,7 @@ class VehicleInfoModal extends StatefulWidget {
   final Function() onCloseTap;
   final Function(String) onErrorOccurred;
 
-  VehicleInfoModal(
+  const VehicleInfoModal(
       {Key? key, required this.onCloseTap, required this.onErrorOccurred})
       : super(key: key);
 
@@ -100,15 +101,17 @@ class _VehicleInfoModalState extends State<VehicleInfoModal> {
                   label: 'Pick license back',
                   validator: (val) {
                     if (val == null) return 'Pick Vehicle Photo';
+                    return null;
                   },
-                  onChanged: (_file) {},
+                  onChanged: (file) {},
                 ),
                 CustomImageFormField(
                   label: 'Pick license back',
                   validator: (val) {
                     if (val == null) return 'Pick Vehicle Registation';
+                    return null;
                   },
-                  onChanged: (_file) {},
+                  onChanged: (file) {},
                 ),
               ],
             ),
@@ -130,7 +133,7 @@ class _VehicleInfoModalState extends State<VehicleInfoModal> {
                 child: Column(
                   children: [
                     Padding(
-                      padding: EdgeInsets.only(left: 16),
+                      padding: const EdgeInsets.only(left: 16),
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
@@ -149,32 +152,36 @@ class _VehicleInfoModalState extends State<VehicleInfoModal> {
                       label: 'Pick cnic front',
                       validator: (val) {
                         if (val == null) return 'Pick cnic front';
+                        return null;
                       },
-                      onChanged: (_file) {},
+                      onChanged: (file) {},
                     ),
                     const SizedBox(height: 8),
                     CustomImageFormField(
                       label: 'Pick cnic back',
                       validator: (val) {
                         if (val == null) return 'Pick cnic back';
+                        return null;
                       },
-                      onChanged: (_file) {},
+                      onChanged: (file) {},
                     ),
                     const SizedBox(height: 8),
                     CustomImageFormField(
                       label: 'Pick incense front',
                       validator: (val) {
                         if (val == null) return 'Pick incense front';
+                        return null;
                       },
-                      onChanged: (_file) {},
+                      onChanged: (file) {},
                     ),
                     const SizedBox(height: 8),
                     CustomImageFormField(
                       label: 'Pick license back',
                       validator: (val) {
                         if (val == null) return 'Pick license back';
+                        return null;
                       },
-                      onChanged: (_file) {},
+                      onChanged: (file) {},
                     ),
                   ],
                 ),
@@ -224,7 +231,7 @@ class _VehicleInfoModalState extends State<VehicleInfoModal> {
               //   ),
               // ),
 
-              Container(
+              SizedBox(
             width: config.scaleWidth * 0.9,
             child: Stepper(
               type: StepperType.vertical,
@@ -352,16 +359,16 @@ class _CustomImageFormFieldState extends State<CustomImageFormField> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Icon(Icons.image_outlined,
+                        const Icon(Icons.image_outlined,
                             size: 36, color: AppColors.PRIMARY_500),
                         Text(
                           widget.label,
                           textAlign: TextAlign.center,
                         ),
                         !isPicking
-                            ? Icon(Icons.check_outlined,
+                            ? const Icon(Icons.check_outlined,
                                 size: 21, color: AppColors.FONT_GRAY)
-                            : Icon(Icons.check,
+                            : const Icon(Icons.check,
                                 size: 21, color: AppColors.PRIMARY_500),
                       ],
                     ),
@@ -405,7 +412,7 @@ class StepControlBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(top: 20),
+      padding: const EdgeInsets.only(top: 20),
       child: Row(
         children: [
           if (_activeStepIndex > 0)

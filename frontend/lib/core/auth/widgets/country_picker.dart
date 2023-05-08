@@ -14,7 +14,7 @@ class ContactInputField extends StatefulWidget {
 
   const ContactInputField(this.onChanged, this.doWeExecuteAction,
       this.isSuccess, this.isFailure, this.controller,
-      {this.initialCountryCode, this.validator});
+      {super.key, this.initialCountryCode, this.validator});
 
   @override
   _ContactInputFieldState createState() => _ContactInputFieldState();

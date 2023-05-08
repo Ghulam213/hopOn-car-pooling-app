@@ -30,6 +30,7 @@ export class RideController {
 
   @Post('/ride')
   @ApiOkResponse({ type: RideEntity })
+
   async createRide(@Body() rideCreateData: RideCreateDto): Promise<RideEntity> {
     return this.rideService.createRide(rideCreateData);
   }

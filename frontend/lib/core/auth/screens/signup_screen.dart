@@ -1,11 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:hop_on/Utils/colors.dart';
-
 import 'package:hop_on/config/sizeconfig/size_config.dart';
 import 'package:hop_on/core/auth/provider/login_store.dart';
-import 'package:hop_on/core/auth/screens/otp_screen.dart';
-import 'package:hop_on/core/map/screens/home.dart';
 import 'package:provider/provider.dart';
 
 class SignUpScreen extends StatefulWidget {

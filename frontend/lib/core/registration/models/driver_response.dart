@@ -1,4 +1,3 @@
-import 'package:hop_on/core/profile/models/user_model.dart';
 import 'package:hop_on/core/registration/models/driver.dart';
 
 class DriverInfoResponse {

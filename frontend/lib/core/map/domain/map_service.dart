@@ -1,17 +1,37 @@
-import 'dart:ffi';
+import 'package:hop_on/core/map/models/request_ride_response.dart';
 
-import 'package:hop_on/core/map/models/map_response.dart';
+import '../models/create_ride_response.dart';
+import '../models/ride_for_passenger_response.dart';
+
 
 abstract class MapService {
-  Future<MapResponse> findRides({
+  Future<RideForPassengerResponse> findRides({
     String? source,
     String? destination,
   });
 
-  Future<MapResponse> requestRide({
-    String? rideId,
+  Future<RequestRideResponse> requestRide({
+    required String? rideId,
+    required String? passengerSource,
+    required String? passengerDestination,
+    required String? driverName,
+    required num? distance,
+    required num? fare,
+    required num? ETA,
+  });
+
+  Future<CreateRideResponse> createRide({
     String? source,
     String? destination,
-    num? distance,
+    String? currentLocation,
+    num? totalDistance,
+    String? city,
+    List<dynamic>? polygonPoints,
   });
+
+  Future<void> updateDriverLoc({
+    String? rideId,
+    String? currentLocation,
+  });
+
 }

@@ -38,22 +38,23 @@ class _AppDrawerState extends State<AppDrawer> {
             children: <Widget>[
               const SizedBox(height: 40),
               ListTile(
-                leading: Icon(Icons.person_rounded,
+                leading: const Icon(Icons.person_rounded,
                     size: 22, color: AppColors.PRIMARY_500),
                 title: Text('Profile', style: textStyle),
                 onTap: () => {
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => ProfileScreen()),
+                    MaterialPageRoute(builder: (_) => const ProfileScreen()),
                   )
                 },
               ),
               ListTile(
                 leading:
-                    Icon(Icons.map, size: 22, color: AppColors.PRIMARY_500),
+                    const Icon(Icons.map,
+                    size: 22, color: AppColors.PRIMARY_500),
                 title: Text('Map', style: textStyle),
                 onTap: () => {
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => MapScreen()),
+                    MaterialPageRoute(builder: (_) => const MapScreen()),
                   )
                 },
               ),
@@ -69,7 +70,7 @@ class _AppDrawerState extends State<AppDrawer> {
               //   title: Text('Settings', style: textStyle),
               // ),
               
-              Spacer(),
+              const Spacer(),
               ListTile(
                 title: Padding(
                   padding: const EdgeInsets.only(left: 1.0),

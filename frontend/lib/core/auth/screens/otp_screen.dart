@@ -2,15 +2,15 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:android_sms_retriever/android_sms_retriever.dart';
+import 'package:easy_localization/easy_localization.dart' as ez;
+import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:hop_on/Utils/colors.dart';
+import 'package:hop_on/config/sizeconfig/size_config.dart';
+import 'package:hop_on/core/auth/provider/login_store.dart';
 import 'package:hop_on/core/map/screens/home.dart';
 import 'package:lottie/lottie.dart';
 import 'package:numeric_keyboard/numeric_keyboard.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:hop_on/config/sizeconfig/size_config.dart';
-import 'package:hop_on/core/auth/provider/login_store.dart';
-import 'package:easy_localization/easy_localization.dart' as ez;
-import 'package:hop_on/utils/colors.dart';
 import 'package:provider/provider.dart';
 
 class OtpPage extends StatefulWidget {
@@ -33,8 +33,8 @@ class _OtpPageState extends State<OtpPage> {
   final SizeConfig config = SizeConfig();
 
   final viewInsets = EdgeInsets.fromWindowPadding(
-      WidgetsBinding.instance!.window.viewInsets,
-      WidgetsBinding.instance!.window.devicePixelRatio);
+      WidgetsBinding.instance.window.viewInsets,
+      WidgetsBinding.instance.window.devicePixelRatio);
 
   String text = '';
   String _codeJoined = '';
@@ -47,9 +47,9 @@ class _OtpPageState extends State<OtpPage> {
     setState(() {
       text = text.length <= 6 ? text + value : text;
     });
-    debugPrint(text);
+
   }
-  String _applicationSignature = "";
+  final String _applicationSignature = "";
   String _smsCode = "";
 
   bool isListening = false;
@@ -208,7 +208,7 @@ class _OtpPageState extends State<OtpPage> {
                           rightButtonFn: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                  builder: (_) => MapScreen()),
+                                  builder: (_) => const MapScreen()),
                             );
                             
                             loginStore.validateOtpAndLogin(
@@ -247,7 +247,7 @@ class _OtpPageState extends State<OtpPage> {
     });
   }
 
-  Widget otpNumberWidget(int _position) {
+  Widget otpNumberWidget(int position) {
     try {
       return Container(
         height: 40,
@@ -259,7 +259,7 @@ class _OtpPageState extends State<OtpPage> {
           ),
         child: Center(
             child: Text(
-          text[_position],
+          text[position],
           // focusNode: _fnode,
           // controller: _tcontroller,
           style: const TextStyle(color: AppColors.BLACK),

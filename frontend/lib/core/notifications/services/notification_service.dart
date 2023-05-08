@@ -35,7 +35,6 @@ class NotificationService {
       attachBackgroundNotificationHandler();
     } catch (e) {
       isNotificationRegistered = false;
-      debugPrint("Error: $e");
     }
   }
 
@@ -66,7 +65,7 @@ class NotificationService {
   Future<void> getToken() async {
     String? token = await FirebaseMessaging.instance.getToken();
     // TODO: Make a request to the server to save the token
-    print('Device Token: $token');
+    debugPrint('Device Token: $token');
   }
 
   Future<void> requestPermissions() async {

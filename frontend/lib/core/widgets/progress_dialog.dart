@@ -3,7 +3,7 @@ import 'package:hop_on/Utils/colors.dart';
 
 class ProgressDialog extends StatelessWidget {
   final String status;
-  ProgressDialog({super.key, this.status = ''});
+  const ProgressDialog({super.key, this.status = ''});
 
   @override
   Widget build(BuildContext context) {
@@ -11,26 +11,26 @@ class ProgressDialog extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       backgroundColor: Colors.transparent,
       child: Container(
-        margin: EdgeInsets.all(16.0),
+        margin: const EdgeInsets.all(16.0),
         width: double.infinity,
         decoration: BoxDecoration(
             color: Colors.white, borderRadius: BorderRadius.circular(4)),
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Row(
             children: <Widget>[
-              SizedBox(
+              const SizedBox(
                 width: 5,
               ),
-              CircularProgressIndicator(
+              const CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(AppColors.BLACK),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 25.0,
               ),
               Text(
                 status,
-                style: TextStyle(fontSize: 15),
+                style: const TextStyle(fontSize: 15),
               ),
             ],
           ),

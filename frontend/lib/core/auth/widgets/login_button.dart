@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hop_on/config/sizeconfig/size_config.dart';
+
 import '../../../Utils/colors.dart';
 
 class LoginButton extends StatelessWidget {
@@ -9,7 +10,11 @@ class LoginButton extends StatelessWidget {
   final bool? isLoading;
 
   const LoginButton(
-      {this.text = '', this.onPress, this.color, this.isLoading = false});
+      {super.key,
+      this.text = '',
+      this.onPress,
+      this.color,
+      this.isLoading = false});
 
   @override
   Widget build(BuildContext context) {

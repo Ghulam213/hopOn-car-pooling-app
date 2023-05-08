@@ -2,38 +2,51 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hop_on/Utils/helpers.dart';
+import 'package:hop_on/core/map/viewmodel/map_view_model.dart';
+import 'package:provider/provider.dart';
+
 import '../../../Utils/colors.dart';
 import '../../../Utils/image_path.dart';
-import '../modals/confirm_trip_modal.dart';
-import '../models/ride.dart';
-import '../models/ride_mock_data.dart';
 
 class RideCard extends StatefulWidget {
-  final Ride rideModel;
-  final ValueChanged<Ride> onSelected;
+  final int index;
+
 
   const RideCard({
-    required this.rideModel,
-    required this.onSelected,
+    required this.index,
     Key? key,
   }) : super(key: key);
 
   @override
-  _RideCardState createState() => _RideCardState();
+  RideCardState createState() => RideCardState();
 }
 
-class _RideCardState extends State<RideCard> {
+class RideCardState extends State<RideCard> {
   bool isSelected = true;
 
   @override
   Widget build(BuildContext context) {
+
+    final MapViewModel viewModel = context.watch<MapViewModel>();
+
     return InkWell(
       onLongPress: () {
-        debugPrint(isSelected.toString());
         setState(() {
           isSelected = !isSelected;
         });
-        buildConfirmTrip(context);
+
+   
+        viewModel.requestRide(
+          rideId: viewModel.availableRides[widget.index].id,
+          distance:
+              widget.index == 0 ? 100 : 200, // TO DO : get from google map
+          driverName: viewModel.availableRides[widget.index].driverName,
+          passengerSource: viewModel.availableRides[widget.index].source,
+          passengerDestination:
+              viewModel.availableRides[widget.index].destination,
+          fare: viewModel.availableRides[widget.index].fare,
+          ETA: viewModel.availableRides[widget.index].ETA,
+        );
       },
       child: Container(
         color: isSelected
@@ -52,7 +65,8 @@ class _RideCardState extends State<RideCard> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        widget.rideModel.rideStartedAt.toString(),
+                        viewModel.availableRides[widget.index].driverName
+                            .toString(),
                         style: GoogleFonts.montserrat(
                           fontSize: 15.0,
                           fontWeight: FontWeight.w700,
@@ -83,7 +97,8 @@ class _RideCardState extends State<RideCard> {
                       ),
                       const SizedBox(width: 3),
                       Text(
-                        "12 mins",
+                        viewModel.availableRides[widget.index].ETA.toString(),
+                    
                         style: GoogleFonts.montserrat(
                           fontSize: 11.0,
                           fontWeight: FontWeight.w300,
@@ -103,7 +118,11 @@ class _RideCardState extends State<RideCard> {
                             size: 10,
                           ),
                           Text(
-                            "3 seats",
+                            viewModel.availableRides[widget.index]
+                                .alreadySeatedPassengerCount
+                                .toString(),
+                    
+                  
                             style: GoogleFonts.montserrat(
                               fontSize: 11.0,
                               fontWeight: FontWeight.w300,
@@ -116,7 +135,7 @@ class _RideCardState extends State<RideCard> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                  
                 ],
               ),
@@ -127,7 +146,7 @@ class _RideCardState extends State<RideCard> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    "\Rs. " + widget.rideModel.totalFare.toString(),
+                    "Rs. ${viewModel.availableRides[widget.index].fare.toString()}",
                     style: GoogleFonts.montserrat(
                       fontSize: 16.0,
                       fontWeight: FontWeight.bold,
@@ -135,9 +154,10 @@ class _RideCardState extends State<RideCard> {
                           : AppColors.PRIMARY_500,
                     ),
                   ),
-                  SizedBox(height: 5.0),
+                  const SizedBox(height: 5.0),
                   Text(
-                    widget.rideModel.destination.toString(),
+                    viewModel.availableRides[widget.index].destination
+                        .toString(),
                     style: GoogleFonts.montserrat(
                       fontSize: 9.0,
                       fontWeight: FontWeight.w500,
@@ -154,9 +174,7 @@ class _RideCardState extends State<RideCard> {
           ],
         ),
       ).ripple(() {
-        setState(() {
-          widget.onSelected(widget.rideModel);
-        });
+        
       }),
     );
   }

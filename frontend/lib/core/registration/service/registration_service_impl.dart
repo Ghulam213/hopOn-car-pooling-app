@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:hop_on/core/registration/models/driver.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../../Utils/error.dart';
 import '../../../config/network/network_config.dart';
 import '../domain/registartion_service.dart';
@@ -46,8 +47,6 @@ class RegistrationServiceImpl extends RegistrationService {
         }
       };
 
-      debugPrint(body.toString());
-      debugPrint(jsonEncode(body));
       final Response response = await dio.post('/driver',
           data: jsonEncode(body),
           options: Options(headers: {
@@ -59,7 +58,7 @@ class RegistrationServiceImpl extends RegistrationService {
         log(response.data.toString());
         final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-        debugPrint("registering Driver");
+
         return driverResponse;
       } else {
         throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
@@ -84,9 +83,6 @@ class RegistrationServiceImpl extends RegistrationService {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final String? id = prefs.getString("userID");
-
-      debugPrint('userID');
-      debugPrint(id);
 
       final Response response = await dio.get('/driver', queryParameters: {'userId': id});
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -130,7 +126,6 @@ class RegistrationServiceImpl extends RegistrationService {
 
         await prefs.setString("driverID", driverResponse.data!.id!.toString());
 
-        debugPrint("Updating Driver Details");
         return driverResponse;
       } else {
         throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);

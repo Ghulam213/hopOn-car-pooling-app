@@ -1,17 +1,12 @@
 import 'dart:async';
 
 import 'package:animate_do/animate_do.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:geocode/geocode.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hop_on/Utils/colors.dart';
 import 'package:hop_on/core/map/modals/driver_start_ride_modal.dart';
 import 'package:hop_on/core/map/modals/search_rides_modal.dart';
-import 'package:hop_on/core/map/models/direction.dart';
-
 import 'package:hop_on/core/registration/screens/registration_modal.dart';
 import 'package:provider/provider.dart';
 
@@ -29,15 +24,13 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  String? source;
-  String? destination;
+ 
   final Completer<GoogleMapController> _controller = Completer();
 
   final Set<Marker> _markers = {};
   final Set<Polyline> _polyline = {};
 
   final LatLng _center = getLatLngFromSharedPrefs();
-  final List<LatLng> polyLineArray = [];
   late LatLng _lastMapPosition;
 
   @override
@@ -53,70 +46,49 @@ class _MapScreenState extends State<MapScreen> {
     _lastMapPosition = position.target;
   }
 
-  void _drawRoute(String? source, String? destination) async {
-    final GoogleMapController mapController = await _controller.future;
+  void _drawRoute(
+      String? source, String? destination, MapViewModel viewModel) async {
 
     // Note: update will real cords when not testing
-    LatLng src = const LatLng(33.684714, 73.048045);
-    LatLng dest = const LatLng(33.645509, 72.985208);
-    try {
-      Dio dio = Dio();
-      final direction = await dio.post("https://maps.googleapis.com/maps/api/directions/json?", queryParameters: {
-        'origin': '${src.latitude},${src.longitude}',
-        'destination': '${dest.latitude},${dest.longitude}',
-        'key': "AIzaSyDP192QwnB-tR8NfjGT3vZCrE-mnkmGFbo"
-      });
+    LatLng src = const LatLng(33.64333419508494, 72.9914673283913);
+    LatLng dest = const LatLng(33.65879628444844, 73.08346009601216);
 
-      final result = direction.data as Map<String, dynamic>;
-      debugPrint("result.toString()");
-      debugPrint(result.toString());
-      if (direction.data.points.isNotEmpty) {
-        direction.data.points.forEach((PointLatLng point) {
-          polyLineArray.add(LatLng(point.latitude, point.longitude));
-        });
-      }
-      debugPrint(Directions.fromMap(result).polylinePoints.toString());
+    viewModel.getDirections(
+        source: '${src.latitude},${src.longitude}',
+        destination: '${dest.latitude},${dest.longitude}');
 
-      Directions.fromMap(result).polylinePoints.forEach((PointLatLng point) {
-        polyLineArray.add(LatLng(point.latitude, point.longitude));
-      });
+    _markers.add(Marker(
+      // This marker id can be anything that uniquely identifies each marker.
+      markerId: MarkerId(_lastMapPosition.toString()),
+      position: src,
 
-      _markers.add(Marker(
-// This marker id can be anything that uniquely identifies each marker.
-        markerId: MarkerId(_lastMapPosition.toString()),
-        position: _center,
+      icon: await BitmapDescriptor.fromAssetImage(
+          const ImageConfiguration(size: Size(18, 18)),
+          'assets/images/car_ios.png'),
+      infoWindow: const InfoWindow(
+        title: "ride starting",
+      ),
+    ));
 
-        icon: await BitmapDescriptor.fromAssetImage(
-            const ImageConfiguration(size: Size(18, 18)), 'assets/images/car_ios.png'),
+    _polyline.add(Polyline(
+      polylineId: PolylineId(source.toString()),
+      visible: true,
+      points: viewModel.polyLineArray,
+      color: Colors.red,
+    ));
 
-        infoWindow: const InfoWindow(
-          title: "ride starting",
-        ),
-      ));
+    viewModel.createRide(
+      source: '33.64333419508494, 72.9914673283913',
+      destination: '33.65879628444844, 73.08346009601216',
+      currentLocation: '33.684714,73.048045',
+      totalDistance: 50,
+      city: 'Islamabad',
+      polygonPoints: viewModel.polyLineArray,
+    );
 
-      _polyline.add(Polyline(
-        polylineId: PolylineId(source.toString()),
-        visible: true,
-        points: polyLineArray,
-        color: Colors.red,
-      ));
-
-      mapController.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(
-            target: LatLng(
-              src.latitude,
-              src.longitude,
-            ),
-            bearing: 180,
-            tilt: 30,
-            zoom: 16,
-          ),
-        ),
-      );
-    } catch (e) {
-      debugPrint(e.toString());
-    }
+    viewModel.updateDriverLoc(
+        rideId: '148a0a27-ed88-422b-be7f-19a35872f287',
+        currentLocation: '33.684714,73.048045');
   }
 
   @override
@@ -135,10 +107,12 @@ class _MapScreenState extends State<MapScreen> {
                 padding: const EdgeInsets.all(3.0),
                 child: TextButton(
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(AppColors.PRIMARY_500),
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(AppColors.PRIMARY_500),
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8), side: const BorderSide(color: AppColors.PRIMARY_500)),
+                          borderRadius: BorderRadius.circular(8),
+                          side: const BorderSide(color: AppColors.PRIMARY_500)),
                     ),
                   ),
                   onPressed: () async {
@@ -158,7 +132,8 @@ class _MapScreenState extends State<MapScreen> {
                     padding: EdgeInsets.symmetric(horizontal: 10.0),
                     child: Text(
                       'Register as a Driver',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w400),
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.w400),
                     ),
                   ),
                 ),
@@ -191,7 +166,7 @@ class _MapScreenState extends State<MapScreen> {
                     ),
                   ),
                 ),
-                showModals(config, loginStore)
+                showModals(config, loginStore, mapViewModel)
               ],
             ),
           ),
@@ -200,14 +175,15 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  Widget showModals(SizeConfig config, LoginStore loginStore) {
+  Widget showModals(
+      SizeConfig config, LoginStore loginStore, MapViewModel viewModel) {
     return Positioned(
       bottom: 0,
       child: Column(
         children: [
           FadeInUp(
-            delay: const Duration(milliseconds: 1000),
-            duration: const Duration(milliseconds: 1000),
+            delay: const Duration(milliseconds: 200),
+            duration: const Duration(milliseconds: 200),
             child: AnimatedContainer(
               curve: Curves.easeInOut,
               duration: const Duration(milliseconds: 100),
@@ -229,15 +205,17 @@ class _MapScreenState extends State<MapScreen> {
                     child: Column(
                       children: [
                         InkWell(
-                          child: loginStore.isDriver
-                              ? SearchRidesModal(
-                                  onCloseTap: () {},
-                                  onErrorOccurred: (String) {},
-                                  onRideRequest: () {},
+                          child: !loginStore.isDriver
+                              ? SearchRidesModal(                               
+                                  onRideRequest: () {
+                                    // viewModel.requestRide(source: ,rideId: ,destination: ,distance: );
+                                  },
                                 )
                               : StartRideModal(
                                   onRideStarted: (String curLoc, String dest) {
-                                    _drawRoute(curLoc, dest);
+                                    _drawRoute(curLoc, dest, viewModel);
+
+                                    Navigator.of(context).pop();
                                   },
                                 ),
                         ),

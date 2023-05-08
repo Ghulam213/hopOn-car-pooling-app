@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hop_on/utils/colors.dart';
+import 'package:hop_on/Utils/colors.dart';
+
 
 mixin Styles {
   static ThemeData lightTheme = ThemeData(
@@ -47,7 +48,6 @@ mixin Styles {
   static ThemeData darkTheme = ThemeData(
     primaryColor: AppColors.BLUE,
     iconTheme: const IconThemeData(color: Colors.black, size: 15),
-    backgroundColor: AppColors.LM_BACKGROUND_BASIC,
     textTheme: const TextTheme(
         bodyLarge: TextStyle(
           fontFamily: "NotoArabic",

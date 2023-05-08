@@ -1,5 +1,4 @@
 import 'package:hop_on/core/map/models/ride.dart';
-import 'package:hop_on/core/registration/models/driver.dart';
 
 class MapResponse {
   int? code;
