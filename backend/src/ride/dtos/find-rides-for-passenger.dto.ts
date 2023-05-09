@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Prisma } from '@prisma/client';
-import { IsDefined, IsJSON, IsNotEmpty, IsNumber, IsString, IsUUID } from 'class-validator';
+import { IsDefined, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { Trim } from 'src/library/decorators';
 
 export class FindRidesForPassengerDto {
@@ -24,4 +23,10 @@ export class FindRidesForPassengerDto {
   @IsString()
   @IsDefined()
   city: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  @IsDefined()
+  distance: number;
 }

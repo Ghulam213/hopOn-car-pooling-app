@@ -37,4 +37,8 @@ export const applicationConfig = registerAs('application', () => ({
     ttl: parseInt(process.env.RIDE_CURRENT_LOCATION_CACHE_TTL, 10),
     baseCacheKey: process.env.RIDE_CURRENT_LOCATION_BASE_CACHE_KEY,
   },
+  fare: {
+    baseFare: parseFloat(process.env.FARE_BASE_FARE),
+    perKmFare: parseFloat(process.env.FARE_PER_KM_FARE),
+  },
 }));

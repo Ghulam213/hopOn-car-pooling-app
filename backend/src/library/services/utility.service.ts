@@ -91,4 +91,21 @@ export class UtilityService {
 
     return false;
   }
+
+  public static calculatePolygonRouteDistance(route: number[][]) {
+    let distance = 0;
+    for (let i = 0; i < route.length - 1; i++) {
+      distance += UtilityService.getKmDistanceBetweenTwoPoints(route[i], route[i + 1]);
+    }
+
+    return distance;
+  }
+
+  public static getSegmentOnRoute(route: number[][], source: number[], destination: number[]) {
+    const sourceIndex = route.findIndex((point) => UtilityService.arePointsWithinThreshold(point, source, 3));
+    const destinationIndex = route.findIndex((point) => UtilityService.arePointsWithinThreshold(point, destination, 3));
+    const passengerRoute = route.slice(sourceIndex, destinationIndex + 1);
+
+    return passengerRoute;
+  }
 }

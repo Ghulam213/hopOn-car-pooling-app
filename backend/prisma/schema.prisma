@@ -37,6 +37,24 @@ enum PasengerRideStatusEnum {
   COMPLETED
 }
 
+enum WeatherConditionEnum {
+  SUNNY
+  RAINY
+  CLOUDY
+}
+
+enum RideRequestDemandEnum {
+  LOW
+  MODERATE
+  HIGH
+}
+
+enum RideAvailabilityEnum {
+  LOW
+  MODERATE
+  HIGH
+}
+
 model User {
   id          String          @id @default(uuid())
   coginitoId  String          @unique
@@ -145,4 +163,15 @@ model Device {
   token      String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+model RideFareFactors {
+  id                  String                @id @default(uuid())
+  petrolPricePerLitre Float
+  pricePerKm          Float
+  weatherCondition    WeatherConditionEnum
+  rideRequestDemand   RideRequestDemandEnum
+  rideAvailability    RideAvailabilityEnum
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
 }
