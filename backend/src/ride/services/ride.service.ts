@@ -1,14 +1,6 @@
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
-import {
-  Device,
-  Driver,
-  PasengerRideStatusEnum,
-  PassengersOnRide,
-  Prisma,
-  Ride,
-  RideStatusEnum
-} from '@prisma/client';
+import { Device, Driver, PasengerRideStatusEnum, PassengersOnRide, Prisma, Ride, RideStatusEnum } from '@prisma/client';
 import { Cache } from 'cache-manager';
 import { applicationConfig } from 'src/config';
 import { DriverService } from 'src/driver/services';
@@ -177,7 +169,6 @@ export class RideService {
 
     const promisesResults = await Promise.all(
       rides.map(async (ride) => {
-        const rideDestination = UtilityService.stringToCoordinates(ride.destination);
         const rideCache = await this.getRideCurrentLocationFromCache(ride.id);
 
         if (!rideCache) {
@@ -185,15 +176,17 @@ export class RideService {
         }
 
         const rideCurrentLocation = UtilityService.stringToCoordinates(rideCache.driver.currentLocation);
-        const isDestinationsWithinThreshold = UtilityService.arePointsWithinThreshold(
-          pasengerDestination,
-          rideDestination,
-          this.appConfig.destinationOverlapThreshold,
-        );
-        const isPassengerOnDriverRouter = UtilityService.isPointOnRouteWithinThreshold(
+
+        const isPassengerSourceOnDriverRoute = UtilityService.isPointOnRouteWithinThreshold(
           pasengerSource,
           ride.polygonPoints as number[][],
-          this.appConfig.routeOverlapThreshold,
+          this.appConfig.passengerSourceOnRouteThreshold,
+        );
+
+        const isPassengerDestinationOnDriverRoute = UtilityService.isPointOnRouteWithinThreshold(
+          pasengerDestination,
+          ride.polygonPoints as number[][],
+          this.appConfig.passengerDestinationOnRouteThreshold,
         );
         const isPassengerWithinThresholdOfDriver = UtilityService.arePointsWithinThreshold(
           pasengerSource,
@@ -201,7 +194,9 @@ export class RideService {
           this.appConfig.passengerDriverDistanceOverlapThreshold,
         );
 
-        return isDestinationsWithinThreshold && isPassengerOnDriverRouter && isPassengerWithinThresholdOfDriver;
+        return (
+          isPassengerSourceOnDriverRoute && isPassengerDestinationOnDriverRoute && isPassengerWithinThresholdOfDriver
+        );
       }),
     );
 
