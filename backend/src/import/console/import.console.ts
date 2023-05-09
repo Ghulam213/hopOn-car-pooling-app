@@ -26,18 +26,26 @@ export class ImportConsole {
       },
     ],
   })
-  async importEntities(options: CreateCommandOptions & { flush?: boolean }): Promise<void> {
+  async importEntitiesConsoleCommand(options: CreateCommandOptions & { flush?: boolean }): Promise<void> {
     try {
       let flush = false;
       if (options && Object.keys(options).includes('flush') && options.flush === true) {
         flush = true;
       }
+      await this.importEntities(path.join(__dirname, '../../../data'), flush);
+      process.exit(0);
+    } catch (err) {
+      process.exit(1);
+    }
+  }
+
+  async importEntities(directory: string, flush: boolean = true): Promise<void> {
+    try {
       const spin = createSpinner();
 
       const entities = [];
-      const directory = '../../../data';
       spin.start('Reading files from directories');
-      const files = fs.readdirSync(path.join(__dirname, directory));
+      const files = fs.readdirSync(directory);
       spin.succeed('Files loaded');
 
       files.forEach((file) => {
@@ -54,16 +62,20 @@ export class ImportConsole {
 
       const savedEntities = [];
 
+      const sortedEntities = this.sortEntities(entities);
+
       if (flush) {
-        await this.flushEntities(entities);
+        spin.start('Removing existing data');
+        await this.removeEntities(sortedEntities);
+        spin.succeed('Existing data removed');
       }
 
-      const sortedEntities = this.sortEntities(entities);
       const keys = Object.keys(sortedEntities);
       for (const key of keys) {
         try {
           const entity = entities[key];
-          const fileDirectory = path.join(__dirname, `${directory}/${key}`);
+          const fileDirectory = `${directory}/${key}`;
+          spin.start(`Reading ${entity} started`);
           const data = await csv({ flatKeys: true }).fromFile(fileDirectory);
           if (data.length === 0) {
             for (let i = 0; i < 100; i++) {
@@ -84,24 +96,38 @@ export class ImportConsole {
         }
       }
       console.log('The saved entities are', savedEntities);
-      process.exit(0);
+      return;
     } catch (err) {
       console.error('The error while importing Entities is', err);
-      process.exit(1);
+      throw new Error(err);
     }
   }
 
-  async flushEntities(entities: Record<string, unknown>[]): Promise<void> {
-    const spin = createSpinner();
-    spin.start('Removing existing data');
-    await this.removeEntities(entities);
-    spin.succeed('Existing data removed');
+  async flushAllEntities(): Promise<void> {
+    try {
+      const spin = createSpinner();
+
+      const entities = [];
+      Object.keys(entityDependencies).forEach((entity) => (entities[entity] = entity));
+      const sortedEntities = this.sortEntities(entities);
+      spin.start('Removing existing data');
+      await this.removeEntities(sortedEntities);
+      spin.succeed('Existing data removed');
+
+      return;
+    } catch (err) {
+      console.error('The error while importing Entities is', err);
+      throw new Error(err);
+    }
   }
 
-  async removeEntities(entities: Record<string, unknown>[]): Promise<void> {
+  private async removeEntities(entities: Record<string, unknown>[]): Promise<void> {
     const keys = Object.keys(entities).reverse();
     for (const key of keys) {
-      await this.prismaService[key]?.deleteMany({});
+      const entity = entities[key];
+      console.log(`Removing ${entity}`);
+      const deletedEntities = await this.prismaService[entity]?.deleteMany({});
+      console.log(`Removed ${entity}, ${deletedEntities.count} entities`);
     }
   }
 
@@ -144,7 +170,6 @@ export class ImportConsole {
         }
 
         const dependencies = entityDependencies[entity];
-
         if (dependencies.length === 0) {
           sortedEntities.push(entity);
           results[key] = entity;
