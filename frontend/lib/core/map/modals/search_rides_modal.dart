@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:hop_on/Utils/helpers.dart';
 import 'package:hop_on/core/auth/widgets/login_button.dart';
 import 'package:hop_on/core/map/modals/trip_details_modal.dart';
@@ -25,10 +24,10 @@ class SearchRidesModal extends StatefulWidget {
       : super(key: key);
 
   @override
-  _SearchRidesModalState createState() => _SearchRidesModalState();
+  SearchRidesModalState createState() => SearchRidesModalState();
 }
 
-class _SearchRidesModalState extends State<SearchRidesModal> {
+class SearchRidesModalState extends State<SearchRidesModal> {
   final SizeConfig config = SizeConfig();
 
   @override
@@ -42,19 +41,6 @@ class _SearchRidesModalState extends State<SearchRidesModal> {
   final source = '';
   final destination = '';
 
-
-  Future<String?> autoCompleteSearch(String value) async {
-    if (value != '') {
-      try {
-        List<Location> locations = await locationFromAddress(value);
-
-        return '${locations[0].latitude.toString()},${locations[0].longitude.toString()}';
-      } catch (e) {
-        debugPrint(e.toString());
-      }
-    }
-    return null;
-  }
 
   @override
   Widget build(BuildContext context) {

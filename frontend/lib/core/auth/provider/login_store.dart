@@ -273,8 +273,7 @@ abstract class LoginStoreBase with Store {
     prefs.setString("deviceInfo", deviceInformation?.toJson().toString() ?? '');
 
     NotificationService notificationService = NotificationService(
-      onNotificationReceived: (_) {},
-    );
+);
 
     String token = await notificationService.getToken();
 
@@ -288,9 +287,10 @@ abstract class LoginStoreBase with Store {
     prefs.setString('userMode', userAuth['user']['currentMode'] as String);
     prefs.setString("user", jsonEncode(userAuth['user']));
 
-    logger('CURRENT MODE');
-    logger(userAuth['user']['currentMode']);
+
     if (userAuth['user']['currentMode'] == 'DRIVER') {
+      logger('CURRENT MODE');
+      logger(userAuth['user']['currentMode']);
       isDriver = true;
       prefs.setString("driverID", userAuth['driverId'] as String);
     } else {

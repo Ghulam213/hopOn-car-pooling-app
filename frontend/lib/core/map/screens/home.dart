@@ -45,51 +45,33 @@ class _MapScreenState extends State<MapScreen> {
     _lastMapPosition = position.target;
   }
 
-  void _drawRoute(
-      String? source, String? destination, MapViewModel viewModel) async {
-    debugPrint('_drawRoute');
-    debugPrint(source.toString());
-    debugPrint(source.toString());
-    // Note: update will real cords when not testing
-    LatLng src = const LatLng(33.64333419508494, 72.9914673283913);
-    LatLng dest = const LatLng(33.65879628444844, 73.08346009601216);
-
-    viewModel.getDirections(
-        source: '${src.latitude},${src.longitude}',
-        destination: '${dest.latitude},${dest.longitude}');
+  void updateMarker(String? position) async {
+    LatLng pos = const LatLng(33.64333419508494, 72.9914673283913); // fallback
 
     _markers.add(Marker(
-      // This marker id can be anything that uniquely identifies each marker.
       markerId: MarkerId(_lastMapPosition.toString()),
-      position: src,
-
+      position: convertStringToLatLng(position) ?? pos,
       icon: await BitmapDescriptor.fromAssetImage(
-          const ImageConfiguration(size: Size(18, 18)),
+          const ImageConfiguration(size: Size(22, 22)),
           'assets/images/car_ios.png'),
       infoWindow: const InfoWindow(
         title: "ride starting",
       ),
     ));
+  }
 
+  void drawRoute(
+      String? source, String? destination, MapViewModel viewModel) async {
+    viewModel.getDirections(source: '$source', destination: '$destination');
+
+    updateMarker(source);
     _polyline.add(Polyline(
       polylineId: PolylineId(source.toString()),
       visible: true,
       points: viewModel.polyLineArray,
-      color: Colors.red,
+      width: 8,
+      color: AppColors.PRIMARY_500,
     ));
-
-    viewModel.createRide(
-      source: '33.64333419508494, 72.9914673283913',
-      destination: '33.65879628444844, 73.08346009601216',
-      currentLocation: '33.684714,73.048045',
-      totalDistance: 30,
-      city: 'Islamabad',
-      polygonPoints: viewModel.polyLineArray,
-    );
-
-    viewModel.updateDriverLoc(
-        rideId: 'bd8c17df-5d49-4546-87ae-3073a7408f8[',
-        currentLocation: '33.684714,73.048045');
   }
 
   @override
@@ -125,10 +107,7 @@ class _MapScreenState extends State<MapScreen> {
                               isScrollControlled: true,
                               useRootNavigator: true,
                               builder: (context) {
-                                return RegistrationModal(
-                                  onCloseTap: () {},
-                                  onErrorOccurred: (String) {},
-                                );
+                                return const RegistrationModal();
                               },
                             );
                           },
@@ -165,7 +144,7 @@ class _MapScreenState extends State<MapScreen> {
                       onCameraMove: _onCameraMove,
                       initialCameraPosition: CameraPosition(
                         target: _center,
-                        zoom: 16.0,
+                        zoom: 14.0,
                       ),
                     ),
                   ),
@@ -215,7 +194,7 @@ class _MapScreenState extends State<MapScreen> {
                                 )
                               : StartRideModal(
                                   onRideStarted: (String curLoc, String dest) {
-                                    _drawRoute(curLoc, dest, viewModel);
+                                    drawRoute(curLoc, dest, viewModel);
 
                                     Navigator.of(context).pop();
                                   },

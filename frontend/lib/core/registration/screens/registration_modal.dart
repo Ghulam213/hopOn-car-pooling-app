@@ -7,25 +7,22 @@ import '../../../config/sizeconfig/size_config.dart';
 import '../../widgets/custom_toast.dart';
 
 class RegistrationModal extends StatefulWidget {
-  // final Datum data;
-  // final Function() onStatusChangedCompleted;
 
-  final Function() onCloseTap;
-  final Function(String) onErrorOccurred;
+
+  final Function()? onCloseTap;
+  final Function(String)? onErrorOccurred;
 
   const RegistrationModal(
       {Key? key,
-      // required this.onStatusChangedCompleted,
-      required this.onCloseTap,
-      required this.onErrorOccurred})
+       this.onCloseTap, this.onErrorOccurred})
       : super(key: key);
 
   @override
-  _ReferenceNumberBottomSheetState createState() =>
-      _ReferenceNumberBottomSheetState();
+  ReferenceNumberBottomSheetState createState() =>
+      ReferenceNumberBottomSheetState();
 }
 
-class _ReferenceNumberBottomSheetState extends State<RegistrationModal> {
+class ReferenceNumberBottomSheetState extends State<RegistrationModal> {
   final TextEditingController _searchController = TextEditingController();
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();

@@ -9,8 +9,7 @@ import '../../../config/sizeconfig/size_config.dart';
 import '../../widgets/dot_widget.dart';
 import 'booking_details_modal.dart';
 
-buildConfirmTrip(BuildContext context) {
-  Navigator.pop(context);
+buildConfirmTrip(BuildContext context, int index) {
   showModalBottomSheet(
       isDismissible: false,
       isScrollControlled: true,
@@ -19,13 +18,15 @@ buildConfirmTrip(BuildContext context) {
       clipBehavior: Clip.hardEdge,
       context: context,
       builder: (context) {
-        return const BookingComfirm();
+        return BookingComfirm(index: index);
       });
 }
 
 class BookingComfirm extends StatefulWidget {
-  const BookingComfirm({
+  int? index;
+  BookingComfirm({
     Key? key,
+    required index,
   }) : super(key: key);
 
   @override
@@ -37,9 +38,9 @@ class _BookingComfirmState extends State<BookingComfirm> {
   @override
   void initState() {
     setState(() {
-      Future.delayed(const Duration(seconds: 8), () {
+      Future.delayed(const Duration(seconds: 6), () {
         Navigator.pop(context);
-        buildBookingDetails(context);
+        buildBookingDetails(context, widget.index);
       });
     });
     super.initState();
@@ -103,67 +104,6 @@ class _BookingComfirmState extends State<BookingComfirm> {
             ),
           ),
           const SizedBox(height: 20),
-          // Padding(
-          //   padding: const EdgeInsets.symmetric(horizontal: 50.0),
-          //   child: Row(
-          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //     children: [
-          //       Column(
-          //         children: [
-          //           InkWell(
-          //             onTap: () {
-          //               // driversDetail(context);
-          //             },
-          //             child: Container(
-          //               height: 50,
-          //               width: 50,
-          //               decoration: BoxDecoration(
-          //                   image: DecorationImage(
-          //                       image: AssetImage(ImagesAsset.driverpic))),
-          //             ),
-          //           ),
-          //           SizedBox(height: 8.0),
-          //           Text(
-          //             "Your Driver",
-          //             style: GoogleFonts.montserrat(
-          //               fontSize: 10.0,
-          //               fontWeight: FontWeight.w400,
-          //               color: AppColors.FONT_GRAY,
-          //             ),
-          //           )
-          //         ],
-          //       ),
-          //       GestureDetector(
-          //         onTap: () {
-          //           Navigator.pop(context);
-          //         },
-          //         child: Column(
-          //           children: [
-          //             Container(
-          //               height: 50,
-          //               width: 50,
-          //               decoration: const BoxDecoration(
-          //                   color: AppColors.FONT_GRAY,
-          //                   borderRadius: BorderRadius.all(
-          //                     Radius.circular(11),
-          //                   )),
-          //               child: SvgPicture.asset(ImagesAsset.cancelride),
-          //             ),
-          //             const SizedBox(height: 8.0),
-          //             Text(
-          //               "Cancel Ride",
-          //               style: GoogleFonts.montserrat(
-          //                 fontSize: 10.0,
-          //                 fontWeight: FontWeight.w400,
-          //                 color: AppColors.FONT_GRAY,
-          //               ),
-          //             )
-          //           ],
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
         ],
       ),
     );

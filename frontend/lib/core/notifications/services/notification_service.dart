@@ -3,6 +3,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:hop_on/Utils/helpers.dart';
 import 'package:hop_on/core/notifications/models/notification_datamodel.dart';
 
 Future<void> _backgroundMessageHandler(RemoteMessage message) async {
@@ -13,10 +14,10 @@ class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-  late Function(NotificationDataModel notification) onNotificationReceived;
+  late Function(NotificationDataModel notification)? onNotificationReceived;
   bool isNotificationRegistered = false;
 
-  factory NotificationService({required onNotificationReceived}) {
+  factory NotificationService({onNotificationReceived}) {
     _instance.onNotificationReceived = onNotificationReceived;
     return _instance;
   }
@@ -102,7 +103,9 @@ class NotificationService {
           "onMessage: ${message.data['type']}/${message.notification?.title}/${message.notification?.body}",
         );
 
-        onNotificationReceived(NotificationDataModel.fromJson(message.data));
+        logger(NotificationDataModel.fromJson(message.data).toString());
+        onNotificationReceived
+            ?.call((NotificationDataModel.fromJson(message.data)));
 
         BigTextStyleInformation bigTextStyleInformation =
             BigTextStyleInformation(

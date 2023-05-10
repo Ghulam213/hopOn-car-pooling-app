@@ -86,32 +86,22 @@ class ProfileServiceImpl extends ProfileService {
     final prefs = await SharedPreferences.getInstance();
     String? id = prefs.getString('userID') ?? '';
 
-    logger('ProfileServiceImpl: updateUserProfile: $id $currentMode');
+   
 
     try {
       final Map<String, dynamic> data = {
         "id": id,
-        "firstName": firstName,
-        "lastName": lastName,
-        "phone": phone,
-        "locale": locale,
-        "timezone": timezone,
-        "currentCity": currentCity,
-        "gender": gender,
-        "birthDate": birthDate,
-        "profilePic": profilePic,
-        "optedInAt": optedInAt,
-        "active": active,
-        "verified": verified,
+     
         "currentMode": 'DRIVER'
       };
-      // final FormData formData = FormData.fromMap(data);
+  
+      logger('ProfileServiceImpl: updateUserProfile: Body  $data');
       final Response response = await dio.put(
         '/user/$id',
         data: data,
       );
-
-      logger('ProfileServiceImpl: updateUserProfile: ${response.data}');
+      logger(
+          'ProfileServiceImpl: updateUserProfile: Response ${response.data}');
      
       if (response.statusCode == 200 || response.statusCode == 201) {
         final UserInfoResponse updateOrderStatusResponse =
@@ -128,8 +118,6 @@ class ProfileServiceImpl extends ProfileService {
 
         return updateOrderStatusResponse;
       } else {
-
-
         throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
       }
     } catch (e) {

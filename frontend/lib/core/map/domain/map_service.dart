@@ -41,7 +41,7 @@ abstract class MapService {
     required num? ETA,
   });
 
-  Future<CreateRideResponse> createRide({
+  Future<CreatedRideResponse> createRide({
     String? source,
     String? destination,
     String? currentLocation,

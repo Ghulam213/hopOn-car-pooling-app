@@ -1,10 +1,12 @@
 import 'dart:developer';
 
+import 'package:cron/cron.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hop_on/Utils/constants.dart';
+import 'package:hop_on/Utils/helpers.dart';
 
 import '../../../config/network/resources.dart';
 import '../domain/map_service.dart';
@@ -23,6 +25,9 @@ class MapViewModel extends ChangeNotifier {
     _mapService = MapServiceImpl();
   }
 
+  final cron = Cron();
+
+  String createdRideId = '';
   String rideId = '';
   String driverId = '';
   String source = '';
@@ -35,11 +40,33 @@ class MapViewModel extends ChangeNotifier {
   String rideStartedAt = '';
   String rideEndedAt = '';
 
+  Rider? rideDriver = Rider();
+  List<Rider?> ridePassengers = [];
+
   final List<LatLng> _polyLineArray = [];
   final List<RideForPassenger> _availableRides = [];
 
   List<LatLng> get polyLineArray => _polyLineArray;
   List<RideForPassenger> get availableRides => _availableRides;
+
+  Future<void> cronUpdateDriverLoc() async {
+    // */1 * * * * means every minute
+    cron.schedule(Schedule.parse('*/1 * * * *'), () async {
+      updateDriverLoc(
+          currentLocation: '33.684714,73.048045', rideId: createdRideId);
+      logger(
+          '###  Driver Location CRON task called  with ID: $createdRideId ###');
+    });
+  }
+
+  Future<void> cronGetRideLoc() async {
+    // */1 * * * * means every minute
+    cron.schedule(Schedule.parse('*/1 * * * *'), () async {
+      getRideLocation(createdRideId);
+      logger(
+          '###  Driver Get Ride Location CRON task called with ID: $createdRideId ###');
+    });
+  }
 
   Resource<RideForPassengerResponse> findRidesResource = Resource.idle();
 
@@ -50,7 +77,7 @@ class MapViewModel extends ChangeNotifier {
     try {
       findRidesResource = Resource.loading();
       notifyListeners();
-     
+
       final RideForPassengerResponse response = await _mapService.findRides(
         source: source,
         destination: destination,
@@ -127,7 +154,7 @@ class MapViewModel extends ChangeNotifier {
     }
   }
 
-  Resource<CreateRideResponse> createRideResource = Resource.idle();
+  Resource<CreatedRideResponse> createRideResource = Resource.idle();
 
   Future<void> createRide({
     String? source,
@@ -141,7 +168,7 @@ class MapViewModel extends ChangeNotifier {
       createRideResource = Resource.loading();
       notifyListeners();
 
-      final CreateRideResponse response = await _mapService.createRide(
+      final CreatedRideResponse response = await _mapService.createRide(
           currentLocation: currentLocation,
           source: source,
           destination: destination,
@@ -150,6 +177,11 @@ class MapViewModel extends ChangeNotifier {
           polygonPoints: polygonPoints);
 
       createRideResource = Resource.success(response);
+
+      createdRideId = createRideResource.modelResponse!.data!.id.toString();
+
+      cronUpdateDriverLoc();
+      cronGetRideLoc();
 
       notifyListeners();
     } catch (e) {
@@ -277,6 +309,14 @@ class MapViewModel extends ChangeNotifier {
           await _mapService.getRideLocation(rideId);
 
       getRideLocationResource = Resource.success(response);
+
+      rideDriver = getRideLocationResource.modelResponse?.data?.driver;
+
+      logger(rideDriver?.currentLocation
+          .toString()); // shall be giving live location of driver
+      // TO DO : Update the map marketr using updateMarker() func and polyline (drawRoute func) with live driver/passengers location
+      // Need a way to listen to rideDriver.currentLocation either via Consumer<MapViewModel> (see other places where used) or some other way
+
       notifyListeners();
     } catch (e) {
       getRideLocationResource = Resource.failed(e.toString());
@@ -289,7 +329,6 @@ class MapViewModel extends ChangeNotifier {
     String? destination,
   }) async {
     try {
-        
       Dio dio = Dio();
       final direction = await dio.post(
           'https://maps.googleapis.com/maps/api/directions/json?',
@@ -319,5 +358,4 @@ class MapViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
-
 }

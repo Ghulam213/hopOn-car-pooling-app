@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 import '../../../Utils/colors.dart';
 import '../../../Utils/image_path.dart';
 import '../../../config/sizeconfig/size_config.dart';
 import '../../widgets/dot_widget.dart';
+import '../viewmodel/map_view_model.dart';
 
-buildEnjoyRide(BuildContext context) {
-  // Navigator.pop(context);
+buildEnjoyRide(BuildContext context, int index) {
   showModalBottomSheet(
       isDismissible: false,
       isScrollControlled: true,
@@ -17,24 +18,29 @@ buildEnjoyRide(BuildContext context) {
       clipBehavior: Clip.hardEdge,
       context: context,
       builder: (context) {
-        return const EnjoyRide();
+        return EnjoyRide(index: index);
       });
 }
 
 class EnjoyRide extends StatefulWidget {
-  const EnjoyRide({
+  int index = 0;
+  EnjoyRide({
     Key? key,
+    required index,
   }) : super(key: key);
 
   @override
-  _EnjoyRideState createState() => _EnjoyRideState();
+  EnjoyRideState createState() => EnjoyRideState();
 }
 
-class _EnjoyRideState extends State<EnjoyRide> {
+class EnjoyRideState extends State<EnjoyRide> {
   final SizeConfig config = SizeConfig();
+
 
   @override
   Widget build(BuildContext context) {
+    final MapViewModel viewModel = context.watch<MapViewModel>();
+        
     return Container(
       padding: const EdgeInsets.only(top: 7),
       height: config.uiHeightPx / 1.8,
@@ -117,7 +123,9 @@ class _EnjoyRideState extends State<EnjoyRide> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "Umer Zia",
+                                  viewModel.availableRides[widget.index]
+                                          .driverName ??
+                                      "Umer Zia",
                                   style: GoogleFonts.montserrat(
                                     fontSize: 12.0,
                                     fontWeight: FontWeight.w700,
@@ -127,6 +135,8 @@ class _EnjoyRideState extends State<EnjoyRide> {
                                 Row(
                                   children: [
                                     Text(
+                                      viewModel.availableRides[widget.index]
+                                              .vehicleName ??
                                       "Toyata Corolla 2015 |",
                                       style: GoogleFonts.montserrat(
                                         fontSize: 10.0,
@@ -135,7 +145,9 @@ class _EnjoyRideState extends State<EnjoyRide> {
                                       ),
                                     ),
                                     Text(
-                                      " AUC-206 ",
+                                      viewModel.availableRides[widget.index]
+                                              .vehicleRegNo ??
+                                          " AUC-206 ",
                                       style: GoogleFonts.montserrat(
                                         fontSize: 10.0,
                                         fontWeight: FontWeight.w600,
@@ -154,7 +166,8 @@ class _EnjoyRideState extends State<EnjoyRide> {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
-                                "Rs,300",
+                                'Rs ${viewModel.availableRides[widget.index].fare}',
+                        
                                 style: GoogleFonts.montserrat(
                                   fontSize: 12.0,
                                   fontWeight: FontWeight.w700,
@@ -211,6 +224,7 @@ class _EnjoyRideState extends State<EnjoyRide> {
                       children: [
                         Text(
                           "Current Location",
+            
                           style: GoogleFonts.montserrat(
                             fontSize: 9.0,
                             fontWeight: FontWeight.w600,
@@ -219,7 +233,8 @@ class _EnjoyRideState extends State<EnjoyRide> {
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          "Faizaabd, Islamabad",
+                          viewModel.availableRides[widget.index].source ??
+                              "Faizaabd, Islamabad",
                           style: GoogleFonts.montserrat(
                             fontSize: 9.0,
                             fontWeight: FontWeight.w400,
@@ -237,7 +252,8 @@ class _EnjoyRideState extends State<EnjoyRide> {
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          "NUST, Islamabad",
+                          viewModel.availableRides[widget.index].destination ??
+                              "NUST, Islamabad",
                           style: GoogleFonts.montserrat(
                             fontSize: 9.0,
                             fontWeight: FontWeight.w400,
@@ -267,28 +283,21 @@ class _EnjoyRideState extends State<EnjoyRide> {
                 color: AppColors.PRIMARY_500,
                 borderRadius: BorderRadius.circular(8.0),
               ),
-              child: InkWell(
-                onTap: () {},
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text(
-                        "Hopped On",
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  "Hopped On",
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ),
           ),
+          const SizedBox(height: 14),
         ],
       ),
     );

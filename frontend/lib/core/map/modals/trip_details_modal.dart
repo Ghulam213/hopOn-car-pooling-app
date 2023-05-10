@@ -3,8 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hop_on/core/map/modals/enjoy_ride_modal.dart';
-import 'package:hop_on/core/map/widgets/ride_card.dart';
+import 'package:hop_on/core/map/modals/confirm_trip_modal.dart';
 import 'package:provider/provider.dart';
 
 import '../../../Utils/colors.dart';
@@ -114,8 +113,27 @@ buildTripDetails(BuildContext context, String source, String destination,
                                             const Duration(milliseconds: 1),
                                             () {
                                           Navigator.pop(context);
-                                          showSelectRideModal(context, config,
-                                              viewModel, index);
+                                          viewModel.requestRide(
+                                            rideId: viewModel
+                                                .availableRides[index].id,
+                                            distance: index == 0
+                                                ? 20
+                                                : 30, // TO DO : get from google map
+                                            driverName: viewModel
+                                                .availableRides[index]
+                                                .driverName,
+                                            passengerSource: viewModel
+                                                .availableRides[index].source,
+                                            passengerDestination: viewModel
+                                                .availableRides[index]
+                                                .destination,
+                                            fare: viewModel
+                                                .availableRides[index].fare,
+                                            ETA: viewModel
+                                                .availableRides[index].ETA,
+                                          );
+                                          buildConfirmTrip(context, index);
+                                        
                                         });
                                       },
                                     ),
@@ -135,79 +153,74 @@ buildTripDetails(BuildContext context, String source, String destination,
                     ),
                   ]);
                 } else {
-                  return LoginButton(
-                    text: "buildEnjoyRide",
-                    onPress: () {
-                      Future.delayed(const Duration(milliseconds: 1), () {
-                        Navigator.pop(context);
-                        buildEnjoyRide(context);
-                      });
-                    },
-                  );
-                  // return Center(
-                  //     child: Text(
-                  //   'No Rides Found',
-                  //   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                  //       fontSize: 15, height: 1.0, color: AppColors.FONT_GRAY),
-                  // ));
+                  return Center(
+                      child: Text(
+                    'No Rides Found',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          color: AppColors.PRIMARY_500,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                        ),
+                  ));
+               
                 }
               }
             }));
       });
 }
 
-Future<dynamic> showSelectRideModal(BuildContext context, SizeConfig config,
-    MapViewModel viewModel, int index) {
-  return showModalBottomSheet(
-      isDismissible: false,
-      isScrollControlled: true,
-      elevation: 0,
-      backgroundColor: Colors.white,
-      clipBehavior: Clip.hardEdge,
-      context: context,
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.only(top: 7, bottom: 10),
-          height: config.uiHeightPx / 1.5,
-          width: config.uiWidthPx * 1,
-          decoration: const BoxDecoration(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(15),
-              topRight: Radius.circular(15),
-            ),
-          ),
-          child: Column(
-            children: [
-              Container(
-                  width: 80,
-                  height: 2.875,
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(80)),
-                    color: AppColors.PRIMARY_500,
-                  )),
-              const SizedBox(height: 15),
-              Text(
-                "Select a driver",
-                style: GoogleFonts.montserrat(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.PRIMARY_500,
-                ),
-              ),
-              const SizedBox(height: 5),
-              const DotWidget(
-                dashColor: AppColors.PRIMARY_500,
-                dashHeight: 1.0,
-                dashWidth: 2.0,
-              ),
-              const SizedBox(height: 10),
-              RideCard(index: index),
-              const Spacer(),
-            ],
-          ),
-        );
-      });
-}
+// Future<dynamic> showSelectRideModal(BuildContext context, SizeConfig config,
+//     MapViewModel viewModel, int index) {
+//   return showModalBottomSheet(
+//       isDismissible: false,
+//       isScrollControlled: true,
+//       elevation: 0,
+//       backgroundColor: Colors.white,
+//       clipBehavior: Clip.hardEdge,
+//       context: context,
+//       builder: (context) {
+//         return Container(
+//           padding: const EdgeInsets.only(top: 7, bottom: 10),
+//           height: config.uiHeightPx / 1.5,
+//           width: config.uiWidthPx * 1,
+//           decoration: const BoxDecoration(
+//             borderRadius: BorderRadius.only(
+//               topLeft: Radius.circular(15),
+//               topRight: Radius.circular(15),
+//             ),
+//           ),
+//           child: Column(
+//             children: [
+//               Container(
+//                   width: 80,
+//                   height: 2.875,
+//                   decoration: const BoxDecoration(
+//                     borderRadius: BorderRadius.all(Radius.circular(80)),
+//                     color: AppColors.PRIMARY_500,
+//                   )),
+//               const SizedBox(height: 15),
+//               Text(
+//                 "Select a driver",
+//                 style: GoogleFonts.montserrat(
+//                   fontSize: 20.0,
+//                   fontWeight: FontWeight.w500,
+//                   color: AppColors.PRIMARY_500,
+//                 ),
+//               ),
+//               const SizedBox(height: 5),
+//               const DotWidget(
+//                 dashColor: AppColors.PRIMARY_500,
+//                 dashHeight: 1.0,
+//                 dashWidth: 2.0,
+//               ),
+//               const SizedBox(height: 10),
+//               RideCard(index: index),
+//               const Spacer(),
+//             ],
+//           ),
+//         );
+//       });
+// }
 
 Widget tripdetails(String icon, String locate, String location,
     String extimated, String eIcon, String eDistance, SizeConfig config) {
