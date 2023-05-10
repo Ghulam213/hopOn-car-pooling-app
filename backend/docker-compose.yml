@@ -12,12 +12,13 @@ services:
       POSTGRES_USER: hopon
       POSTGRES_PASSWORD: hopon
   redis:
-      container_name: cache
-      image: redis
-      ports:
-        - 6379:6379
-      volumes:
-        - redis:/data
+    container_name: cache
+    image: redis
+    restart: always
+    ports:
+      - 6379:6379
+    volumes:
+      - redis:/data
 
 volumes:
   redis:

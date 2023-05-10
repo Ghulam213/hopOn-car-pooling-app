@@ -13,6 +13,7 @@ import { ImportModule } from 'src/import';
 import { LibraryModule } from 'src/library';
 import { ResponseMappingInterceptor } from 'src/library/interceptors';
 import { PrismaModule } from 'src/prisma';
+import { PrismaService } from 'src/prisma/services';
 
 export function initModule(modules: Array<Type<any>> = []): Promise<TestingModule> {
   const testModule = Test.createTestingModule({
@@ -61,5 +62,9 @@ export const createApp = async (modules: Array<Type<any>> = []): Promise<INestAp
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useGlobalInterceptors(new ResponseMappingInterceptor());
   await app.init();
+
+  const prismaService = app.get(PrismaService);
+  await prismaService.enableShutdownHooks(app);
+
   return app;
 };

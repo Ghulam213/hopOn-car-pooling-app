@@ -1,22 +1,22 @@
 import { INestApplication } from '@nestjs/common';
 import * as path from 'path';
+import { ImportService } from 'src/import/services';
+import { UserModule } from 'src/user';
 import * as request from 'supertest';
 import { createApp } from 'test/create-app';
-import { UserModule } from 'src/user';
-import { ImportConsole } from 'src/import/console';
 
 describe('User (e2e)', () => {
   let app: INestApplication;
-  let importConsole: ImportConsole;
+  let importService: ImportService;
 
   beforeAll(async () => {
     app = await createApp([UserModule]);
-    importConsole = app.get(ImportConsole);
-    await importConsole.importEntities(path.resolve(__dirname, './fixtures'), true);
+    importService = app.get(ImportService);
+    await importService.importEntities(path.resolve(__dirname, './fixtures'), true);
   });
 
   afterAll(async () => {
-    await importConsole.flushAllEntities();
+    await importService.flushAllEntities();
     await app.close();
   });
 
