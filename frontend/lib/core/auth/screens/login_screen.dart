@@ -230,7 +230,7 @@ class PasswordInput extends StatelessWidget {
             borderRadius: BorderRadius.circular(4),
           ),
           child: TextField(
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.emailAddress,
               cursorColor: AppColors.PRIMARY_500,
               controller: controller,
               onChanged: (value) {},

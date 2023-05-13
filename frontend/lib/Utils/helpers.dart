@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart' as loc;
 
 import '../main.dart';
 import 'constants.dart';
@@ -83,6 +84,13 @@ extension OnPressed on Widget {
           )
         ],
       );
+}
+
+Future<String> getCurrentLocation() async {
+  var location = loc.Location();
+  var locationService = await location.getLocation();
+
+  return "${locationService.latitude},${locationService.longitude}";
 }
 
 void logger(String? message) {

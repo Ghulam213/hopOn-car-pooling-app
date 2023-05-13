@@ -123,18 +123,18 @@ class StartRideModalState extends State<StartRideModal> {
                                                 destinationController.text)
                                           ]);
 
-                                          if (src.isNotEmpty) {
-                                            mapViewModel.createRide(
-                                              source: src[0].toString(),
-                                              destination: src[1].toString(),
-                                              currentLocation:
-                                                  '33.684714,73.048045',
-                                              totalDistance: 30,
-                                              city: 'Islamabad',
-                                              polygonPoints:
-                                                  mapViewModel.polyLineArray,
-                                            );
-                                          }
+                                          // if (src.isNotEmpty) {
+                                          //   mapViewModel.createRide(
+                                          //     source: src[0].toString(),
+                                          //     destination: src[1].toString(),
+                                          //     currentLocation:
+                                          //         '33.684714,73.048045',
+                                          //     totalDistance: 30,f
+                                          //     city: 'Islamabad',
+                                          //     polygonPoints:
+                                          //         mapViewModel.polyLineArray,
+                                          //   );
+                                          // }
 
                                           widget.onRideStarted(
                                             src[0].toString(),

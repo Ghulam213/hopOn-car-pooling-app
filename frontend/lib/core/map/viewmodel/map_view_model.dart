@@ -50,10 +50,12 @@ class MapViewModel extends ChangeNotifier {
   List<RideForPassenger> get availableRides => _availableRides;
 
   Future<void> cronUpdateDriverLoc() async {
+
+    var currentLoc = await getCurrentLocation();
     // */1 * * * * means every minute
     cron.schedule(Schedule.parse('*/1 * * * *'), () async {
       updateDriverLoc(
-          currentLocation: '33.684714,73.048045', rideId: createdRideId);
+          currentLocation: currentLoc, rideId: createdRideId);
       logger(
           '###  Driver Location CRON task called  with ID: $createdRideId ###');
     });
@@ -328,6 +330,9 @@ class MapViewModel extends ChangeNotifier {
     String? source,
     String? destination,
   }) async {
+
+    
+    var currentLoc = await getCurrentLocation();
     try {
       Dio dio = Dio();
       final direction = await dio.post(
@@ -345,9 +350,9 @@ class MapViewModel extends ChangeNotifier {
       }
 
       createRide(
-        source: '33.6618931, 73.0857944',
-        destination: '33.7099656, 73.0527963',
-        currentLocation: '33.6618931,73.0857944',
+        source: source,
+        destination: destination,
+        currentLocation: currentLoc,
         totalDistance: 100,
         city: 'Islamabad',
         polygonPoints: _polyLineArray,

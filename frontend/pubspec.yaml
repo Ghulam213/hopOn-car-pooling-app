@@ -52,7 +52,7 @@ dependencies:
   geocoding: ^2.1.0
   google_maps_flutter: ^2.2.5
   http: ^0.13.4
-  file_picker: ^5.2.5
+  image_picker: ^0.8.7+4
   latlong2: ^0.8.1
   lottie: ^2.3.2
   location: ^4.3.0

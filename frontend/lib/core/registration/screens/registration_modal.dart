@@ -73,14 +73,13 @@ class ReferenceNumberBottomSheetState extends State<RegistrationModal> {
                         useRootNavigator: true,
                         builder: (context) {
                           return VehicleInfoModal(
-                            // data: data,
                             onErrorOccurred: (error) {
                               customToastBlack(
                                   msg: "Error while updating order: $error");
                             },
                             onCloseTap: () {
                               Navigator.of(context).pop();
-                              Navigator.of(context).pop();
+                                 Navigator.of(context).pop();
                             },
                           );
                         });

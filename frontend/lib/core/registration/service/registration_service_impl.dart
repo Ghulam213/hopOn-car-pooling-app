@@ -11,6 +11,7 @@ import '../../../Utils/helpers.dart';
 import '../../../config/network/network_config.dart';
 import '../domain/registartion_service.dart';
 import '../models/driver_response.dart';
+import '../models/file_upload_response.dart';
 
 class RegistrationServiceImpl extends RegistrationService {
   final Dio dio = NetworkConfig().dio;
@@ -27,7 +28,8 @@ class RegistrationServiceImpl extends RegistrationService {
       String? vehicleModel,
       String? vehicleColor,
       String? vehiclePhoto,
-      String? vehicleRegImage}) async {
+      String? vehicleRegImage,
+      String? vehicleRegNo}) async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final String? id = prefs.getString("userID");
@@ -45,6 +47,7 @@ class RegistrationServiceImpl extends RegistrationService {
           "vehicleColor": vehicleColor,
           "vehiclePhoto": vehiclePhoto,
           "vehicleRegImage": vehicleRegImage,
+          "vehicleRegNo": vehicleRegNo
         }
       };
       logger("BranchServiceImpl: registerDriver() Body: $body");
@@ -54,10 +57,11 @@ class RegistrationServiceImpl extends RegistrationService {
           options: Options(headers: {
             HttpHeaders.contentTypeHeader: "application/json",
           }));
-          
+
       logger("BranchServiceImpl: registerDriver() Respose: $response.data");
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final DriverInfoResponse driverResponse = DriverInfoResponse.fromJson(response.data as Map<String, dynamic>);
+        final DriverInfoResponse driverResponse =
+            DriverInfoResponse.fromJson(response.data as Map<String, dynamic>);
         log(response.data.toString());
         final SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -68,7 +72,8 @@ class RegistrationServiceImpl extends RegistrationService {
     } catch (e) {
       if (e is DioError) {
         if (e.response != null) {
-          throw AppErrors.processErrorJson(e.response?.data as Map<String, dynamic>);
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";
@@ -89,8 +94,9 @@ class RegistrationServiceImpl extends RegistrationService {
           await dio.get('/driver/$id', queryParameters: {'id': id});
       debugPrint(response.data.toString());
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final DriverInfoResponse driverResponse = DriverInfoResponse.fromJson(response.data as Map<String, dynamic>);
-     
+        final DriverInfoResponse driverResponse =
+            DriverInfoResponse.fromJson(response.data as Map<String, dynamic>);
+
         final SharedPreferences prefs = await SharedPreferences.getInstance();
 
         await prefs.setString("driverID", driverResponse.data!.id!.toString());
@@ -103,7 +109,8 @@ class RegistrationServiceImpl extends RegistrationService {
     } catch (e) {
       if (e is DioError) {
         if (e.response != null) {
-          throw AppErrors.processErrorJson(e.response?.data as Map<String, dynamic>);
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";
@@ -122,7 +129,8 @@ class RegistrationServiceImpl extends RegistrationService {
 
       final Response response = await dio.get('/user/$id');
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final DriverInfoResponse driverResponse = DriverInfoResponse.fromJson(response.data as Map<String, dynamic>);
+        final DriverInfoResponse driverResponse =
+            DriverInfoResponse.fromJson(response.data as Map<String, dynamic>);
         log(response.data.toString());
         final SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -135,7 +143,8 @@ class RegistrationServiceImpl extends RegistrationService {
     } catch (e) {
       if (e is DioError) {
         if (e.response != null) {
-          throw AppErrors.processErrorJson(e.response?.data as Map<String, dynamic>);
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";
@@ -154,7 +163,8 @@ class RegistrationServiceImpl extends RegistrationService {
 
       final Response response = await dio.get('/user/$id');
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final DriverInfoResponse driverResponse = DriverInfoResponse.fromJson(response.data as Map<String, dynamic>);
+        final DriverInfoResponse driverResponse =
+            DriverInfoResponse.fromJson(response.data as Map<String, dynamic>);
         log(response.data.toString());
         final SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -167,7 +177,37 @@ class RegistrationServiceImpl extends RegistrationService {
     } catch (e) {
       if (e is DioError) {
         if (e.response != null) {
-          throw AppErrors.processErrorJson(e.response?.data as Map<String, dynamic>);
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
+        } else {
+          if (e.message.contains("SocketException: Failed host lookup")) {
+            throw "No internet connection";
+          }
+        }
+      }
+      throw e.toString();
+    }
+  }
+
+  @override
+  Future<FileUploadResponse> uploadFile() async {
+    try {
+      final Response response = await dio.post('/file');
+
+      logger(response.toString());
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final FileUploadResponse fileResponse =
+            FileUploadResponse.fromJson(response.data as Map<String, dynamic>);
+
+        return fileResponse;
+      } else {
+        throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
+      }
+    } catch (e) {
+      if (e is DioError) {
+        if (e.response != null) {
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";
