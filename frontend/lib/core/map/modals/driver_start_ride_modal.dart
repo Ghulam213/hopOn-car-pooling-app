@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hop_on/Utils/helpers.dart';
@@ -35,9 +34,8 @@ class StartRideModalState extends State<StartRideModal> {
 
   @override
   Widget build(BuildContext context) {
-
     final MapViewModel mapViewModel = context.watch<MapViewModel>();
-        
+
     return SizedBox(
       width: config.uiWidthPx * 0.7,
       child: const LoginButton(
@@ -123,23 +121,11 @@ class StartRideModalState extends State<StartRideModal> {
                                                 destinationController.text)
                                           ]);
 
-                                          // if (src.isNotEmpty) {
-                                          //   mapViewModel.createRide(
-                                          //     source: src[0].toString(),
-                                          //     destination: src[1].toString(),
-                                          //     currentLocation:
-                                          //         '33.684714,73.048045',
-                                          //     totalDistance: 30,f
-                                          //     city: 'Islamabad',
-                                          //     polygonPoints:
-                                          //         mapViewModel.polyLineArray,
-                                          //   );
-                                          // }
-
                                           widget.onRideStarted(
                                             src[0].toString(),
                                             src[1].toString(),
                                           );
+                                        
                                         },
                                       ),
                                     ),
