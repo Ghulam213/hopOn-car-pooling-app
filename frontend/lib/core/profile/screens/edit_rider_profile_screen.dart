@@ -24,10 +24,10 @@ class EditProfileScreen extends StatefulWidget {
       : super(key: key);
 
   @override
-  _EditProfileScreenState createState() => _EditProfileScreenState();
+  EditProfileScreenState createState() => EditProfileScreenState();
 }
 
-class _EditProfileScreenState extends State<EditProfileScreen> {
+class EditProfileScreenState extends State<EditProfileScreen> {
   final SizeConfig config = SizeConfig();
 
   final TextEditingController _fNameController = TextEditingController();
@@ -61,10 +61,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    // final ProfileViewModel profileViewModel = context.read<ProfileViewModel>();
-    // _emailController.text = profileViewModel.email;
+    final ProfileViewModel profileViewModel = context.read<ProfileViewModel>();
+    _emailController.text = profileViewModel.email;
     // _nameController.text = profileViewModel.name;
-    // fullCode = profileViewModel.phone;
+    fullCode = profileViewModel.phone;
   }
 
   @override
@@ -304,38 +304,38 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
             ),
             SizedBox(height: config.sh(4).toDouble()),
-            InkWell(
-              onTap: () {
-                updateProfile(); // TO DO remove
-                if (true
-                    // profileViewModel.updateProfileResource.ops !=
-                    //     NetworkStatus.LOADING
-                    ) {
-                  // if (_formKey.currentState!.validate() &&
-                  //     _numberController.text.isNotEmpty) {
-                  //   updateProfile();
-                  // }
-                }
-              },
-              child: Card(
-                  color: false
-                      // profileViewModel.updateProfileResource.ops ==
-                      //         NetworkStatus.LOADING
-                      ? AppColors.LM_BACKGROUND_BASIC
-                      : AppColors.PRIMARY_300,
-                  child: SizedBox(
-                      width: SizeConfig.screenWidthDp,
-                      height: config.sh(40).toDouble(),
-                      child: Center(
-                        child: Text(
-                          easy.tr("Save"),
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 17,
-                              fontWeight: FontWeight.w700),
-                        ),
-                      ))),
-            ),
+            // InkWell(
+            //   onTap: () {
+            //     updateProfile(); // TO DO remove
+            //     if (true
+            //         profileViewModel.updateProfileResource.ops !=
+            //             NetworkStatus.LOADING
+            //         ) {
+            //       if (_formKey.currentState!.validate() &&
+            //           _numberController.text.isNotEmpty) {
+            //         updateProfile();
+            //       }
+            //     }
+            //   },
+            // child: Card(
+            //     color: false
+            //         profileViewModel.updateProfileResource.ops ==
+            //                 NetworkStatus.LOADING
+            //         ? AppColors.LM_BACKGROUND_BASIC
+            //         : AppColors.PRIMARY_300,
+            //     child: SizedBox(
+            //         width: SizeConfig.screenWidthDp,
+            //         height: config.sh(40).toDouble(),
+            //         child: Center(
+            //           child: Text(
+            //             easy.tr("Save"),
+            //             style: const TextStyle(
+            //                 color: Colors.white,
+            //                 fontSize: 17,
+            //                 fontWeight: FontWeight.w700),
+            //           ),
+            //         ))),
+            // ),
           ],
         ),
       ),
@@ -351,7 +351,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final String password = _passwordController.text;
     final String age = _ageController.text;
     final String gender = _genderController.text;
-
 
 
     await profileViewModel.updateProfile(

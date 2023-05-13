@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hop_on/Utils/helpers.dart';
 import 'package:hop_on/core/auth/widgets/login_button.dart';
+import 'package:provider/provider.dart';
 
 import '../../../Utils/colors.dart';
 import '../../../Utils/image_path.dart';
 import '../../../config/sizeconfig/size_config.dart';
 import '../../widgets/custom_text_field.dart';
 import '../../widgets/textfield_icons.dart';
+import '../viewmodel/map_view_model.dart';
 
 class StartRideModal extends StatefulWidget {
   final Function(String, String) onRideStarted;
@@ -33,6 +35,9 @@ class StartRideModalState extends State<StartRideModal> {
 
   @override
   Widget build(BuildContext context) {
+
+    final MapViewModel mapViewModel = context.watch<MapViewModel>();
+        
     return SizedBox(
       width: config.uiWidthPx * 0.7,
       child: const LoginButton(
@@ -110,10 +115,30 @@ class StartRideModalState extends State<StartRideModal> {
                                       width: config.uiWidthPx - 100,
                                       child: LoginButton(
                                         text: 'Start',
-                                        onPress: () {
+                                        onPress: () async {
+                                          var src = await Future.wait([
+                                            autoCompleteSearch(
+                                                currentController.text),
+                                            autoCompleteSearch(
+                                                destinationController.text)
+                                          ]);
+
+                                          // if (src.isNotEmpty) {
+                                          //   mapViewModel.createRide(
+                                          //     source: src[0].toString(),
+                                          //     destination: src[1].toString(),
+                                          //     currentLocation:
+                                          //         '33.684714,73.048045',
+                                          //     totalDistance: 30,f
+                                          //     city: 'Islamabad',
+                                          //     polygonPoints:
+                                          //         mapViewModel.polyLineArray,
+                                          //   );
+                                          // }
+
                                           widget.onRideStarted(
-                                            currentController.text,
-                                            destinationController.text,
+                                            src[0].toString(),
+                                            src[1].toString(),
                                           );
                                         },
                                       ),

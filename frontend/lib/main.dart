@@ -53,7 +53,7 @@ Future<void> main() async {
 
 Future _getDeviceInfo() async {
   final prefs = await SharedPreferences.getInstance();
-  // prefs.clear();
+  //  prefs.clear(); // uncomment if need to login at each time
   final DeviceInformation? deviceInformation =
       await DeviceInfoService.getDeviceInfo();
   prefs.setString("deviceId", deviceInformation?.uUID.toString() ?? '');
@@ -77,8 +77,6 @@ Future _initLocationService() async {
     }
   }
 
-  var locationService = await location.getLocation();
-  debugPrint("${locationService.latitude} ${locationService.longitude}");
 }
 
 class App extends StatefulWidget {
@@ -127,20 +125,26 @@ class AppState extends State<App> with WidgetsBindingObserver {
           navigatorKey: Get.key,
           debugShowCheckedModeBanner: false,
           theme: Styles.lightTheme,
-          home: WithNotifications(
-            key: UniqueKey(),
-            child: Builder(
-              builder: (context) {
-                final Size size = MediaQuery.of(context).size;
-                SizeConfig.init(
-                  context,
-                  height: size.height,
-                  width: size.width,
-                  allowFontScaling: true,
-                );
-                return isAuthenticated ? MapScreen() : AuthScreen();
-              },
-            ),
+          home: Builder(
+            builder: (context) {
+              final Size size = MediaQuery.of(context).size;
+              SizeConfig.init(
+                context,
+                height: size.height,
+                width: size.width,
+                allowFontScaling: true,
+              );
+              return !isAuthenticated
+                  ? AuthScreen()
+                  : WithNotifications(
+                      key: UniqueKey(),
+                      child: Builder(
+                        builder: (context) {
+                          return MapScreen();
+                        },
+                      ),
+                    );
+            },
           ),
         ),
       ),

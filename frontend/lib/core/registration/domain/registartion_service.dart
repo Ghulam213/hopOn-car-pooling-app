@@ -1,5 +1,5 @@
-
 import '../models/driver_response.dart';
+import '../models/file_upload_response.dart';
 
 abstract class RegistrationService {
   Future<DriverInfoResponse> registerDriver({
@@ -14,8 +14,10 @@ abstract class RegistrationService {
     String? vehicleColor,
     String? vehiclePhoto,
     String? vehicleRegImage,
+      String? vehicleRegNo
   });
   Future<DriverInfoResponse> getDriver();
   Future<DriverInfoResponse> updateDriverInfo(String? userId);
   Future<DriverInfoResponse> searchDriver(String? userId);
+  Future<FileUploadResponse> uploadFile();
 }

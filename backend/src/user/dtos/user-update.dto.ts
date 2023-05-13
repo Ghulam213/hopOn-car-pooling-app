@@ -85,5 +85,5 @@ export class UserUpdateDto implements Prisma.UserUpdateInput {
   @IsEnum(CurrentModeEnum)
   @IsNotEmpty()
   @IsOptional()
-  currentMode: CurrentModeEnum;
+  currentMode?: CurrentModeEnum;
 }

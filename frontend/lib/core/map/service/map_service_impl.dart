@@ -29,12 +29,12 @@ class MapServiceImpl extends MapService {
         'destination': destination,
         "city": city ?? 'Islamabad',
       };
-      logger("BranchServiceImpl: findRides() Body: $body");
+      logger("MapServiceImpl: findRides() Body: $body");
 
       final Response response =
           await dio.get('/ride-for-passenger', queryParameters: body);
 
-      logger("BranchServiceImpl: findRides() Response: ${response.data}");
+      logger("MapServiceImpl: findRides() Response: ${response.data}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final RideForPassengerResponse driverResponse =
@@ -75,11 +75,10 @@ class MapServiceImpl extends MapService {
     final String user = prefs.getString("user") ?? '';
     final String pessengerId = prefs.getString("passengerID") ?? '';
 
-                    
     final body = {
       "rideId": rideId,
       "passengerId": pessengerId,
-      "passengerName": jsonDecode(user)['firstName'], 
+      "passengerName": jsonDecode(user)['firstName'],
       "driverName": driverName,
       "passengerSource": passengerSource,
       "passengerDestination": passengerDestination,
@@ -88,22 +87,18 @@ class MapServiceImpl extends MapService {
       "fare": fare
     };
 
-    logger("BranchServiceImpl: requestRide() Body: $body");
+    logger("MapServiceImpl: requestRide() Body: $body");
     try {
       final Response response = await dio.post(
         '/ride/request',
         data: jsonEncode(body),
       );
 
-      logger("BranchServiceImpl: requestRide() Response: ${response.data}");
+      logger("MapServiceImpl: requestRide() Response: ${response.data}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final RequestRideResponse driverResponse =
             RequestRideResponse.fromJson(response.data as Map<String, dynamic>);
-
-        // final SharedPreferences prefs = await SharedPreferences.getInstance();
-        // await prefs.setString("driverID", driverResponse.data!.id!.toString());
-
         return driverResponse;
       } else {
         throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
@@ -125,7 +120,7 @@ class MapServiceImpl extends MapService {
   }
 
   @override
-  Future<CreateRideResponse> createRide({
+  Future<CreatedRideResponse> createRide({
     String? source,
     String? destination,
     String? currentLocation,
@@ -136,28 +131,28 @@ class MapServiceImpl extends MapService {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final String? city = prefs.getString("currentCity");
-      final String? driverID = prefs.getString("driverId");
-
+      final String? driverID = prefs.getString("driverID");
+           
       final body = {
         'driverId': driverID ?? '',
-        "source": source,
-        'destination': destination,
+        "source": source!.trim(),
+        'destination': destination!.trim(),
         'currentLocation': currentLocation,
         'totalDistance': totalDistance,
         "city": city ?? 'Islamabad',
         'polygonPoints': jsonEncode(polygonPoints)
       };
 
-      logger("BranchServiceImpl: createRide() Body: $body");
+      logger("MapServiceImpl: createRide() Body: $body");
       final Response response = await dio.post(
         '/ride',
         data: jsonEncode(body),
       );
 
-      logger("BranchServiceImpl: createRide() Response: $response.data");
+      logger("MapServiceImpl: createRide() Response: $response.data");
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final CreateRideResponse driverResponse =
-            CreateRideResponse.fromJson(response.data as Map<String, dynamic>);
+        final CreatedRideResponse driverResponse =
+            CreatedRideResponse.fromJson(response.data as Map<String, dynamic>);
 
         return driverResponse;
       } else {
@@ -178,8 +173,6 @@ class MapServiceImpl extends MapService {
       throw e.toString();
     }
   }
-
-
 
   @override
   Future<RequestRideResponse> acceptRide({
@@ -208,14 +201,14 @@ class MapServiceImpl extends MapService {
       "ETA": ETA,
       "fare": fare
     };
-    logger("BranchServiceImpl: acceptRide() Body: $body");
+    logger("MapServiceImpl: acceptRide() Body: $body");
 
     try {
       final Response response = await dio.post(
         '/ride/accept-request',
-        data: jsonEncode(body),
+        data: body,
       );
-      logger("BranchServiceImpl: acceptRide() Response: $response.data");
+      logger("MapServiceImpl: acceptRide() Response: $response.data");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final RequestRideResponse driverResponse =
@@ -267,14 +260,14 @@ class MapServiceImpl extends MapService {
       "ETA": ETA,
       "fare": fare
     };
-    logger("BranchServiceImpl: rejectRide() Body: $body");
+    logger("MapServiceImpl: rejectRide() Body: $body");
     try {
       final Response response = await dio.post(
         '/ride/reject-request',
         data: jsonEncode(body),
       );
 
-      logger("BranchServiceImpl: rejectRide() RAesponse: $response.data");
+      logger("MapServiceImpl: rejectRide() RAesponse: $response.data");
       if (response.statusCode == 200 || response.statusCode == 201) {
         final RequestRideResponse driverResponse =
             RequestRideResponse.fromJson(response.data as Map<String, dynamic>);
@@ -314,11 +307,13 @@ class MapServiceImpl extends MapService {
         "currentLocation": currentLocation
       };
 
-      logger("BranchServiceImpl: updateDriverLoc() Body: $body");
+      logger("MapServiceImpl: updateDriverLoc() Body: $body");
       await dio.post(
         '/ride/driver/current-location',
         data: jsonEncode(body),
       );
+
+      logger("MapServiceImpl: updateDriverLoc() Response");
     } catch (e) {
       if (e is DioError) {
         if (e.response != null) {
@@ -349,11 +344,14 @@ class MapServiceImpl extends MapService {
         "currentLocation": currentLocation
       };
 
-      logger("BranchServiceImpl: updatePassengerLoc() Body: $body");
+      logger("MapServiceImpl: updatePassengerLoc() Body: $body");
       await dio.post(
         '/ride/passenger/current-location',
         data: jsonEncode(body),
       );
+
+
+      logger("MapServiceImpl: updatePassengerLoc() Response");
     } catch (e) {
       if (e is DioError) {
         if (e.response != null) {
@@ -378,7 +376,7 @@ class MapServiceImpl extends MapService {
         "rideId": rideId,
       };
 
-      logger("BranchServiceImpl: getRideLocation() Body: $body");
+      logger("MapServiceImpl: getRideLocation() Body: $body");
       final Response response = await dio.get(
         '/ride/$rideId/current-location',
         queryParameters: body,
@@ -387,6 +385,8 @@ class MapServiceImpl extends MapService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final GetRideResponse rideResponse =
             GetRideResponse.fromJson(response.data as Map<String, dynamic>);
+
+        logger("MapServiceImpl: getRideLocation() Response:$response}");
 
         return rideResponse;
       } else {
@@ -406,5 +406,4 @@ class MapServiceImpl extends MapService {
       throw e.toString();
     }
   }
-
 }

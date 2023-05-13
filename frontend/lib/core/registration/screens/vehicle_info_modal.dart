@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:easy_localization/easy_localization.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../../../Utils/colors.dart';
@@ -24,10 +24,6 @@ class VehicleInfoModal extends StatefulWidget {
 }
 
 class _VehicleInfoModalState extends State<VehicleInfoModal> {
-  final TextEditingController _searchController = TextEditingController();
-
-  final GlobalKey<FormState> _formKey = GlobalKey();
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
   final SizeConfig config = SizeConfig();
 
   @override
@@ -37,155 +33,119 @@ class _VehicleInfoModalState extends State<VehicleInfoModal> {
 
   int _activeStepIndex = 0;
 
-  TextEditingController fName = TextEditingController();
-  TextEditingController lName = TextEditingController();
-  TextEditingController email = TextEditingController();
-  TextEditingController password = TextEditingController();
-  TextEditingController phone = TextEditingController();
-  TextEditingController gender = TextEditingController();
-  TextEditingController age = TextEditingController();
+  TextEditingController vType = TextEditingController();
+  TextEditingController vBrand = TextEditingController();
+  TextEditingController vModel = TextEditingController();
+  TextEditingController vColor = TextEditingController();
+  TextEditingController vregNo = TextEditingController();
 
-  List<Step> stepList() {
+  String? cnicFrontUrl;
+
+  List<Step> stepList({RegistrationViewModel? regViewModel}) {
     var textStyle = Theme.of(context)
         .textTheme
         .bodyMedium!
         .copyWith(fontSize: 18, color: AppColors.PRIMARY_500);
 
+    TextField formField(String text, TextEditingController controller) {
+      return TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(),
+          labelText: text,
+        ),
+      );
+    }
+
     return [
       Step(
         state: _activeStepIndex <= 0 ? StepState.editing : StepState.complete,
         isActive: _activeStepIndex >= 0,
-        title: const Text('Information'),
-        content: Container(
-          child: Column(
-            children: [
-              TextField(
-                controller: fName,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Vehicle Brand',
-                ),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: lName,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Vehicle Model',
-                ),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: lName,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Vehicle Color',
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
-          ),
+        title: const Text('Vehicle Information'),
+        content: Column(
+          children: [
+            formField('Vehicle Type', vType),
+            const SizedBox(height: 8),
+            formField('Vehicle Brand', vBrand),
+            const SizedBox(height: 8),
+            formField('Vehicle Model', vModel),
+            const SizedBox(height: 8),
+            formField('Vehicle Color', vColor),
+            const SizedBox(height: 8),
+            formField('Vehicle Registration Number', vregNo),
+            const SizedBox(height: 16),
+          ],
         ),
       ),
       Step(
-          state: _activeStepIndex <= 1 ? StepState.editing : StepState.complete,
-          isActive: _activeStepIndex >= 1,
-          title: const Text('Images'),
-          content: Container(
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 8,
-                ),
-                CustomImageFormField(
-                  label: 'Pick license back',
-                  validator: (val) {
-                    if (val == null) return 'Pick Vehicle Photo';
-                    return null;
-                  },
-                  onChanged: (file) {},
-                ),
-                CustomImageFormField(
-                  label: 'Pick license back',
-                  validator: (val) {
-                    if (val == null) return 'Pick Vehicle Registation';
-                    return null;
-                  },
-                  onChanged: (file) {},
-                ),
-              ],
-            ),
-          )),
-      Step(
         state: _activeStepIndex <= 1 ? StepState.editing : StepState.complete,
         isActive: _activeStepIndex >= 1,
-        title: const Text('Driver Registration'),
+        title: const Text('Upload Images'),
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(
-              height: config.sh(40).toDouble(),
-            ),
-            Form(
-              key: _formKey,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 16),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          tr("Driver registration information"),
-                          style: const TextStyle(
-                              color: AppColors.FONT_GRAY,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: config.sh(40).toDouble(),
-                    ),
-                    CustomImageFormField(
-                      label: 'Pick cnic front',
-                      validator: (val) {
-                        if (val == null) return 'Pick cnic front';
-                        return null;
-                      },
-                      onChanged: (file) {},
-                    ),
-                    const SizedBox(height: 8),
-                    CustomImageFormField(
-                      label: 'Pick cnic back',
-                      validator: (val) {
-                        if (val == null) return 'Pick cnic back';
-                        return null;
-                      },
-                      onChanged: (file) {},
-                    ),
-                    const SizedBox(height: 8),
-                    CustomImageFormField(
-                      label: 'Pick incense front',
-                      validator: (val) {
-                        if (val == null) return 'Pick incense front';
-                        return null;
-                      },
-                      onChanged: (file) {},
-                    ),
-                    const SizedBox(height: 8),
-                    CustomImageFormField(
-                      label: 'Pick license back',
-                      validator: (val) {
-                        if (val == null) return 'Pick license back';
-                        return null;
-                      },
-                      onChanged: (file) {},
-                    ),
-                  ],
+            Column(
+              children: [
+                CustomImageFormField(
+                  label: 'Pick Cnic Front',
+                  validator: (val) {
+                    if (val == null) return 'Pick Cnic Front';
+                    return null;
+                  },
+                  onChanged: (file) async {
+                    var fName = await regViewModel?.uploadFile();
+                    // setState(() {
+                    //   cnicFrontUrl = fName;
+                    // });
+                  },
                 ),
-              ),
+                const SizedBox(height: 8),
+                CustomImageFormField(
+                  label: 'Pick Cnic Back',
+                  validator: (val) {
+                    if (val == null) return 'Pick Cnic Back';
+                    return null;
+                  },
+                  onChanged: (file) {},
+                ),
+                const SizedBox(height: 8),
+                CustomImageFormField(
+                  label: 'Pick License Front',
+                  validator: (val) {
+                    if (val == null) return 'Pick License Front';
+                    return null;
+                  },
+                  onChanged: (file) {},
+                ),
+                const SizedBox(height: 8),
+                CustomImageFormField(
+                  label: 'Pick License Back',
+                  validator: (val) {
+                    if (val == null) return 'Pick License Back';
+                    return null;
+                  },
+                  onChanged: (file) {},
+                ),
+                const SizedBox(height: 8),
+                CustomImageFormField(
+                  label: 'Vehicle Registration Paper',
+                  validator: (val) {
+                    if (val == null) return 'Registration Paper';
+                    return null;
+                  },
+                  onChanged: (file) {},
+                ),
+                const SizedBox(height: 8),
+                CustomImageFormField(
+                  label: 'Vehicle Image',
+                  validator: (val) {
+                    if (val == null) return 'Vehicle Image';
+                    return null;
+                  },
+                  onChanged: (file) {},
+                ),
+                const SizedBox(height: 16),
+              ],
             ),
           ],
         ),
@@ -205,7 +165,7 @@ class _VehicleInfoModalState extends State<VehicleInfoModal> {
 
   @override
   Widget build(BuildContext context) {
-    final RegistrationViewModel registrationViewModel =
+    final RegistrationViewModel regViewModel =
         context.watch<RegistrationViewModel>();
 
     return DraggableScrollableSheet(
@@ -216,53 +176,38 @@ class _VehicleInfoModalState extends State<VehicleInfoModal> {
       builder: (BuildContext context, ScrollController controller) {
         return Container(
           color: AppColors.LM_BACKGROUND_BASIC,
-          child:
-              // SizedBox(
-              //   height: config.sh(120).toDouble(),
-              // ),
-              // Padding(
-              //   padding: const EdgeInsets.symmetric(horizontal: 13.0),
-              //   child: Text(
-              //     tr("Please fill in the required information"),
-              //     style: const TextStyle(
-              //         color: AppColors.LM_FONT_BLOCKTEXT_GREY7,
-              //         fontSize: 17,
-              //         fontWeight: FontWeight.w400),
-              //   ),
-              // ),
-
-              SizedBox(
+          child: SizedBox(
             width: config.scaleWidth * 0.9,
             child: Stepper(
               type: StepperType.vertical,
               currentStep: _activeStepIndex,
-              steps: stepList(),
+              steps: stepList(regViewModel: regViewModel),
               onStepContinue: () {
                 if (_activeStepIndex < (stepList().length - 1)) {
                   setState(() {
                     _activeStepIndex += 1;
                   });
                 } else {
-                  registrationViewModel.registerDriver(
+                  regViewModel.registerDriver(
                       userId: '5ee04f51-0692-48bb-bcbf-de3d88b90dd7',
-                      cnicFront: 'cnicFront',
+                      cnicFront: cnicFrontUrl ?? '',
                       cnicBack: 'cnicBack',
                       licenseFront: 'licenseFront',
                       licenseBack: 'licenseBack',
-                      vehicleType: 'vehicleType',
-                      vehicleBrand: 'vehicleBrand',
-                      vehicleModel: 'vehicleModel',
-                      vehicleColor: 'vehicleColor',
+                      vehicleType: vType.text,
+                      vehicleBrand: vBrand.text,
+                      vehicleModel: vModel.text,
+                      vehicleColor: vColor.text,
                       vehiclePhoto: 'vehiclePhoto',
-                      vehicleRegImage: 'vehicleRegImage');
-                  widget.onCloseTap();
+                      vehicleRegImage: 'vehicleRegImage',
+                      vehicleRegNo: vregNo.text);
+                  // widget.onCloseTap();
                 }
               },
               onStepCancel: () {
                 if (_activeStepIndex == 0) {
                   return;
                 }
-
                 setState(() {
                   _activeStepIndex -= 1;
                 });
@@ -271,26 +216,11 @@ class _VehicleInfoModalState extends State<VehicleInfoModal> {
                 setState(() {
                   _activeStepIndex = index;
                 });
-                if (_activeStepIndex == 4) {
-                  //   registrationViewModel.registerDriver(
-                  //       userId: '5ee04f51-0692-48bb-bcbf-de3d88b90dd7',
-                  //       cnicFront: 'cnicFront',
-                  //       cnicBack: 'cnicBack',
-                  //       licenseFront: 'licenseFront',
-                  //       licenseBack: 'licenseBack',
-                  //       vehicleType: 'vehicleType',
-                  //       vehicleBrand: 'vehicleBrand',
-                  //       vehicleModel: 'vehicleModel',
-                  //       vehicleColor: 'vehicleColor',
-                  //       vehiclePhoto: 'vehiclePhoto',
-                  //       vehicleRegImage: 'vehicleRegImage');
-                  // }
-                }
               },
               controlsBuilder: (BuildContext context, ControlsDetails details) {
                 final isLastStep = _activeStepIndex == stepList().length - 1;
                 return StepControlBuilder(
-                    viewModel: registrationViewModel,
+                    viewModel: regViewModel,
                     details: details,
                     activeStepIndex: _activeStepIndex,
                     isLastStep: isLastStep);
@@ -323,6 +253,24 @@ class _CustomImageFormFieldState extends State<CustomImageFormField> {
   File? _pickedFile;
 
   bool isPicking = false;
+  Future<String> uploadImage(filename, url) async {
+    debugPrint(filename);
+    debugPrint(url);
+    var request = http.MultipartRequest(
+        'POST', Uri.parse('http://192.168.100.228:3001/file'));
+
+    debugPrint('FILE');
+    debugPrint(request.files.toString());
+    debugPrint(request.fields.toString());
+    debugPrint('FILE sending');
+    var res = await request.send();
+
+    debugPrint(res.toString());
+    debugPrint(res.reasonPhrase.toString());
+    return res.reasonPhrase!;
+  }
+
+  String state = "";
 
   @override
   Widget build(BuildContext context) {
@@ -333,20 +281,14 @@ class _CustomImageFormFieldState extends State<CustomImageFormField> {
             children: [
               GestureDetector(
                 onTap: () async {
-                  FilePickerResult? file = await FilePicker.platform.pickFiles(
-                      dialogTitle: widget.label,
-                      type: FileType.image,
-                      allowMultiple: false);
+                  XFile? imageFile;
+                  imageFile = await ImagePicker()
+                      .pickImage(source: ImageSource.gallery);
+                  var res = await uploadImage(imageFile?.path, imageFile?.name);
                   setState(() {
-                    isPicking = true;
+                    state = res;
+                    print(res);
                   });
-
-                  if (file != null) {
-                    _pickedFile = File(file.files.first.path!);
-
-                    isPicking = true;
-                    widget.onChanged.call(_pickedFile!);
-                  }
                 },
                 child: Card(
                   elevation: 5,

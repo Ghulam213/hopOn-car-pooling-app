@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:hop_on/Utils/helpers.dart';
 
 class Ride {
   final String? rideId;
@@ -32,10 +33,9 @@ class Ride {
   });
 
   factory Ride.fromJson(Map<String, dynamic> json) {
-
     List<dynamic> points = jsonDecode(json['polygonPoints']);
-    // dynamic? polygonPoints =
-    //     points.map((point) => List<double>.from(point)).toList();
+    logger('json.toString()');
+    logger(json.toString());
     return Ride(
       rideId: json['id'] as String?,
       driverId: json['driverId'] as String?,
@@ -50,6 +50,8 @@ class Ride {
       rideEndedAt: json['rideEndedAt'] as String?,
       polygonPoints: points,
     );
+
+    
   }
 
   Map<String, dynamic> toJson() => {
@@ -71,7 +73,7 @@ class Ride {
 class Coordinates {
   List<List<double>> data;
   Coordinates({required this.data});
-  
+
   factory Coordinates.fromJson(Map<String, dynamic> json) {
     return Coordinates(
         data: List<List<double>>.from(json['polygonPoints'].map(

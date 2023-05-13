@@ -2,7 +2,9 @@ import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart' as loc;
 
 import '../main.dart';
 import 'constants.dart';
@@ -84,11 +86,46 @@ extension OnPressed on Widget {
       );
 }
 
+Future<String> getCurrentLocation() async {
+  var location = loc.Location();
+  var locationService = await location.getLocation();
+
+  return "${locationService.latitude},${locationService.longitude}";
+}
+
 void logger(String? message) {
   // ignore: avoid_print
   kDebugMode ? print(('$message')) : log('$message');
 }
 
+Future<String?> autoCompleteSearch(String value) async {
+  if (value != '') {
+    try {
+      List<Location> locations = await locationFromAddress(value);
+
+      return '${locations[0].latitude.toString()},${locations[0].longitude.toString()}';
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+  return null;
+}
+
+LatLng? convertStringToLatLng(String? latLngString) {
+  if (latLngString == null) {
+    return null;
+  }
+  List<String> latLngList = latLngString.split(',');
+  if (latLngList.length != 2) {
+    return null;
+  }
+  double? latitude = double.tryParse(latLngList[0].trim());
+  double? longitude = double.tryParse(latLngList[1].trim());
+  if (latitude == null || longitude == null) {
+    return null;
+  }
+  return LatLng(latitude, longitude);
+}
 
 // Map getGeometryFromSharedPrefs(int index) {
 //   Map geometry =  {}//getDecodedResponseFromSharedPrefs(index)['geometry'];

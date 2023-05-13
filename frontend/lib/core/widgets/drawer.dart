@@ -24,7 +24,7 @@ class _AppDrawerState extends State<AppDrawer> {
 
   Future<String> checkCurrentMode() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('userMode')!;
+    return prefs.getString('userMode') != 'DRIVER' ? 'driver' : 'passenger';
   }
 
   @override
@@ -71,6 +71,8 @@ class _AppDrawerState extends State<AppDrawer> {
               ),
               const Spacer(),
               Consumer<LoginStore>(builder: (_, loginStore, __) {
+
+                
                 return Observer(
                   builder: (_) => ListTile(
                     title: Padding(
@@ -79,49 +81,34 @@ class _AppDrawerState extends State<AppDrawer> {
                         alignment: Alignment.centerLeft,
                         child: Column(
                           children: [
-                            // Center(
-                            //   child: SizedBox(
-                            //     width: config.sw(30).toDouble(),
-                            //     height: config.sh(65).toDouble(),
-                            //     child: FittedBox(
-                            //       fit: BoxFit.fitHeight,
-                            //       child: Switch.adaptive(
-                            //         trackColor:
-                            //             MaterialStateProperty.all(Colors.black38),
-                            //         activeColor: AppColors.LM_BACKGROUND_BASIC,
-                            //         inactiveThumbColor:
-                            //             AppColors.LM_BACKGROUND_BASIC,
-                            //         activeThumbImage: const AssetImage(
-                            //             'assets/images/carpool.png'),
-                            //         inactiveThumbImage: const AssetImage(
-                            //             'assets/images/driver.png'),
-                            //             value: loginStore.isDriver,
-                            //         onChanged: (value) => setState(() {
-                            //               isDriver = !loginStore.isDriver;
-                            //         }),
-                            //       ),
-                            //     ),
-                            //   ),
-                            // ),
+                           
                             Center(
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.PRIMARY_500),
-                                child: Text(
-                                    checkCurrentMode() != 'PASSENGER'
-                                        ? 'Switch to passenger'
-                                        : 'Switch to driver',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium!
-                                        .copyWith(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600,
-                                            height: 1.0,
-                                            color: AppColors.WHITE)),
+                                child: FutureBuilder<String>(
+                                  future: checkCurrentMode(),
+                                  builder: (_, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return const CircularProgressIndicator();
+                                    }
+                                    return Text(
+                                        'Switch to ${snapshot.data.toString().toLowerCase()}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium!
+                                            .copyWith(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                                height: 1.0,
+                                                color: AppColors
+                                                    .WHITE)); //👈 Your valid data here
+                                  },
+                                ),
                                 onPressed: () async {
                                   viewModel.updateProfile(
-                                      currentMode: await checkCurrentMode());
+                                      currentMode: 'DRIVER');
                                 },
                               ),
                             ),
