@@ -30,6 +30,7 @@ class _MapScreenState extends State<MapScreen> {
   final Set<Polyline> _polyline = {};
 
   final LatLng _center = getLatLngFromSharedPrefs();
+  // ignore: unused_field
   LatLng _lastMapPosition = const LatLng(33.64333419508494, 72.9914673283913);
 
   @override
@@ -45,33 +46,76 @@ class _MapScreenState extends State<MapScreen> {
     _lastMapPosition = position.target;
   }
 
-  void updateMarker(String? position) async {
+  Future<void> updateMarker(MapViewModel viewModel, LoginStore loginStore) async {
     LatLng pos = const LatLng(33.64333419508494, 72.9914673283913); // fallback
 
-    _markers.add(Marker(
-      markerId: MarkerId(_lastMapPosition.toString()),
-      position: convertStringToLatLng(position) ?? pos,
-      icon: await BitmapDescriptor.fromAssetImage(
-          const ImageConfiguration(size: Size(22, 22)),
-          'assets/images/car_ios.png'),
-      infoWindow: const InfoWindow(
-        title: "ride starting",
+    // lets to the current User first.
+    _markers.add(
+      Marker(
+        markerId: MarkerId(loginStore.userId.toString()),
+        position: pos, // need to getCurrentLocationFunction here
+        icon: BitmapDescriptor.defaultMarker,
+        infoWindow: const InfoWindow(
+          title: "User's Location",
+        ),
       ),
-    ));
+    );
+
+    // if user is passenger add drivers marker
+    if (!loginStore.isDriver) {
+      _markers.add(
+        Marker(
+          markerId: MarkerId(viewModel.rideDriver!.id.toString()),
+          position: convertStringToLatLng(viewModel.rideDriver!.currentLocation!) ?? pos,
+          icon: await BitmapDescriptor.fromAssetImage(
+            const ImageConfiguration(
+              size: Size(22, 22),
+            ),
+            'assets/images/car_ios.png',
+          ),
+          infoWindow: const InfoWindow(
+            title: "Driver's Location",
+          ),
+        ),
+      );
+    } else {
+      // if user is driver add passengers marker
+      for (var element in viewModel.ridePassengers) {
+        _markers.add(
+          Marker(
+            markerId: MarkerId(element!.id!.toString()),
+            position: convertStringToLatLng(element.currentLocation!) ?? pos,
+            icon: await BitmapDescriptor.fromAssetImage(
+              const ImageConfiguration(
+                size: Size(22, 22),
+              ),
+              'assets/images/car_ios.png', // need to find a passengers png
+            ),
+            infoWindow: const InfoWindow(
+              title: "Passenger's Location",
+            ),
+          ),
+        );
+      }
+    }
   }
 
-  void drawRoute(
-      String? source, String? destination, MapViewModel viewModel) async {
-    viewModel.getDirections(source: '$source', destination: '$destination');
+  void drawRoute(MapViewModel viewModel) {
+    _polyline.add(
+      Polyline(
+        polylineId: PolylineId(viewModel.createdRideId.toString()),
+        visible: true,
+        points: viewModel.polyLineArray,
+        width: 8,
+        color: AppColors.PRIMARY_500,
+      ),
+    );
+  }
 
-    updateMarker(source);
-    _polyline.add(Polyline(
-      polylineId: PolylineId(source.toString()),
-      visible: true,
-      points: viewModel.polyLineArray,
-      width: 8,
-      color: AppColors.PRIMARY_500,
-    ));
+  Future<bool> updateMapLocations(MapViewModel viewModel, LoginStore loginStore) async {
+    await updateMarker(viewModel, loginStore);
+    drawRoute(viewModel);
+    return true;
   }
 
   @override
@@ -90,36 +134,34 @@ class _MapScreenState extends State<MapScreen> {
                   ? Padding(
                       padding: const EdgeInsets.all(3.0),
                       child: TextButton(
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                AppColors.PRIMARY_500),
-                            shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  side: const BorderSide(
-                                      color: AppColors.PRIMARY_500)),
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(AppColors.PRIMARY_500),
+                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              side: const BorderSide(color: AppColors.PRIMARY_500),
                             ),
                           ),
-                          onPressed: () async {
-                            await showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              useRootNavigator: true,
-                              builder: (context) {
-                                return const RegistrationModal();
-                              },
-                            );
-                          },
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10.0),
-                            child: Text(
-                              'Register as a Driver',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                          )))
+                        ),
+                        onPressed: () async {
+                          await showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            useRootNavigator: true,
+                            builder: (context) {
+                              return const RegistrationModal();
+                            },
+                          );
+                        },
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10.0),
+                          child: Text(
+                            'Register as a Driver',
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w400),
+                          ),
+                        ),
+                      ),
+                    )
                   : const SizedBox(height: 0),
             ],
           ),
@@ -133,19 +175,30 @@ class _MapScreenState extends State<MapScreen> {
                   duration: const Duration(milliseconds: 1500),
                   child: SizedBox(
                     height: MediaQuery.of(context).size.height * 1,
-                    child: GoogleMap(
-                      onMapCreated: _onMapCreated,
-                      compassEnabled: false,
-                      myLocationButtonEnabled: false,
-                      zoomControlsEnabled: true,
-                      zoomGesturesEnabled: true,
-                      markers: _markers,
-                      polylines: _polyline,
-                      onCameraMove: _onCameraMove,
-                      initialCameraPosition: CameraPosition(
-                        target: _center,
-                        zoom: 14.0,
-                      ),
+                    child: FutureBuilder<bool>(
+                      future: updateMapLocations(mapViewModel, loginStore),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          return GoogleMap(
+                            onMapCreated: _onMapCreated,
+                            compassEnabled: false,
+                            myLocationButtonEnabled: false,
+                            zoomControlsEnabled: true,
+                            zoomGesturesEnabled: true,
+                            markers: _markers,
+                            polylines: _polyline,
+                            onCameraMove: _onCameraMove,
+                            initialCameraPosition: CameraPosition(
+                              target: _center,
+                              zoom: 14.0,
+                            ),
+                          );
+                        } else {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                      },
                     ),
                   ),
                 ),
@@ -158,8 +211,7 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  Widget showModals(
-      SizeConfig config, LoginStore loginStore, MapViewModel viewModel) {
+  Widget showModals(SizeConfig config, LoginStore loginStore, MapViewModel viewModel) {
     return Positioned(
       bottom: 0,
       child: Column(
@@ -194,8 +246,9 @@ class _MapScreenState extends State<MapScreen> {
                                 )
                               : StartRideModal(
                                   onRideStarted: (String curLoc, String dest) {
-                                    drawRoute(curLoc, dest, viewModel);
-                                    Navigator.of(context).pop();
+                                    drawRoute(viewModel);
+                                    updateMarker(viewModel, loginStore);
+                                    Navigator.of(context, rootNavigator: true).pop();
                                   },
                                 ),
                         ),

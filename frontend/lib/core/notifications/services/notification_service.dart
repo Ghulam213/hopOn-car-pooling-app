@@ -12,8 +12,7 @@ Future<void> _backgroundMessageHandler(RemoteMessage message) async {
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
-  late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   late Function(NotificationDataModel notification)? onNotificationReceived;
   bool isNotificationRegistered = false;
 
@@ -85,8 +84,7 @@ class NotificationService {
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       print('User granted permission');
-    } else if (settings.authorizationStatus ==
-        AuthorizationStatus.provisional) {
+    } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
       print('User granted provisional permission');
     } else {
       print('User declined or has not accepted permission');
@@ -96,6 +94,7 @@ class NotificationService {
 
   // For handling notification when the app is in foreground
   void attachForegroundNotificationHandler() {
+    print(".........attachForegroundNotificationHandler...........");
     FirebaseMessaging.onMessage.listen(
       (RemoteMessage message) async {
         print(".........onMessage...........");
@@ -104,18 +103,15 @@ class NotificationService {
         );
 
         logger(NotificationDataModel.fromJson(message.data).toString());
-        onNotificationReceived
-            ?.call((NotificationDataModel.fromJson(message.data)));
+        onNotificationReceived?.call((NotificationDataModel.fromJson(message.data)));
 
-        BigTextStyleInformation bigTextStyleInformation =
-            BigTextStyleInformation(
+        BigTextStyleInformation bigTextStyleInformation = BigTextStyleInformation(
           message.notification!.body.toString(),
           htmlFormatBigText: true,
           contentTitle: message.notification!.title.toString(),
           htmlFormatContentTitle: true,
         );
-        AndroidNotificationDetails androidPlatformChannelSpecifics =
-            AndroidNotificationDetails(
+        AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
           'high_importance_channel',
           'High Importance Notifications',
           importance: Importance.high,
@@ -124,8 +120,7 @@ class NotificationService {
           playSound: true,
           // sound: RawResourceAndroidNotificationSound('notification'),
         );
-        IOSNotificationDetails iosPlatformChannelSpecifics =
-            const IOSNotificationDetails();
+        IOSNotificationDetails iosPlatformChannelSpecifics = const IOSNotificationDetails();
         NotificationDetails platformChannelSpecifics = NotificationDetails(
           android: androidPlatformChannelSpecifics,
           iOS: iosPlatformChannelSpecifics,
@@ -149,8 +144,7 @@ class NotificationService {
 
   // For handling notification when the app is in terminated state
   checkForInitialMessage() async {
-    RemoteMessage? initialMessage =
-        await FirebaseMessaging.instance.getInitialMessage();
+    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
 
     if (initialMessage != null) {
       // TODO: Handle initial message

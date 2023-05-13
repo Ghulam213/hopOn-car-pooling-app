@@ -36,29 +36,36 @@ class RideNotificationModal extends StatelessWidget {
           Expanded(
             child: Row(
               children: [
-                Text(notification.passengerName ?? '',
-                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                          fontWeight: FontWeight.w400,
-                        )),
-                Text('${notification.fare} PKR',
-                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                          fontWeight: FontWeight.w400,
-                        )),
+                Text(
+                  notification.passengerName ?? '',
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                        fontWeight: FontWeight.w400,
+                      ),
+                ),
+                Text(
+                  '${notification.fare} PKR',
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                        fontWeight: FontWeight.w400,
+                      ),
+                ),
               ],
             ),
           ),
           Expanded(
             child: Row(
               children: [
-                Text('${notification.distance} KM',
-                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                          fontWeight: FontWeight.w400,
-                        )),
                 Text(
-                    '${((notification.eta ?? 0) / 60000).round()} minutes away',
-                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                          fontWeight: FontWeight.w400,
-                        )),
+                  '${notification.distance} KM',
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                        fontWeight: FontWeight.w400,
+                      ),
+                ),
+                Text(
+                  '${((notification.eta ?? 0) / 60000).round()} minutes away',
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                        fontWeight: FontWeight.w400,
+                      ),
+                ),
               ],
             ),
           ),
@@ -69,12 +76,10 @@ class RideNotificationModal extends StatelessWidget {
                   onPressed: () {
                     viewModel.rejectRide(
                       rideId: notification.rideId,
-                      distance: 20,
+                      distance: notification.distance,
                       driverName: notification.passengerName,
-                      passengerSource:
-                         notification.passengerSource,
-                      passengerDestination:
-                          notification.passengerDestination,
+                      passengerSource: notification.passengerSource,
+                      passengerDestination: notification.passengerDestination,
                       fare: notification.fare,
                       ETA: notification.eta,
                     );
@@ -91,17 +96,14 @@ class RideNotificationModal extends StatelessWidget {
                   onPressed: () {
                     viewModel.acceptRide(
                       rideId: notification.rideId,
-                      distance: 20,
+                      distance: notification.distance,
                       driverName: notification.passengerName,
-                      passengerSource:
-                         notification.passengerSource,
-                      passengerDestination:
-                        notification.passengerDestination,
+                      passengerSource: notification.passengerSource,
+                      passengerDestination: notification.passengerDestination,
                       fare: notification.fare,
                       ETA: notification.eta,
                     );
                     buildPassengerLocation(context, notification);
-
                   },
                   child: Text(
                     'Accept',

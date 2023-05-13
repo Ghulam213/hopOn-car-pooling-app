@@ -14,159 +14,139 @@ import '../../auth/widgets/login_button.dart';
 import '../../widgets/dot_widget.dart';
 import '../viewmodel/map_view_model.dart';
 
-buildTripDetails(BuildContext context, String source, String destination,
-    Function onRideRequest) {
+buildTripDetails(BuildContext context, String source, String destination, Function onRideRequest) {
   final SizeConfig config = SizeConfig();
 
   Navigator.pop(context);
   showModalBottomSheet(
-      isDismissible: true,
-      isScrollControlled: true,
-      elevation: 5,
-      backgroundColor: Colors.white,
-      clipBehavior: Clip.hardEdge,
-      context: context,
-      builder: (context) {
-        return Container(
-            padding: const EdgeInsets.only(top: 7),
-            height: config.uiHeightPx / 2,
-            width: config.uiWidthPx * 1,
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(15),
-                topRight: Radius.circular(15),
-              ),
-            ),
-            child: Consumer<MapViewModel>(
-                builder: (BuildContext context, MapViewModel viewModel, _) {
-              if (viewModel.findRidesResource.ops == NetworkStatus.LOADING) {
-                return const Center(
-                  child: SizedBox(
-                      height: 50,
-                      width: 50,
-                      child: CircularProgressIndicator()),
-                );
-              } else {
-                if (viewModel.availableRides.isNotEmpty) {
-                  return Column(children: [
-                    Container(
-                        width: 80,
-                        height: 2.875,
-                        decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(80)),
-                          color: AppColors.PRIMARY_500,
-                        )),
-                    const SizedBox(height: 15),
-                    Text(
-                      "Trip Details",
-                      style: GoogleFonts.montserrat(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.FONT_GRAY,
-                      ),
+    isDismissible: true,
+    isScrollControlled: true,
+    elevation: 5,
+    backgroundColor: Colors.white,
+    clipBehavior: Clip.hardEdge,
+    context: context,
+    builder: (context) {
+      return Container(
+        padding: const EdgeInsets.only(top: 7),
+        height: config.uiHeightPx / 2,
+        width: config.uiWidthPx * 1,
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(15),
+            topRight: Radius.circular(15),
+          ),
+        ),
+        child: Consumer<MapViewModel>(
+          builder: (BuildContext context, MapViewModel viewModel, _) {
+            if (viewModel.findRidesResource.ops == NetworkStatus.LOADING) {
+              return const Center(
+                child: SizedBox(height: 50, width: 50, child: CircularProgressIndicator()),
+              );
+            } else {
+              if (viewModel.availableRides.isNotEmpty) {
+                return Column(children: [
+                  Container(
+                      width: 80,
+                      height: 2.875,
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(80)),
+                        color: AppColors.PRIMARY_500,
+                      )),
+                  const SizedBox(height: 15),
+                  Text(
+                    "Trip Details",
+                    style: GoogleFonts.montserrat(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.FONT_GRAY,
                     ),
-                    const SizedBox(height: 10),
-                    SingleChildScrollView(
-                      child: SizedBox(
-                        height: config.uiHeightPx * 0.36,
-                        child: ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: false,
-                          dragStartBehavior: DragStartBehavior.down,
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          itemCount: viewModel.availableRides.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Column(
-                              children: [
-                                tripdetails(
-                                    ImagesAsset.down,
-                                    "Your Current Location",
-                                    viewModel.availableRides[index].source
-                                        .toString(),
-                                    "Estimated Distance",
-                                    ImagesAsset.run,
-                                    viewModel.availableRides[index].ETA
-                                        .toString(),
-                                    config),
-                                const SizedBox(height: 10),
-                                tripdetails(
-                                    ImagesAsset.locate,
-                                    "Your Destination",
-                                    viewModel.availableRides[index].destination
-                                        .toString(),
-                                    "Estimated time",
-                                    ImagesAsset.clock,
-                                    viewModel.availableRides[index].ETA
-                                        .toString(),
-                                    config),
-                                const SizedBox(height: 10),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: config.uiWidthPx * 0.2),
-                                  child: SizedBox(
-                                    height: 40,
-                                    width: config.uiWidthPx * 1,
-                                    child: LoginButton(
-                                      text: "Select",
-                                      onPress: () {
-                                        Future.delayed(
-                                            const Duration(milliseconds: 1),
-                                            () {
-                                          Navigator.pop(context);
-                                          viewModel.requestRide(
-                                            rideId: viewModel
-                                                .availableRides[index].id,
-                                            distance: index == 0
-                                                ? 20
-                                                : 30, // TO DO : get from google map
-                                            driverName: viewModel
-                                                .availableRides[index]
-                                                .driverName,
-                                            passengerSource: viewModel
-                                                .availableRides[index].source,
-                                            passengerDestination: viewModel
-                                                .availableRides[index]
-                                                .destination,
-                                            fare: viewModel
-                                                .availableRides[index].fare,
-                                            ETA: viewModel
-                                                .availableRides[index].ETA,
-                                          );
-                                          buildConfirmTrip(context, index);
-                                        
-                                        });
-                                      },
-                                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  SingleChildScrollView(
+                    child: SizedBox(
+                      height: config.uiHeightPx * 0.36,
+                      child: ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: false,
+                        dragStartBehavior: DragStartBehavior.down,
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        itemCount: viewModel.availableRides.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Column(
+                            children: [
+                              tripdetails(
+                                  ImagesAsset.down,
+                                  "Your Current Location",
+                                  viewModel.availableRides[index].source.toString(),
+                                  "Estimated Distance",
+                                  ImagesAsset.run,
+                                  viewModel.availableRides[index].ETA.toString(),
+                                  config),
+                              const SizedBox(height: 10),
+                              tripdetails(
+                                  ImagesAsset.locate,
+                                  "Your Destination",
+                                  viewModel.availableRides[index].destination.toString(),
+                                  "Estimated time",
+                                  ImagesAsset.clock,
+                                  viewModel.availableRides[index].ETA.toString(),
+                                  config),
+                              const SizedBox(height: 10),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: config.uiWidthPx * 0.2),
+                                child: SizedBox(
+                                  height: 40,
+                                  width: config.uiWidthPx * 1,
+                                  child: LoginButton(
+                                    text: "Select",
+                                    onPress: () {
+                                      Future.delayed(const Duration(milliseconds: 1), () {
+                                        Navigator.pop(context);
+                                        viewModel.requestRide(
+                                          rideId: viewModel.availableRides[index].id,
+                                          distance: index == 0 ? 20 : 30, // TO DO : get from google map
+                                          driverName: viewModel.availableRides[index].driverName,
+                                          passengerSource: viewModel.availableRides[index].source,
+                                          passengerDestination: viewModel.availableRides[index].destination,
+                                          fare: viewModel.availableRides[index].fare,
+                                          ETA: viewModel.availableRides[index].ETA,
+                                        );
+                                        buildConfirmTrip(context, index);
+                                      });
+                                    },
                                   ),
                                 ),
-                                const SizedBox(height: 10),
-                                const DotWidget(
-                                  dashColor: AppColors.PRIMARY_500,
-                                  dashHeight: 1.0,
-                                  dashWidth: 2.0,
-                                ),
-                              ],
-                            );
-                          },
-                        ),
+                              ),
+                              const SizedBox(height: 10),
+                              const DotWidget(
+                                dashColor: AppColors.PRIMARY_500,
+                                dashHeight: 1.0,
+                                dashWidth: 2.0,
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ),
-                  ]);
-                } else {
-                  return Center(
-                      child: Text(
-                    'No Rides Found',
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          color: AppColors.PRIMARY_500,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w400,
-                        ),
-                  ));
-               
-                }
+                  ),
+                ]);
+              } else {
+                return Center(
+                    child: Text(
+                  'No Rides Found',
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        color: AppColors.PRIMARY_500,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                      ),
+                ));
               }
-            }));
-      });
+            }
+          },
+        ),
+      );
+    },
+  );
 }
 
 // Future<dynamic> showSelectRideModal(BuildContext context, SizeConfig config,
@@ -222,8 +202,8 @@ buildTripDetails(BuildContext context, String source, String destination,
 //       });
 // }
 
-Widget tripdetails(String icon, String locate, String location,
-    String extimated, String eIcon, String eDistance, SizeConfig config) {
+Widget tripdetails(
+    String icon, String locate, String location, String extimated, String eIcon, String eDistance, SizeConfig config) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 30.0),
     child: Row(
@@ -237,9 +217,7 @@ Widget tripdetails(String icon, String locate, String location,
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SvgPicture.asset(icon,
-                    colorFilter: const ColorFilter.mode(
-                        AppColors.PRIMARY_500, BlendMode.srcIn)),
+                SvgPicture.asset(icon, colorFilter: const ColorFilter.mode(AppColors.PRIMARY_500, BlendMode.srcIn)),
               ],
             ),
             const SizedBox(width: 5),
@@ -296,15 +274,13 @@ Widget tripdetails(String icon, String locate, String location,
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                  color: AppColors.PRIMARY_500.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(7.0)),
+                  color: AppColors.PRIMARY_500.withOpacity(0.2), borderRadius: BorderRadius.circular(7.0)),
               child: Row(
                 children: [
                   SvgPicture.asset(eIcon,
                       height: 16,
                       width: 16,
-                      colorFilter: const ColorFilter.mode(
-                          AppColors.PRIMARY_500, BlendMode.srcIn)),
+                      colorFilter: const ColorFilter.mode(AppColors.PRIMARY_500, BlendMode.srcIn)),
                   const SizedBox(width: 4),
                   Text(
                     eDistance,
