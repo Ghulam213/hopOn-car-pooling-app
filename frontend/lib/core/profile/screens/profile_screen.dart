@@ -2,9 +2,13 @@ import 'package:easy_localization/easy_localization.dart' as easy;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hop_on/core/map/screens/home.dart';
+import 'package:provider/provider.dart';
 
 import '../../../Utils/colors.dart';
+import '../../../Utils/image_path.dart';
+import '../../../config/network/resources.dart';
 import '../../../config/sizeconfig/size_config.dart';
+import '../viewmodel/profile_viewmodel.dart';
 import '../widgets/rider_details.dart';
 import 'edit_rider_profile_screen.dart';
 
@@ -32,6 +36,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final ProfileViewModel pViewModel = context.watch<ProfileViewModel>();
     return Scaffold(
       backgroundColor: AppColors.LM_BACKGROUND_BASIC,
       appBar: AppBar(
@@ -69,14 +74,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(
                   height: 10,
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 12.0, bottom: 30),
-                  child: CircleAvatar(radius: 40, child: Text('umer')
-                      // backgroundImage: Image.file(
-                      //   File(),
-                      //   fit: BoxFit.cover,
-                      // ).image,
-                      ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 12.0, bottom: 30),
+                  child: Container(
+                    height: 60,
+                    width: 60,
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: AssetImage(ImagesAsset.driverpic))),
+                  ),
                 ),
                 Align(
                   alignment: Alignment.centerLeft,
@@ -107,18 +113,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       const RiderDetailCard(),
                       Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
+                        decoration: const BoxDecoration(
+                            // borderRadius: BorderRadius.circular(20),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 12.0),
+                        padding: const EdgeInsets.only(
+                          top: 8.0,
+                          bottom: 12,
+                        ),
                         child: InkWell(
                           onTap: () {
                             onEditTapped();
                           },
                           child: Card(
-                              color: false
-                                  // profileViewModel.updateProfileResource.ops ==
-                                  //         NetworkStatus.LOADING
+                              color: pViewModel.updateProfileResource.ops ==
+                                      NetworkStatus.LOADING
                                   ? AppColors.LM_BACKGROUND_BASIC
                                   : AppColors.PRIMARY_500.withOpacity(0.90),
                               child: SizedBox(
