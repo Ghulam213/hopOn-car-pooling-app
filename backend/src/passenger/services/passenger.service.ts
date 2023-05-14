@@ -40,7 +40,7 @@ export class PassengerService {
 
     const preferences = await this.getPassengerRidePreferences(passengerId);
 
-    if (preferences.length) {
+    if (preferences) {
       return this.prisma.passengerRidePreferences.update({
         where: {
           id: preferences[0].id,

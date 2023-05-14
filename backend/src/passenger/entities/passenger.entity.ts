@@ -19,6 +19,6 @@ export class PassengerEntity implements Passenger {
   @ApiProperty()
   updatedAt: Date;
 
-  @ApiProperty({ isArray: true, type: () => PassengerRidePreferencesEntity })
-  preferences?: PassengerRidePreferences[];
+  @ApiProperty({ type: () => PassengerRidePreferencesEntity })
+  preferences?: PassengerRidePreferences;
 }

@@ -17,9 +17,7 @@ export class PassengerController {
   //   @UseGuards(AccessTokenGuard)
   @Get('passenger/:id/preferences')
   @ApiOkResponse({ isArray: true, type: PassengerRidePreferencesEntity })
-  async getPassengerPreferences(
-    @Param('id', ParseUUIDStringPipe) id: string,
-  ): Promise<PassengerRidePreferencesEntity[]> {
+  async getPassengerPreferences(@Param('id', ParseUUIDStringPipe) id: string): Promise<PassengerRidePreferencesEntity> {
     return this.passengerService.getPassengerRidePreferences(id);
   }
 

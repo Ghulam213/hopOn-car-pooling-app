@@ -308,8 +308,8 @@ export class RideService {
           id: ride.driver.userId,
         });
 
-        const isPassengerPreferencePassed = passengerPreferences.length
-          ? passengerPreferences[0].genderPreference === driverDetails.gender
+        const isPassengerPreferencePassed = passengerPreferences
+          ? passengerPreferences.genderPreference === driverDetails.gender
           : true;
 
         const isPassengerSourceOnDriverRoute = UtilityService.isPointOnRouteWithinThreshold(

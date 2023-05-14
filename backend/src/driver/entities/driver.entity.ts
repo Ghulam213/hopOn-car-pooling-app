@@ -41,6 +41,6 @@ export class DriverEntity implements Driver {
   @ApiProperty()
   updatedAt: Date;
 
-  @ApiProperty({ isArray: true, type: () => DriverRidePreferencesEntity })
-  preferences?: DriverRidePreferences[];
+  @ApiProperty({ type: () => DriverRidePreferencesEntity })
+  preferences?: DriverRidePreferences;
 }

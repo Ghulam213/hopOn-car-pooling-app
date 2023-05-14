@@ -84,7 +84,7 @@ export class DriverController {
   // @UseGuards(AccessTokenGuard)
   @Get('driver/:id/preferences')
   @ApiOkResponse({ isArray: true, type: DriverRidePreferencesEntity })
-  async getDriverPreferences(@Param('id', ParseUUIDStringPipe) id: string): Promise<DriverRidePreferencesEntity[]> {
+  async getDriverPreferences(@Param('id', ParseUUIDStringPipe) id: string): Promise<DriverRidePreferencesEntity> {
     return this.driverService.getDriverRidePreferences(id);
   }
 

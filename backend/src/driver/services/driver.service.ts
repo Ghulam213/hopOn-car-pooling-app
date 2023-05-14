@@ -140,7 +140,7 @@ export class DriverService {
 
     const preferences = await this.getDriverRidePreferences(driverId);
 
-    if (preferences.length) {
+    if (preferences) {
       return this.prisma.driverRidePreferences.update({
         where: {
           id: preferences[0].id,
