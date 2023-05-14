@@ -9,8 +9,7 @@ import 'package:location/location.dart' as loc;
 import '../main.dart';
 
 class GlobalVariable {
-  static final GlobalKey<ScaffoldState> scaffoldKey =
-      GlobalKey<ScaffoldState>();
+  static final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 }
 
 getSharedPrefs(String key) async {
@@ -31,7 +30,6 @@ LatLng getLatLngFromSharedPrefs() {
   //     double.parse(sharedPreferences.getString('longitude') ?? '73.0479'));
 }
 
-
 num getDistanceFromSharedPrefs(int index) {
   num distance = 2000; //getDecodedResponseFromSharedPrefs(index)['distance'];
   return distance;
@@ -42,11 +40,8 @@ num getDurationFromSharedPrefs(int index) {
   return duration;
 }
 
-
 extension OnPressed on Widget {
-  Widget ripple(Function onPressed,
-          {BorderRadiusGeometry borderRadius =
-              const BorderRadius.all(Radius.circular(5))}) =>
+  Widget ripple(Function onPressed, {BorderRadiusGeometry borderRadius = const BorderRadius.all(Radius.circular(5))}) =>
       Stack(
         children: <Widget>[
           this,

@@ -14,9 +14,14 @@ Map<String, Function(BuildContext, NotificationDataModel)> notificationsConfig =
     );
   },
   'RIDE_ACCEPTED': (BuildContext context, NotificationDataModel notification) {
-    final MapViewModel viewModel = Provider.of<MapViewModel>(context, listen: true);
+    final MapViewModel viewModel = Provider.of<MapViewModel>(context, listen: false);
     // set the cron job to update passenger location
+    viewModel.hasDriverAcceptedPassengerRideRequest = true;
+    viewModel.rideId = notification.rideId!;
+    viewModel.updatePassengerLoc();
+    viewModel.getRideLocation(notification.rideId!);
     viewModel.cronUpdatePassengerLoc();
+    viewModel.cronGetRideLoc();
   },
 };
 
@@ -34,16 +39,18 @@ class WithNotificationsState extends State<WithNotifications> {
   @override
   void initState() {
     super.initState();
-    notificationsModel = Provider.of<NotificationsModel>(context, listen: true);
+    if (mounted) {
+      notificationsModel = Provider.of<NotificationsModel>(context, listen: false);
 
-    NotificationService notificationService = NotificationService(
-      onNotificationReceived: (NotificationDataModel notification) {
-        notificationsConfig[notification.type]!(context, notification);
+      NotificationService notificationService = NotificationService(
+        onNotificationReceived: (NotificationDataModel notification) {
+          notificationsConfig[notification.type]!(context, notification);
 
-        notificationsModel.addNotification(notification);
-      },
-    );
-    notificationService.registerNotification();
+          notificationsModel.addNotification(notification);
+        },
+      );
+      notificationService.registerNotification();
+    }
   }
 
   @override

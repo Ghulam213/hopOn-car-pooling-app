@@ -117,14 +117,15 @@ class StartRideModalState extends State<StartRideModal> {
                                             ),
                                             autoCompleteSearch(
                                               destinationController.text,
-                                            )
+                                            ),
+                                            getCurrentLocation()
                                           ]);
 
                                           if (src.isNotEmpty) {
                                             await mapViewModel.createRide(
-                                              source: src[0].toString(),
+                                              source: src[0] != null ? src[0].toString() : src[2].toString(),
                                               destination: src[1].toString(),
-                                              currentLocation: '33.684714,73.048045',
+                                              currentLocation: src[2].toString(),
                                               totalDistance: 30,
                                               city: 'Islamabad',
                                             );

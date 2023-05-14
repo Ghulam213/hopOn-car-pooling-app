@@ -25,17 +25,46 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   final Completer<GoogleMapController> _controller = Completer();
-
-  final Set<Marker> _markers = {};
-  final Set<Polyline> _polyline = {};
-
   final LatLng _center = getLatLngFromSharedPrefs();
   // ignore: unused_field
   LatLng _lastMapPosition = const LatLng(33.64333419508494, 72.9914673283913);
+  BitmapDescriptor _currentUserIcon = BitmapDescriptor.defaultMarker;
+  BitmapDescriptor _driverIcon = BitmapDescriptor.defaultMarker;
+  BitmapDescriptor _passengerIcon = BitmapDescriptor.defaultMarker;
 
   @override
   void initState() {
     super.initState();
+    if (mounted) {
+      setMapIcons();
+    }
+  }
+
+  setMapIcons() async {
+    BitmapDescriptor currentUserIcon = await BitmapDescriptor.fromAssetImage(
+      const ImageConfiguration(
+        size: Size(22, 22),
+      ),
+      'assets/images/currentLocation.png',
+    );
+    BitmapDescriptor driverIcon = await BitmapDescriptor.fromAssetImage(
+      const ImageConfiguration(
+        size: Size(22, 22),
+      ),
+      'assets/images/car_ios.png',
+    );
+    BitmapDescriptor passengerIcon = await BitmapDescriptor.fromAssetImage(
+      const ImageConfiguration(
+        size: Size(22, 22),
+      ),
+      'assets/images/passenger.png',
+    );
+
+    setState(() {
+      _currentUserIcon = currentUserIcon;
+      _driverIcon = driverIcon;
+      _passengerIcon = passengerIcon;
+    });
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -46,15 +75,16 @@ class _MapScreenState extends State<MapScreen> {
     _lastMapPosition = position.target;
   }
 
-  Future<void> updateMarker(MapViewModel viewModel, LoginStore loginStore) async {
-    LatLng pos = const LatLng(33.64333419508494, 72.9914673283913); // fallback
-
+  Set<Marker> updateMarker(MapViewModel viewModel, LoginStore loginStore) {
+    LatLng pos = const LatLng(33.66672, 73.07099); // fallback
+    final Set<Marker> markers = {};
     // lets to the current User first.
-    _markers.add(
+    logger('currentLocation: ${viewModel.currentLocation}');
+    markers.add(
       Marker(
         markerId: MarkerId(loginStore.userId.toString()),
-        position: pos, // need to getCurrentLocationFunction here
-        icon: BitmapDescriptor.defaultMarker,
+        position: convertStringToLatLng(viewModel.currentLocation) ?? pos,
+        icon: _currentUserIcon,
         infoWindow: const InfoWindow(
           title: "User's Location",
         ),
@@ -62,17 +92,12 @@ class _MapScreenState extends State<MapScreen> {
     );
 
     // if user is passenger add drivers marker
-    if (!loginStore.isDriver) {
-      _markers.add(
+    if (!loginStore.isDriver && viewModel.rideId.isNotEmpty && viewModel.rideDriver != null) {
+      markers.add(
         Marker(
           markerId: MarkerId(viewModel.rideDriver!.id.toString()),
           position: convertStringToLatLng(viewModel.rideDriver!.currentLocation!) ?? pos,
-          icon: await BitmapDescriptor.fromAssetImage(
-            const ImageConfiguration(
-              size: Size(22, 22),
-            ),
-            'assets/images/car_ios.png',
-          ),
+          icon: _driverIcon,
           infoWindow: const InfoWindow(
             title: "Driver's Location",
           ),
@@ -81,16 +106,11 @@ class _MapScreenState extends State<MapScreen> {
     } else {
       // if user is driver add passengers marker
       for (var element in viewModel.ridePassengers) {
-        _markers.add(
+        markers.add(
           Marker(
             markerId: MarkerId(element!.id!.toString()),
             position: convertStringToLatLng(element.currentLocation!) ?? pos,
-            icon: await BitmapDescriptor.fromAssetImage(
-              const ImageConfiguration(
-                size: Size(22, 22),
-              ),
-              'assets/images/car_ios.png', // need to find a passengers png
-            ),
+            icon: _passengerIcon,
             infoWindow: const InfoWindow(
               title: "Passenger's Location",
             ),
@@ -98,10 +118,14 @@ class _MapScreenState extends State<MapScreen> {
         );
       }
     }
+
+    return markers;
   }
 
-  void drawRoute(MapViewModel viewModel) {
-    _polyline.add(
+  Set<Polyline> drawRoute(MapViewModel viewModel) {
+    final Set<Polyline> polyline = {};
+
+    polyline.add(
       Polyline(
         polylineId: PolylineId(viewModel.createdRideId.toString()),
         visible: true,
@@ -110,12 +134,13 @@ class _MapScreenState extends State<MapScreen> {
         color: AppColors.PRIMARY_500,
       ),
     );
+    return polyline;
   }
 
-  Future<bool> updateMapLocations(MapViewModel viewModel, LoginStore loginStore) async {
-    await updateMarker(viewModel, loginStore);
-    drawRoute(viewModel);
-    return true;
+  Future<List<Set<Object>>> updateMapLocations(MapViewModel viewModel, LoginStore loginStore) async {
+    Set<Marker> markers = updateMarker(viewModel, loginStore);
+    Set<Polyline> polyline = drawRoute(viewModel);
+    return [markers, polyline];
   }
 
   @override
@@ -175,30 +200,19 @@ class _MapScreenState extends State<MapScreen> {
                   duration: const Duration(milliseconds: 1500),
                   child: SizedBox(
                     height: MediaQuery.of(context).size.height * 1,
-                    child: FutureBuilder<bool>(
-                      future: updateMapLocations(mapViewModel, loginStore),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.done) {
-                          return GoogleMap(
-                            onMapCreated: _onMapCreated,
-                            compassEnabled: false,
-                            myLocationButtonEnabled: false,
-                            zoomControlsEnabled: true,
-                            zoomGesturesEnabled: true,
-                            markers: _markers,
-                            polylines: _polyline,
-                            onCameraMove: _onCameraMove,
-                            initialCameraPosition: CameraPosition(
-                              target: _center,
-                              zoom: 14.0,
-                            ),
-                          );
-                        } else {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                      },
+                    child: GoogleMap(
+                      onMapCreated: _onMapCreated,
+                      compassEnabled: false,
+                      myLocationButtonEnabled: false,
+                      zoomControlsEnabled: true,
+                      zoomGesturesEnabled: true,
+                      markers: updateMarker(mapViewModel, loginStore),
+                      polylines: drawRoute(mapViewModel),
+                      onCameraMove: _onCameraMove,
+                      initialCameraPosition: CameraPosition(
+                        target: _center,
+                        zoom: 14.0,
+                      ),
                     ),
                   ),
                 ),
@@ -241,13 +255,13 @@ class _MapScreenState extends State<MapScreen> {
                       children: [
                         InkWell(
                           child: !loginStore.isDriver
-                              ? SearchRidesModal(
-                                  onRideRequest: () {},
-                                )
+                              ? !viewModel.hasDriverAcceptedPassengerRideRequest
+                                  ? SearchRidesModal(
+                                      onRideRequest: () {},
+                                    )
+                                  : const SizedBox.shrink()
                               : StartRideModal(
                                   onRideStarted: (String curLoc, String dest) {
-                                    drawRoute(viewModel);
-                                    updateMarker(viewModel, loginStore);
                                     Navigator.of(context, rootNavigator: true).pop();
                                   },
                                 ),

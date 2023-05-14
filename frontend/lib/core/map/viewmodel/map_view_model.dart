@@ -25,6 +25,7 @@ class MapViewModel extends ChangeNotifier {
 
   MapViewModel() {
     _mapService = MapServiceImpl();
+    getCurrentLocation().then((value) => currentLocation = value);
   }
 
   final cron = Cron();
@@ -41,6 +42,9 @@ class MapViewModel extends ChangeNotifier {
   String city = '';
   String rideStartedAt = '';
   String rideEndedAt = '';
+
+  // for passenger mode
+  bool hasDriverAcceptedPassengerRideRequest = false;
 
   Rider? rideDriver = Rider();
   List<Rider?> ridePassengers = [];
@@ -64,8 +68,7 @@ class MapViewModel extends ChangeNotifier {
     var currentLoc = await getCurrentLocation();
     // */1 * * * * means every minute
     cron.schedule(Schedule.parse('*/1 * * * *'), () async {
-      // TODO: Change the current location to the passenger's current location
-      updatePassengerLoc(rideId: createdRideId, currentLocation: currentLoc);
+      updatePassengerLoc(rideId: rideId, currentLocation: currentLoc);
       logger('###  Passenger Location CRON task called with ID: $createdRideId ###');
     });
   }
@@ -73,7 +76,7 @@ class MapViewModel extends ChangeNotifier {
   Future<void> cronGetRideLoc() async {
     // */1 * * * * means every minute
     cron.schedule(Schedule.parse('*/1 * * * *'), () async {
-      getRideLocation(createdRideId);
+      getRideLocation(createdRideId.isNotEmpty ? createdRideId : rideId);
       logger('### Get Ride Location CRON task called with ID: $createdRideId ###');
     });
   }
@@ -122,6 +125,7 @@ class MapViewModel extends ChangeNotifier {
         debugPrint("Available Rides${_availableRides.toString()}");
         notifyListeners();
       }
+      currentLocation = await getCurrentLocation();
     } catch (e) {
       findRidesResource = Resource.failed(e.toString());
       notifyListeners();
@@ -142,6 +146,8 @@ class MapViewModel extends ChangeNotifier {
     try {
       requestRideResource = Resource.loading();
       notifyListeners();
+
+      hasDriverAcceptedPassengerRideRequest = false;
 
       final RequestRideResponse response = await _mapService.requestRide(
         rideId: rideId,
@@ -196,6 +202,7 @@ class MapViewModel extends ChangeNotifier {
       cronUpdateDriverLoc();
       cronGetRideLoc();
       rideDriver = Rider(id: createRideResource.modelResponse!.data!.driverId, currentLocation: source);
+      this.currentLocation = currentLocation ?? await getCurrentLocation();
 
       notifyListeners();
     } catch (e) {
@@ -326,12 +333,11 @@ class MapViewModel extends ChangeNotifier {
       getRideLocationResource = Resource.success(response);
 
       rideDriver = getRideLocationResource.modelResponse?.data?.driver;
-      getRideLocationResource.modelResponse?.data?.passengers?.forEach((element) {
-        ridePassengers.add(element);
-      });
+      ridePassengers = getRideLocationResource.modelResponse?.data?.passengers ?? ridePassengers;
+      currentLocation = await getCurrentLocation();
 
       // shall be giving live location of driver
-      // TO DO : Update the map marketr using updateMarker() func and polyline (drawRoute func) with live driver/passengers location
+      // Done : Update the map marketr using updateMarker() func and polyline (drawRoute func) with live driver/passengers location
       // Need a way to listen to rideDriver.currentLocation either via Consumer<MapViewModel> (see other places where used) or some other way
 
       notifyListeners();
@@ -355,6 +361,14 @@ class MapViewModel extends ChangeNotifier {
       final Directions directionResponse = Directions.fromJson(direction.data as Map<String, dynamic>);
 
       _polyLineArray = decodePolyline(directionResponse.routes?[0].overviewPolyline?.points as String);
+
+      // final result = direction.data as Map<String, dynamic>;
+      // List<LatLng> tempPolyLine = [];
+      // for (var point in Directions.fromMap(result).polylinePoints) {
+      //   log('points ${point.latitude},${point.longitude}');
+      //   tempPolyLine.add(LatLng(point.latitude, point.longitude));
+      // }
+      // _polyLineArray = tempPolyLine;
 
       notifyListeners();
     } catch (e) {

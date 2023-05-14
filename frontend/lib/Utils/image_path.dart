@@ -1,8 +1,9 @@
 class ImagesAsset {
   static String circlePin = 'assets/images/currentLocation.png';
   static String pin = 'assets/images/Destination.png';
+  static String passengerIcon = 'assets/images/passenger.png';
 
-//Images
+  //Images
   static String citybg = 'assets/images/Citybackground.jpg';
   static String parking = 'assets/images/Parking.png';
   static String money = 'assets/images/money.png';

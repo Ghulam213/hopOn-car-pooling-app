@@ -286,13 +286,9 @@ class MapServiceImpl extends MapService {
   }) async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final String? driverID = prefs.getString("driverId");
+      final String? driverID = prefs.getString("driverID");
 
-      final body = {
-        "rideId": rideId ?? '62660ffb-abbd-4c36-b3d6-e0941587c291',
-        "entityId": driverID ?? 'e0d89a2b-f8da-441a-8182-bc4bb4f945e7',
-        "currentLocation": currentLocation
-      };
+      final body = {"rideId": rideId, "entityId": driverID, "currentLocation": currentLocation};
 
       logger("MapServiceImpl: updateDriverLoc() Body: $body");
       await dio.post(
@@ -322,13 +318,9 @@ class MapServiceImpl extends MapService {
   }) async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final String? passengerId = prefs.getString("passengerId");
+      final String? passengerId = prefs.getString("passengerID");
 
-      final body = {
-        "rideId": rideId ?? '62660ffb-abbd-4c36-b3d6-e0941587c291',
-        "entityId": passengerId ?? '5ee04f51-0692-48bb-bcbf-de3d88b90dd7',
-        "currentLocation": currentLocation
-      };
+      final body = {"rideId": rideId, "entityId": passengerId, "currentLocation": currentLocation};
 
       logger("MapServiceImpl: updatePassengerLoc() Body: $body");
       await dio.post(
