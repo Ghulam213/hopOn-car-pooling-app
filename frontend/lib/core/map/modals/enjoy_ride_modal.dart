@@ -285,6 +285,9 @@ class EnjoyRideState extends State<EnjoyRide> {
               ),
               child: ElevatedButton(
                 onPressed: () {
+                  viewModel.changePassengerStatus(
+                      rideId: viewModel.availableRides[widget.index].id,
+                      status: 'ON_GOING');
                   Navigator.pop(context);
                 },
                 child: Text(

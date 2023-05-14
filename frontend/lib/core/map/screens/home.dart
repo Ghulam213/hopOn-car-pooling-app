@@ -195,7 +195,6 @@ class _MapScreenState extends State<MapScreen> {
                               : StartRideModal(
                                   onRideStarted: (String curLoc, String dest) {
                                     drawRoute(curLoc, dest, viewModel);
-
                                     Navigator.of(context).pop();
                                   },
                                 ),

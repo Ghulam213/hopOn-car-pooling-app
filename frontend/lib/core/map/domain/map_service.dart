@@ -1,9 +1,9 @@
 import 'package:hop_on/core/map/models/request_ride_response.dart';
 
 import '../models/create_ride_response.dart';
+import '../models/driver_response_general.dart';
 import '../models/get_ride_location_response.dart';
 import '../models/ride_for_passenger_response.dart';
-
 
 abstract class MapService {
   Future<RideForPassengerResponse> findRides({
@@ -61,6 +61,15 @@ abstract class MapService {
   });
 
   Future<GetRideResponse> getRideLocation(
+    String rideId,
+  );
+
+  Future<DriverGeneralResponse> changePassengerStatus(
+    String rideId,
+    String status,
+  );
+
+  Future<DriverGeneralResponse> rideCompleted(
     String rideId,
   );
 }

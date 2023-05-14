@@ -7,7 +7,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as loc;
 
 import '../main.dart';
-import 'constants.dart';
 
 class GlobalVariable {
   static final GlobalKey<ScaffoldState> scaffoldKey =
@@ -32,16 +31,6 @@ LatLng getLatLngFromSharedPrefs() {
   //     double.parse(sharedPreferences.getString('longitude') ?? '73.0479'));
 }
 
-LatLng getLatLngFromRestaurantData(int index) {
-  return LatLng(double.parse(restaurants[index]['coordinates']['latitude']),
-      double.parse(restaurants[index]['coordinates']['longitude']));
-}
-
-// Map getDecodedResponseFromSharedPrefs(int index) {
-//   String key = 'restaurant--$index';
-//   Map response = json.decode(sharedPreferences.getString(key)!);
-//   return response;
-// }
 
 num getDistanceFromSharedPrefs(int index) {
   num distance = 2000; //getDecodedResponseFromSharedPrefs(index)['distance'];
@@ -53,12 +42,6 @@ num getDurationFromSharedPrefs(int index) {
   return duration;
 }
 
-List<LatLng>? convertListToListLatLng(List<List<double>>? input) {
-  if (input == null) {
-    return null;
-  }
-  return input.map((point) => LatLng(point[1], point[0])).toList();
-}
 
 extension OnPressed on Widget {
   Widget ripple(Function onPressed,
