@@ -1,17 +1,18 @@
-import { Module, CacheModule, CacheStore } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigType } from '@nestjs/config';
-import { S3, CognitoIdentityServiceProvider, SNS } from 'aws-sdk';
+import { CognitoIdentityServiceProvider, S3, SNS } from 'aws-sdk';
 import { AwsSdkModule } from 'nest-aws-sdk';
+import { ConsoleModule } from 'nestjs-console';
 import { AppController } from 'src/app.controller';
 import { AuthModule } from 'src/auth';
 import { applicationConfig, validationSchema } from 'src/config';
-import { LibraryModule } from 'src/library';
-import { PrismaModule } from 'src/prisma';
-import { UserModule } from 'src/user';
 import { DriverModule } from 'src/driver';
-import { RideModule } from 'src/ride';
-import { ConsoleModule } from 'nestjs-console';
 import { ImportModule } from 'src/import';
+import { LibraryModule } from 'src/library';
+import { PassengerModule } from 'src/passenger';
+import { PrismaModule } from 'src/prisma';
+import { RideModule } from 'src/ride';
+import { UserModule } from 'src/user';
 
 const redisStore = require('cache-manager-redis-store').redisStore;
 @Module({
@@ -45,6 +46,7 @@ const redisStore = require('cache-manager-redis-store').redisStore;
     AuthModule,
     LibraryModule,
     DriverModule,
+    PassengerModule,
     RideModule,
   ],
   controllers: [AppController],

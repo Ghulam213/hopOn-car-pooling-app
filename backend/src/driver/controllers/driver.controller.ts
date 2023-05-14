@@ -2,8 +2,8 @@ import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/
 import { ApiCreatedResponse, ApiHeader, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { DriverCreateDto, DriverUpdateDto } from 'src/driver/dtos';
 import { UpsertDriverPreferencesDto } from 'src/driver/dtos/upsert-driver-preferences.dto';
+import { DriverRidePreferencesEntity } from 'src/driver/entities/driver-ride-preferences';
 import { DriverEntity } from 'src/driver/entities/driver.entity';
-import { DriverRidePreferencesEntity } from 'src/driver/entities/preferences.entity';
 import { VehicleEntity } from 'src/driver/entities/vehicle.entity';
 import { DriverPageModel } from 'src/driver/models';
 import { DriverService } from 'src/driver/services';
@@ -88,6 +88,7 @@ export class DriverController {
     return this.driverService.getDriverRidePreferences(id);
   }
 
+  // @UseGuards(AccessTokenGuard)
   @Post('driver/:id/preferences')
   @ApiOkResponse({ type: DriverRidePreferencesEntity })
   async upsertDriverPreferences(

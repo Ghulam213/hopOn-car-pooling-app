@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Driver, DriverRidePreferences, Vehicle } from '@prisma/client';
-import { DriverRidePreferencesEntity } from 'src/driver/entities/preferences.entity';
+import { DriverRidePreferencesEntity } from 'src/driver/entities/driver-ride-preferences';
 import { VehicleEntity } from 'src/driver/entities/vehicle.entity';
 import { UserEntity } from 'src/user/entities';
 
