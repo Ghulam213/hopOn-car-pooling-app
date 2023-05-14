@@ -30,7 +30,8 @@ import {
 } from 'src/ride/dtos';
 import { PassengerOnRideEntity } from 'src/ride/entities';
 import { RideNotificationTypeEnum } from 'src/ride/enums';
-import { PassengerInfoModel, RideCacheModel, RideForPassengersModel, RideSegmentModel } from 'src/ride/models';
+import { PassengerInfoModel, RideCacheModel, RideForPassengersModel } from 'src/ride/models';
+import { FareService } from 'src/ride/services/fare.service';
 import { UserService } from 'src/user/services';
 
 @Injectable()
@@ -45,6 +46,7 @@ export class RideService {
     private readonly notificationService: NotificationService,
     private readonly passengerService: PassengerService,
     private readonly userService: UserService,
+    private readonly fareService: FareService,
   ) {
     this.prisma.addMiddleware(async (params, next) => {
       if (params.model === 'Ride') {
@@ -184,45 +186,7 @@ export class RideService {
     return true;
   }
 
-  /*
-   * This function returns the overlapping segments between the route of
-   * the passenger and the route of other passengers.
-   */
-  getOverlappingSegmentsForPassenger(
-    route: number[][],
-    passengerSource: number[],
-    passengerDestination: number[],
-    otherPassengers: PassengersOnRide[],
-  ): RideSegmentModel[] {
-    const overlappingSegments: RideSegmentModel[] = [];
-    const passengerRoute = UtilityService.getSegmentOnRoute(route, passengerSource, passengerDestination);
-    const passengerRouteDistance = UtilityService.calculatePolygonRouteDistance(passengerRoute);
-
-    for (const otherPassenger of otherPassengers) {
-      const passengerSourceToOtherPassengerDestination = UtilityService.getSegmentOnRoute(
-        route,
-        passengerSource,
-        UtilityService.stringToCoordinates(otherPassenger.destination),
-      );
-      const passengerSourceToOtherPassengerDestinationDistance = UtilityService.calculatePolygonRouteDistance(
-        passengerSourceToOtherPassengerDestination,
-      );
-
-      passengerSourceToOtherPassengerDestinationDistance > passengerRouteDistance
-        ? overlappingSegments.push({
-            route: passengerSourceToOtherPassengerDestination,
-            distance: passengerSourceToOtherPassengerDestinationDistance,
-          })
-        : overlappingSegments.push({
-            route: passengerRoute,
-            distance: passengerRouteDistance,
-          });
-    }
-
-    return overlappingSegments;
-  }
-
-  calculateFareForPassegner = async (rideId: string, passengerInfo: PassengerInfoModel) => {
+  estimateFareForNewPassenger = async (rideId: string, passengerInfo: PassengerInfoModel) => {
     const ride = await this.prisma.ride.findUnique({
       where: { id: rideId },
       include: {
@@ -230,62 +194,46 @@ export class RideService {
       },
     });
 
-    const { passengersOnRide } = ride;
-    const { baseFare, perKmFare } = this.appConfig.fare;
-    const { source, destination, distance } = passengerInfo;
-
-    if (!passengersOnRide.length) {
-      return distance * perKmFare + baseFare;
-    }
-
-    const onGoingPassengersOnRide = passengersOnRide.filter((passengerOnRide) => {
+    const onGoingPassengersOnRide = ride.passengersOnRide?.filter((passengerOnRide) => {
       return passengerOnRide.rideStatus === PasengerRideStatusEnum.ON_GOING;
     });
-    const totalPassengers = onGoingPassengersOnRide.length + 1;
 
-    const route = ride.polygonPoints as number[][];
-    const [passengerSourceCoordinates, passengerDestinationCoordinates] = [source, destination].map((location) =>
-      UtilityService.stringToCoordinates(location),
-    );
-    const passengerRoute = UtilityService.getSegmentOnRoute(
-      route,
-      passengerSourceCoordinates,
-      passengerDestinationCoordinates,
-    );
-    const overlappingSegments = this.getOverlappingSegmentsForPassenger(
-      route,
-      passengerSourceCoordinates,
-      passengerDestinationCoordinates,
+    if (!onGoingPassengersOnRide.length) {
+      return this.fareService.calculateFare(passengerInfo.distance);
+    }
+
+    return this.fareService.estimateFareForNewPassenger(
+      UtilityService.stringToCoordinates(passengerInfo.source),
+      UtilityService.stringToCoordinates(passengerInfo.destination),
+      passengerInfo.distance,
       onGoingPassengersOnRide,
     );
-    const sortedOverlappingSegments = [...overlappingSegments].sort((a, b) => a.distance - b.distance);
+  };
 
-    const nonRepeatingSegments: RideSegmentModel[] = [];
+  adjustFareOfPassengersOnRide = async (rideId: string, passengerInfo: PassengerInfoModel) => {
+    const ride = await this.prisma.ride.findUnique({
+      where: { id: rideId },
+      include: {
+        passengersOnRide: true,
+      },
+    });
 
-    for (let i = 0; i < sortedOverlappingSegments.length; i++) {
-      let startPoint: number[] = [];
-      let endPoint: number[] = [];
+    const onGoingPassengersOnRide = ride.passengersOnRide?.filter((passengerOnRide) => {
+      return passengerOnRide.rideStatus === PasengerRideStatusEnum.ON_GOING;
+    });
 
-      if (i === sortedOverlappingSegments.length - 1) {
-        endPoint = sortedOverlappingSegments[i].route[sortedOverlappingSegments[i].route.length - 1];
-        startPoint = passengerDestinationCoordinates;
-      } else {
-        startPoint = sortedOverlappingSegments[i + 1].route[0];
-        endPoint = sortedOverlappingSegments[i].route[sortedOverlappingSegments[0].route.length - 1];
-      }
-
-      const route = UtilityService.getSegmentOnRoute(passengerRoute, startPoint, endPoint);
-      const distance = UtilityService.calculatePolygonRouteDistance(route);
-      nonRepeatingSegments.push({ route, distance });
+    if (!onGoingPassengersOnRide.length) {
+      return ride.passengersOnRide;
     }
 
-    let fare = baseFare;
-    for (let i = 0; i < nonRepeatingSegments.length; i++) {
-      const segment = nonRepeatingSegments[i];
-      fare += (segment.distance * perKmFare) / (totalPassengers - i);
-    }
+    const adjustedPassengers = this.fareService.adjustFareOfPassengersOnRide(
+      UtilityService.stringToCoordinates(passengerInfo.source),
+      UtilityService.stringToCoordinates(passengerInfo.destination),
+      passengerInfo.distance,
+      onGoingPassengersOnRide,
+    );
 
-    return fare;
+    return adjustedPassengers;
   };
 
   /*
@@ -403,7 +351,7 @@ export class RideService {
     const ridesForPassenger = await Promise.all(
       filteredRides.map(async (ride) => {
         const alreadySeatedPassengerCount = await this.prisma.passengersOnRide.count({ where: { rideId: ride.id } });
-        const fare = await this.calculateFareForPassegner(ride.id, passengerData);
+        const fare = await this.estimateFareForNewPassenger(ride.id, passengerData);
         const ETA = await this.calculateETAForPassenger(ride, passengerData);
         const driver = await this.prisma.driver.findUnique({
           where: { id: ride.driverId },
@@ -526,39 +474,26 @@ export class RideService {
     return true;
   }
 
-  async updateAndNotifyRideFareForPassengersOfRide(rideId: string) {
-    const ride = await this.findRide({ id: rideId }, { passengersOnRide: true });
+  async updateAndNotifyRideFareForPassengersOfRide(rideId: string, passengerInfo: PassengerInfoModel) {
+    const updatedPassengers = await this.adjustFareOfPassengersOnRide(rideId, passengerInfo);
 
-    const onGoingPassengersOnRide = ride.passengersOnRide?.filter((passengerOnRide) => {
-      return passengerOnRide.rideStatus === PasengerRideStatusEnum.ON_GOING;
-    });
-
-    onGoingPassengersOnRide.forEach(async (passengerOnRide) => {
-      const fare = await this.calculateFareForPassegner(rideId, {
-        source: passengerOnRide.source,
-        destination: passengerOnRide.destination,
-        distance: passengerOnRide.distance,
-      });
-
+    updatedPassengers.forEach(async (passengerOnRide) => {
       await this.prisma.passengersOnRide.update({
         where: {
           id: passengerOnRide.id,
         },
         data: {
-          fare,
+          fare: passengerOnRide.fare,
         },
       });
 
-      /*
-       * TODO: Send notification to passenger about fare update.
-       */
       const deviceArn = await this.findDeviceArnForPassenger(passengerOnRide.id);
       await this.notificationService.publishMessageToDeviceArn(
         {
           subject: 'Fare update',
-          body: `Your fare has been updated to ${fare}`,
-          type: RideNotificationTypeEnum.RIDE_REQUEST,
-          data: { fare },
+          body: `Your fare has been updated to ${passengerOnRide.fare}`,
+          type: RideNotificationTypeEnum.FARE_UPDATE,
+          data: { fare: passengerOnRide.fare },
         },
         deviceArn.token,
       );
@@ -568,7 +503,8 @@ export class RideService {
   async createPassengerRide(data: PassengerRideCreateDto) {
     const { passengerId, rideId, ...restOfData } = data;
 
-    const fare = await this.calculateFareForPassegner(rideId, restOfData);
+    const fare = await this.estimateFareForNewPassenger(rideId, restOfData);
+
     const createdRide = await this.prisma.passengersOnRide.create({
       data: {
         ...restOfData,
@@ -586,7 +522,9 @@ export class RideService {
         fare,
       },
     });
-    await this.updateAndNotifyRideFareForPassengersOfRide(rideId);
+    await this.updateAndNotifyRideFareForPassengersOfRide(rideId, {
+      ...restOfData,
+    });
 
     return createdRide;
   }
