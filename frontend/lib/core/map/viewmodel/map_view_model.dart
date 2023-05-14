@@ -55,7 +55,7 @@ class MapViewModel extends ChangeNotifier {
     // */1 * * * * means every minute
     cron.schedule(Schedule.parse('*/1 * * * *'), () async {
       updateDriverLoc(
-          currentLocation: currentLoc, rideId: createdRideId);
+          currentLocation: '33.6600116,73.0833224', rideId: createdRideId);
       logger(
           '###  Driver Location CRON task called  with ID: $createdRideId ###');
     });
@@ -352,7 +352,7 @@ class MapViewModel extends ChangeNotifier {
       createRide(
         source: source,
         destination: destination,
-        currentLocation: currentLoc,
+        currentLocation: '33.6600116,73.0833224',
         totalDistance: 100,
         city: 'Islamabad',
         polygonPoints: _polyLineArray,

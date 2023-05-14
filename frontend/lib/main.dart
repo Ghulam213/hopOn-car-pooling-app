@@ -53,7 +53,7 @@ Future<void> main() async {
 
 Future _getDeviceInfo() async {
   final prefs = await SharedPreferences.getInstance();
-  //  prefs.clear(); // uncomment if need to login at each time
+  //prefs.clear(); // uncomment if need to login at each time
   final DeviceInformation? deviceInformation =
       await DeviceInfoService.getDeviceInfo();
   prefs.setString("deviceId", deviceInformation?.uUID.toString() ?? '');

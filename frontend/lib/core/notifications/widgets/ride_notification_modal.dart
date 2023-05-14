@@ -4,6 +4,7 @@ import 'package:hop_on/core/notifications/models/notification_datamodel.dart';
 import 'package:provider/provider.dart';
 
 import '../../../Utils/colors.dart';
+import '../../map/modals/show_passenger_details_modal.dart';
 import '../../map/viewmodel/map_view_model.dart';
 
 class RideNotificationModal extends StatelessWidget {
@@ -67,16 +68,17 @@ class RideNotificationModal extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () {
                     viewModel.rejectRide(
-                      rideId: 'dad04dde-5413-41b8-9bd8-18b61acc683c',
+                      rideId: notification.rideId,
                       distance: 20,
                       driverName: notification.passengerName,
                       passengerSource:
-                          'Faizabad, 31, M36P+M3J, Service Road, Gulistan-e-Jinnah Colony',
+                         notification.passengerSource,
                       passengerDestination:
-                          'Faizabad, 31, M36P+M3J, Service Road, Gulistan-e-Jinnah Colony',
+                          notification.passengerDestination,
                       fare: notification.fare,
                       ETA: notification.eta,
                     );
+                    buildPassengerLocation(context, notification);
                   },
                   child: Text(
                     'Decline',
@@ -88,16 +90,18 @@ class RideNotificationModal extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () {
                     viewModel.acceptRide(
-                      rideId: 'dad04dde-5413-41b8-9bd8-18b61acc683c',
+                      rideId: notification.rideId,
                       distance: 20,
                       driverName: notification.passengerName,
                       passengerSource:
-                          'Faizabad, 31, M36P+M3J, Service Road, Gulistan-e-Jinnah Colony',
+                         notification.passengerSource,
                       passengerDestination:
-                          'Faizabad, 31, M36P+M3J, Service Road, Gulistan-e-Jinnah Colony',
+                        notification.passengerDestination,
                       fare: notification.fare,
                       ETA: notification.eta,
                     );
+                    buildPassengerLocation(context, notification);
+
                   },
                   child: Text(
                     'Accept',

@@ -1,13 +1,11 @@
 
 import 'package:easy_localization/easy_localization.dart' as easy;
 import 'package:flutter/material.dart';
-import 'package:phone_number/phone_number.dart';
 import 'package:provider/provider.dart';
 
 import '../../../Utils/colors.dart';
 import '../../../config/network/resources.dart';
 import '../../../config/sizeconfig/size_config.dart';
-import '../../auth/widgets/country_picker.dart';
 import '../viewmodel/profile_viewmodel.dart';
 import '../widgets/profile_textfield.dart';
 
@@ -42,35 +40,21 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
   final GlobalKey<FormState> _formKey = GlobalKey();
 
-  // Future<PhoneNumber> _parsePhoneNumber() async {
-  // final ProfileViewModel profileViewModel = context.read<ProfileViewModel>();
-  // try {
-  // final PhoneNumber phoneNumber =
-  //     await PhoneNumberUtil().parse('profileViewModel.phone');
-  // _numberController.text = phoneNumber.nationalNumber;
-  // fullCode = phoneNumber.countryCode + phoneNumber.nationalNumber;
-
-  // return await Future<PhoneNumber>.delayed(Duration(seconds: 2));
-  // } catch (e) {
-  //   // _numberController.text = profileViewModel.phone;
-  //   log("Parse error: $e");
-  //   throw e.toString();
-  // }
-  // }
-
   @override
   void initState() {
     super.initState();
     final ProfileViewModel profileViewModel = context.read<ProfileViewModel>();
     _emailController.text = profileViewModel.email;
-    // _nameController.text = profileViewModel.name;
-    fullCode = profileViewModel.phone;
+    _fNameController.text = profileViewModel.firstName;
+    _lNameController.text = profileViewModel.lastName;
+    _phoneController.text = profileViewModel.phone;
+    _emailController.text = profileViewModel.email;
+    _genderController.text = profileViewModel.gender;
   }
 
   @override
   Widget build(BuildContext context) {
    
-
     return Container(
       width: SizeConfig.screenWidthDp,
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -149,59 +133,19 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                     SizedBox(
                       height: config.sh(5).toDouble(),
                     ),
-                    SizedBox(child: FutureBuilder(
-                      // future: _parsePhoneNumber(),
-                      builder: (BuildContext context,
-                          AsyncSnapshot<PhoneNumber> snapshot) {
-                        if (snapshot.hasData) {
-                          return Directionality(
-                            textDirection: TextDirection.ltr,
-                            child: ContactInputField(
-                              (contact, code, _) {
-                                fullCode = code! + contact;
-                              },
-                              () => {},
-                              false,
-                              false,
-                              _phoneController,
-                              initialCountryCode:
-                                  '+${snapshot.data!.countryCode}',
-                              validator: (String? value) {
-                                if (value == null || value.isEmpty) {
-                                  return "Please input your phone";
-                                }
-                                return null;
-                              },
-                            ),
-                          );
-                        } else if (snapshot.hasError) {
-                          return Directionality(
-                            textDirection: TextDirection.ltr,
-                            child: ContactInputField(
-                              (contact, code, _) {
-                                fullCode = code! + contact;
-                              },
-                              () => {},
-                              false,
-                              false,
-                              _phoneController,
-                              validator: (String? value) {
-                                if (value == null) {
-                                  return "Please input your phone";
-                                } else if (value.isEmpty) {
-                                  return "Please input your phone";
-                                }
-                                return null;
-                              },
-                            ),
-                          );
-                        } else {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                      },
-                    )),
+                 
+                    EditProfileTextField(
+                        textEditingController: _phoneController,
+                        textDirection: TextDirection.ltr,
+                        validator: (String? value) {
+                          if (value == null || value.isEmpty) {
+                            return easy.tr("Please input first name");
+                          }
+                          return null;
+                        },
+                        hintText: ''),
+           
+               
                     const SizedBox(
                       height: 10,
                     ),
@@ -309,7 +253,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
             //     updateProfile(); // TO DO remove
             //     if (true
             //         profileViewModel.updateProfileResource.ops !=
-            //             NetworkStatus.LOADING
+            //             NetworkLOADINGStatus.
             //         ) {
             //       if (_formKey.currentState!.validate() &&
             //           _numberController.text.isNotEmpty) {
