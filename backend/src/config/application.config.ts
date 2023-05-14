@@ -23,9 +23,9 @@ export const applicationConfig = registerAs('application', () => ({
   apiKey: {
     secret: process.env.API_KEY_SECRET,
   },
-  destinationOverlapThreshold: parseFloat(process.env.DESTINATION_OVERLAP_THRESHOLD),
+  passengerSourceOnRouteThreshold: parseFloat(process.env.PASSENGER_SOURCE_ON_ROUTE_THRESHOLD),
+  passengerDestinationOnRouteThreshold: parseFloat(process.env.PASSENGER_DESTINATION_ON_ROUTE_THRESHOLD),
   passengerDriverDistanceOverlapThreshold: parseFloat(process.env.PASSENGER_DRIVER_DISTANCE_OVERLAP_THRESHOLD),
-  routeOverlapThreshold: parseFloat(process.env.ROUTE_OVERLAP_THRESHOLD),
   awsSnsTopicType: {
     marketing: process.env.AWS_SNS_TOPIC_ARN_RIDE_REQUEST,
   },
@@ -37,4 +37,9 @@ export const applicationConfig = registerAs('application', () => ({
     ttl: parseInt(process.env.RIDE_CURRENT_LOCATION_CACHE_TTL, 10),
     baseCacheKey: process.env.RIDE_CURRENT_LOCATION_BASE_CACHE_KEY,
   },
+  fare: {
+    baseFare: parseFloat(process.env.FARE_BASE_FARE),
+    perKmFare: parseFloat(process.env.FARE_PER_KM_FARE),
+  },
+  etaPerKm: parseFloat(process.env.ETA_PER_KM),
 }));
