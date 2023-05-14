@@ -628,4 +628,9 @@ export class RideService {
 
     return true;
   }
+
+  async getPassengersOfRide(rideId: string) {
+    const ride = await this.findRide({ id: rideId }, { passengersOnRide: true });
+    return ride.passengersOnRide;
+  }
 }
