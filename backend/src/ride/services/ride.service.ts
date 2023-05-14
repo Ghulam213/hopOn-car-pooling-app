@@ -342,6 +342,7 @@ export class RideService {
           ETA,
           source: ride.source,
           destination: ride.source,
+          distance: passengerData.distance,
         };
       }),
     );

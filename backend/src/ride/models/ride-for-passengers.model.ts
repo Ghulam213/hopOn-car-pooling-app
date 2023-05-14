@@ -37,4 +37,7 @@ export class RideForPassengersModel {
 
   @ApiProperty()
   destination: string;
+
+  @ApiProperty()
+  distance: number;
 }
