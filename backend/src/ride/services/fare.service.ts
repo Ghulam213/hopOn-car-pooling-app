@@ -1,9 +1,8 @@
-import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { PassengersOnRide } from '@prisma/client';
 import { applicationConfig } from 'src/config';
 import { UtilityService } from 'src/library/services';
-import { PrismaService } from 'src/prisma/services';
 
 /*
  * This service contains the business logic for the
@@ -24,9 +23,6 @@ export class FareService {
   constructor(
     @Inject(applicationConfig.KEY)
     private readonly appConfig: ConfigType<typeof applicationConfig>,
-    @Inject(CACHE_MANAGER)
-    private cacheManager: Cache,
-    private prisma: PrismaService,
   ) {}
 
   /*
