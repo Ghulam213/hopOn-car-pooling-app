@@ -8,10 +8,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hop_on/Utils/constants.dart';
 import 'package:hop_on/Utils/helpers.dart';
 
+import '../../../Utils/map_utils.dart';
 import '../../../config/network/resources.dart';
 import '../domain/map_service.dart';
 import '../models/create_ride_response.dart';
 import '../models/direction.dart';
+import '../models/driver_response_general.dart';
 import '../models/get_ride_location_response.dart';
 import '../models/request_ride_response.dart';
 import '../models/ride_for_passenger.dart';
@@ -43,14 +45,13 @@ class MapViewModel extends ChangeNotifier {
   Rider? rideDriver = Rider();
   List<Rider?> ridePassengers = [];
 
-  final List<LatLng> _polyLineArray = [];
+  List<LatLng> _polyLineArray = [];
   final List<RideForPassenger> _availableRides = [];
 
   List<LatLng> get polyLineArray => _polyLineArray;
   List<RideForPassenger> get availableRides => _availableRides;
 
   Future<void> cronUpdateDriverLoc() async {
-
     var currentLoc = await getCurrentLocation();
     // */1 * * * * means every minute
     cron.schedule(Schedule.parse('*/1 * * * *'), () async {
@@ -330,8 +331,6 @@ class MapViewModel extends ChangeNotifier {
     String? source,
     String? destination,
   }) async {
-
-    
     var currentLoc = await getCurrentLocation();
     try {
       Dio dio = Dio();
@@ -343,23 +342,67 @@ class MapViewModel extends ChangeNotifier {
             'key': googleMapApiToken
           });
 
-      final result = direction.data as Map<String, dynamic>;
+      final Directions directionResponse =
+          Directions.fromJson(direction.data as Map<String, dynamic>);
 
-      for (var point in Directions.fromMap(result).polylinePoints) {
-        _polyLineArray.add(LatLng(point.latitude, point.longitude));
-      }
+      _polyLineArray = decodePolyline(
+          directionResponse.routes?[0].overviewPolyline?.points as String);
 
       createRide(
         source: source,
         destination: destination,
-        currentLocation: '33.6600116,73.0833224',
-        totalDistance: 100,
+        currentLocation:
+            '33.6600116,73.0833224', // TO DO : replace with currentLoc
+        totalDistance: calculateDistance(_polyLineArray),
         city: 'Islamabad',
         polygonPoints: _polyLineArray,
       );
 
       notifyListeners();
     } catch (e) {
+      notifyListeners();
+    }
+  }
+
+  Resource<DriverGeneralResponse> rideCompletedResource = Resource.idle();
+
+  Future<void> rideCompleted({
+    required String rideId,
+  }) async {
+    try {
+      rideCompletedResource = Resource.loading();
+      notifyListeners();
+
+      await _mapService.rideCompleted(
+        rideId,
+      );
+
+      notifyListeners();
+    } catch (e) {
+      rideCompletedResource = Resource.failed(e.toString());
+      notifyListeners();
+    }
+  }
+
+  Resource<DriverGeneralResponse> changePassengerStatusResource =
+      Resource.idle();
+
+  Future<void> changePassengerStatus({
+    required rideId,
+    required status,
+  }) async {
+    try {
+      changePassengerStatusResource = Resource.loading();
+      notifyListeners();
+
+      await _mapService.changePassengerStatus(
+        rideId,
+        status,
+      );
+
+      notifyListeners();
+    } catch (e) {
+      changePassengerStatusResource = Resource.failed(e.toString());
       notifyListeners();
     }
   }

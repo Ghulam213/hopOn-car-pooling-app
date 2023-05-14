@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../Utils/error.dart';
 import '../../../config/network/network_config.dart';
 import '../models/create_ride_response.dart';
+import '../models/driver_response_general.dart';
 import '../models/get_ride_location_response.dart';
 
 class MapServiceImpl extends MapService {
@@ -387,6 +388,93 @@ class MapServiceImpl extends MapService {
             GetRideResponse.fromJson(response.data as Map<String, dynamic>);
 
         logger("MapServiceImpl: getRideLocation() Response:$response}");
+
+        return rideResponse;
+      } else {
+        throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
+      }
+    } catch (e) {
+      if (e is DioError) {
+        if (e.response != null) {
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
+        } else {
+          if (e.message.contains("SocketException: Failed host lookup")) {
+            throw "No internet connection";
+          }
+        }
+      }
+      throw e.toString();
+    }
+  }
+
+  @override
+  Future<DriverGeneralResponse> changePassengerStatus(
+    String rideId,
+    String status,
+  ) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? passengerId = prefs.getString("passengerID");
+    try {
+      final body = {
+        "rideId": rideId,
+        "passengerId": passengerId,
+        "status": status
+      };
+
+      logger("MapServiceImpl: changePassengerStatus() Body: $body");
+      final Response response = await dio.post(
+        '/ride/passenger/status',
+        data: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final DriverGeneralResponse passengerResponse =
+            DriverGeneralResponse.fromJson(
+                response.data as Map<String, dynamic>);
+
+        logger("MapServiceImpl: changePassengerStatus() Response:$response}");
+
+        return passengerResponse;
+      } else {
+        throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
+      }
+    } catch (e) {
+      if (e is DioError) {
+        if (e.response != null) {
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
+        } else {
+          if (e.message.contains("SocketException: Failed host lookup")) {
+            throw "No internet connection";
+          }
+        }
+      }
+      throw e.toString();
+    }
+  }
+
+  @override
+  Future<DriverGeneralResponse> rideCompleted(
+    String rideId,
+  ) async {
+    try {
+      final body = {
+        "rideId": rideId,
+      };
+
+      logger("MapServiceImpl: rideCompleted() Body: $body");
+      final Response response = await dio.post(
+        '/ride/$rideId/complete',
+        queryParameters: body,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final DriverGeneralResponse rideResponse =
+            DriverGeneralResponse.fromJson(
+                response.data as Map<String, dynamic>);
+
+        logger("MapServiceImpl: rideCompleted() Response:$response}");
 
         return rideResponse;
       } else {
