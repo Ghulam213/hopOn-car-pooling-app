@@ -16,6 +16,7 @@ import {
   RideCreateDto,
   RideRequestDto,
 } from 'src/ride/dtos';
+import { PassengerOnRideEntity } from 'src/ride/entities';
 import { RideNotificationTypeEnum } from 'src/ride/enums';
 import { PassengerInfoModel, RideCacheModel, RideForPassengersModel, RideSegmentModel } from 'src/ride/models';
 
@@ -386,6 +387,36 @@ export class RideService {
     );
 
     return true;
+  }
+
+  async completePassengerRide(rideId: string, passengerId: string): Promise<PassengerOnRideEntity> {
+    const passengerOnRide = await this.prisma.passengersOnRide.findFirst({
+      where: {
+        rideId,
+        passengerId,
+      },
+    });
+
+    if (!passengerOnRide) {
+      throw new PassengerNotFoundException({
+        variables: {
+          id: passengerId,
+        },
+      });
+    }
+
+    const updatedPassenger = await this.prisma.passengersOnRide.update({
+      where: {
+        id: passengerOnRide.id,
+      },
+      data: {
+        rideStatus: PasengerRideStatusEnum.COMPLETED,
+      },
+    });
+
+    return {
+      ...updatedPassenger,
+    };
   }
 
   async updatePassengerRideStatus(rideId: string, passengerId: string, rideStatus: PasengerRideStatusEnum) {

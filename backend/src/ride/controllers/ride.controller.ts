@@ -98,10 +98,17 @@ export class RideController {
   }
 
   @UseGuards(AccessTokenGuard)
-  @Post('ride/:rideId/complete')
+  @Get('ride/:rideId/complete')
   @ApiOkResponse({ type: Boolean })
   async completeRide(@Param('rideId', ParseUUIDStringPipe) rideId: string): Promise<Boolean> {
     return this.rideService.completeRide(rideId);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Post('ride/:rideId/end-passenger-ride')
+  @ApiOkResponse({ type: PassengerOnRideEntity })
+  async endPassengerRide(@Param('rideId', ParseUUIDStringPipe) rideId: string, @Body() data: { passengerId: string }) {
+    return this.rideService.completePassengerRide(rideId, data.passengerId);
   }
 
   @UseGuards(AccessTokenGuard)
