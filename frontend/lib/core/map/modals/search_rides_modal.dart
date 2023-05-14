@@ -15,12 +15,9 @@ import '../../widgets/textfield_icons.dart';
 import '../viewmodel/map_view_model.dart';
 
 class SearchRidesModal extends StatefulWidget {
-
   final Function() onRideRequest;
 
-  const SearchRidesModal(
-      {Key? key,
-      required this.onRideRequest})
+  const SearchRidesModal({Key? key, required this.onRideRequest})
       : super(key: key);
 
   @override
@@ -40,7 +37,6 @@ class SearchRidesModalState extends State<SearchRidesModal> {
 
   final source = '';
   final destination = '';
-
 
   @override
   Widget build(BuildContext context) {

@@ -20,6 +20,7 @@ class MapServiceImpl extends MapService {
   Future<RideForPassengerResponse> findRides({
     String? source,
     String? destination,
+    num? distance,
   }) async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -29,6 +30,7 @@ class MapServiceImpl extends MapService {
         "source": source,
         'destination': destination,
         "city": city ?? 'Islamabad',
+        "distance": distance
       };
       logger("MapServiceImpl: findRides() Body: $body");
 

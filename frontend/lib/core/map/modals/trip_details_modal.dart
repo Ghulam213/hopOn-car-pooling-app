@@ -14,7 +14,8 @@ import '../../auth/widgets/login_button.dart';
 import '../../widgets/dot_widget.dart';
 import '../viewmodel/map_view_model.dart';
 
-buildTripDetails(BuildContext context, String source, String destination, Function onRideRequest) {
+buildTripDetails(BuildContext context, String source, String destination,
+    Function onRideRequest) {
   final SizeConfig config = SizeConfig();
 
   Navigator.pop(context);
@@ -40,7 +41,8 @@ buildTripDetails(BuildContext context, String source, String destination, Functi
           builder: (BuildContext context, MapViewModel viewModel, _) {
             if (viewModel.findRidesResource.ops == NetworkStatus.LOADING) {
               return const Center(
-                child: SizedBox(height: 50, width: 50, child: CircularProgressIndicator()),
+                child: SizedBox(
+                    height: 50, width: 50, child: CircularProgressIndicator()),
               );
             } else {
               if (viewModel.availableRides.isNotEmpty) {
@@ -77,39 +79,54 @@ buildTripDetails(BuildContext context, String source, String destination, Functi
                               tripdetails(
                                   ImagesAsset.down,
                                   "Your Current Location",
-                                  viewModel.availableRides[index].source.toString(),
+                                  viewModel.availableRides[index].source
+                                      .toString(),
                                   "Estimated Distance",
                                   ImagesAsset.run,
-                                  viewModel.availableRides[index].ETA.toString(),
+                                  viewModel.availableRides[index].ETA
+                                      .toString(),
                                   config),
                               const SizedBox(height: 10),
                               tripdetails(
                                   ImagesAsset.locate,
                                   "Your Destination",
-                                  viewModel.availableRides[index].destination.toString(),
+                                  viewModel.availableRides[index].destination
+                                      .toString(),
                                   "Estimated time",
                                   ImagesAsset.clock,
-                                  viewModel.availableRides[index].ETA.toString(),
+                                  viewModel.availableRides[index].ETA
+                                      .toString(),
                                   config),
                               const SizedBox(height: 10),
                               Padding(
-                                padding: EdgeInsets.symmetric(horizontal: config.uiWidthPx * 0.2),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: config.uiWidthPx * 0.2),
                                 child: SizedBox(
                                   height: 40,
                                   width: config.uiWidthPx * 1,
                                   child: LoginButton(
                                     text: "Select",
                                     onPress: () {
-                                      Future.delayed(const Duration(milliseconds: 1), () {
+                                      Future.delayed(
+                                          const Duration(milliseconds: 1), () {
                                         Navigator.pop(context);
                                         viewModel.requestRide(
-                                          rideId: viewModel.availableRides[index].id,
-                                          distance: index == 0 ? 20 : 30, // TO DO : get from google map
-                                          driverName: viewModel.availableRides[index].driverName,
-                                          passengerSource: viewModel.availableRides[index].source,
-                                          passengerDestination: viewModel.availableRides[index].destination,
-                                          fare: viewModel.availableRides[index].fare,
-                                          ETA: viewModel.availableRides[index].ETA,
+                                          rideId: viewModel
+                                              .availableRides[index].id,
+                                          distance: index == 0
+                                              ? 20
+                                              : 30, // TO DO : get from google map
+                                          driverName: viewModel
+                                              .availableRides[index].driverName,
+                                          passengerSource: viewModel
+                                              .availableRides[index].source,
+                                          passengerDestination: viewModel
+                                              .availableRides[index]
+                                              .destination,
+                                          fare: viewModel
+                                              .availableRides[index].fare,
+                                          ETA: viewModel
+                                              .availableRides[index].ETA,
                                         );
                                         buildConfirmTrip(context, index);
                                       });
@@ -202,8 +219,8 @@ buildTripDetails(BuildContext context, String source, String destination, Functi
 //       });
 // }
 
-Widget tripdetails(
-    String icon, String locate, String location, String extimated, String eIcon, String eDistance, SizeConfig config) {
+Widget tripdetails(String icon, String locate, String location,
+    String extimated, String eIcon, String eDistance, SizeConfig config) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 30.0),
     child: Row(
@@ -217,7 +234,9 @@ Widget tripdetails(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SvgPicture.asset(icon, colorFilter: const ColorFilter.mode(AppColors.PRIMARY_500, BlendMode.srcIn)),
+                SvgPicture.asset(icon,
+                    colorFilter: const ColorFilter.mode(
+                        AppColors.PRIMARY_500, BlendMode.srcIn)),
               ],
             ),
             const SizedBox(width: 5),
@@ -274,13 +293,15 @@ Widget tripdetails(
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                  color: AppColors.PRIMARY_500.withOpacity(0.2), borderRadius: BorderRadius.circular(7.0)),
+                  color: AppColors.PRIMARY_500.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(7.0)),
               child: Row(
                 children: [
                   SvgPicture.asset(eIcon,
                       height: 16,
                       width: 16,
-                      colorFilter: const ColorFilter.mode(AppColors.PRIMARY_500, BlendMode.srcIn)),
+                      colorFilter: const ColorFilter.mode(
+                          AppColors.PRIMARY_500, BlendMode.srcIn)),
                   const SizedBox(width: 4),
                   Text(
                     eDistance,

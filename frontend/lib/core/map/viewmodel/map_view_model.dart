@@ -91,10 +91,10 @@ class MapViewModel extends ChangeNotifier {
       findRidesResource = Resource.loading();
       notifyListeners();
 
+      // TO DO: get distance then send
+
       final RideForPassengerResponse response = await _mapService.findRides(
-        source: source,
-        destination: destination,
-      );
+          source: source, destination: destination, distance: distance);
 
       findRidesResource = Resource.success(response);
 
@@ -121,6 +121,7 @@ class MapViewModel extends ChangeNotifier {
             datum.source = src[0].map((placemark) => placemark.name).toString();
             datum.destination = src[1].map((placemark) => placemark.name).toString();
           }
+        
         }
         debugPrint("Available Rides${_availableRides.toString()}");
         notifyListeners();
