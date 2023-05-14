@@ -1,5 +1,6 @@
-import { Ride, GenderEnum, CurrentModeEnum, RideStatusEnum, Prisma } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
+import { Prisma, Ride, RideStatusEnum } from '@prisma/client';
+import { PassengerOnRideEntity } from 'src/ride/entities/passenger-on-ride.entity';
 
 export class RideEntity implements Ride {
   @ApiProperty()
@@ -40,4 +41,7 @@ export class RideEntity implements Ride {
 
   @ApiProperty()
   updatedAt: Date;
+
+  @ApiProperty({ isArray: true, type: () => PassengerOnRideEntity })
+  passengersOnRide?: PassengerOnRideEntity[];
 }

@@ -8,6 +8,7 @@ import { PassengerNotFoundException, RideNotAvailableException, RideNotFoundExce
 import { NotificationNotSentException } from 'src/library/exception/notificationNotSentException';
 import { UtilityService } from 'src/library/services';
 import { NotificationService } from 'src/library/services/notification.service';
+import { PassengerService } from 'src/passenger/services';
 import { PrismaService } from 'src/prisma/services';
 import {
   FindRidesForPassengerDto,
@@ -16,8 +17,10 @@ import {
   RideCreateDto,
   RideRequestDto,
 } from 'src/ride/dtos';
+import { PassengerOnRideEntity } from 'src/ride/entities';
 import { RideNotificationTypeEnum } from 'src/ride/enums';
 import { PassengerInfoModel, RideCacheModel, RideForPassengersModel, RideSegmentModel } from 'src/ride/models';
+import { UserService } from 'src/user/services';
 
 @Injectable()
 export class RideService {
@@ -29,6 +32,8 @@ export class RideService {
     private prisma: PrismaService,
     private readonly driverService: DriverService,
     private readonly notificationService: NotificationService,
+    private readonly passengerService: PassengerService,
+    private readonly userService: UserService,
   ) {
     this.prisma.addMiddleware(async (params, next) => {
       if (params.model === 'Ride') {
@@ -278,10 +283,14 @@ export class RideService {
   async findRidesForPassenger(passengerData: FindRidesForPassengerDto): Promise<RideForPassengersModel[]> {
     const pasengerDestination = UtilityService.stringToCoordinates(passengerData.destination);
     const pasengerSource = UtilityService.stringToCoordinates(passengerData.source);
+    const passengerPreferences = await this.passengerService.getPassengerRidePreferences(passengerData.passengerId);
     const rides = await this.prisma.ride.findMany({
       where: {
         rideStatus: RideStatusEnum.ON_GOING,
         city: passengerData.city,
+      },
+      include: {
+        driver: true,
       },
     });
 
@@ -294,6 +303,14 @@ export class RideService {
         }
 
         const rideCurrentLocation = UtilityService.stringToCoordinates(rideCache.driver.currentLocation);
+
+        const driverDetails = await this.userService.findUser({
+          id: ride.driver.userId,
+        });
+
+        const isPassengerPreferencePassed = passengerPreferences
+          ? passengerPreferences.genderPreference === driverDetails.gender
+          : true;
 
         const isPassengerSourceOnDriverRoute = UtilityService.isPointOnRouteWithinThreshold(
           pasengerSource,
@@ -313,7 +330,10 @@ export class RideService {
         );
 
         return (
-          isPassengerSourceOnDriverRoute && isPassengerDestinationOnDriverRoute && isPassengerWithinThresholdOfDriver
+          isPassengerSourceOnDriverRoute &&
+          isPassengerDestinationOnDriverRoute &&
+          isPassengerWithinThresholdOfDriver &&
+          isPassengerPreferencePassed
         );
       }),
     );
@@ -342,6 +362,7 @@ export class RideService {
           ETA,
           source: ride.source,
           destination: ride.source,
+          distance: passengerData.distance,
         };
       }),
     );
@@ -385,6 +406,36 @@ export class RideService {
     );
 
     return true;
+  }
+
+  async completePassengerRide(rideId: string, passengerId: string): Promise<PassengerOnRideEntity> {
+    const passengerOnRide = await this.prisma.passengersOnRide.findFirst({
+      where: {
+        rideId,
+        passengerId,
+      },
+    });
+
+    if (!passengerOnRide) {
+      throw new PassengerNotFoundException({
+        variables: {
+          id: passengerId,
+        },
+      });
+    }
+
+    const updatedPassenger = await this.prisma.passengersOnRide.update({
+      where: {
+        id: passengerOnRide.id,
+      },
+      data: {
+        rideStatus: PasengerRideStatusEnum.COMPLETED,
+      },
+    });
+
+    return {
+      ...updatedPassenger,
+    };
   }
 
   async updatePassengerRideStatus(rideId: string, passengerId: string, rideStatus: PasengerRideStatusEnum) {
@@ -627,5 +678,10 @@ export class RideService {
     );
 
     return true;
+  }
+
+  async getPassengersOfRide(rideId: string) {
+    const ride = await this.findRide({ id: rideId }, { passengersOnRide: true });
+    return ride.passengersOnRide;
   }
 }

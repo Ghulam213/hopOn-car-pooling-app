@@ -1,8 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDefined, IsNotEmpty, IsNumberString, IsString } from 'class-validator';
+import { IsDefined, IsNotEmpty, IsNumberString, IsString, IsUUID } from 'class-validator';
 import { Trim } from 'src/library/decorators';
 
 export class FindRidesForPassengerDto {
+  @ApiProperty()
+  @Trim()
+  @IsNotEmpty()
+  @IsUUID()
+  @IsDefined()
+  passengerId: string;
+
   @ApiProperty()
   @Trim()
   @IsNotEmpty()

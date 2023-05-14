@@ -1,13 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { ApiCreatedResponse, ApiHeader, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { AccessTokenGuard } from 'src/auth/guards';
 import { DriverCreateDto, DriverUpdateDto } from 'src/driver/dtos';
-import { DriverService } from 'src/driver/services';
+import { UpsertDriverPreferencesDto } from 'src/driver/dtos/upsert-driver-preferences.dto';
+import { DriverRidePreferencesEntity } from 'src/driver/entities/driver-ride-preferences';
 import { DriverEntity } from 'src/driver/entities/driver.entity';
-import { ParseUUIDStringPipe } from 'src/library/pipes';
-import { DriverPageModel } from 'src/driver/models';
-import { EntityPageOptionsDto } from 'src/library/dtos';
 import { VehicleEntity } from 'src/driver/entities/vehicle.entity';
+import { DriverPageModel } from 'src/driver/models';
+import { DriverService } from 'src/driver/services';
+import { EntityPageOptionsDto } from 'src/library/dtos';
+import { ParseUUIDStringPipe } from 'src/library/pipes';
 
 @Controller()
 @ApiTags('driver')
@@ -80,5 +81,23 @@ export class DriverController {
     return this.driverService.getVehiclesOfDriver({ id });
   }
 
-  // TODO: Add a controller to add a vehicle to a driver
+  // @UseGuards(AccessTokenGuard)
+  @Get('driver/:id/preferences')
+  @ApiOkResponse({ isArray: true, type: DriverRidePreferencesEntity })
+  async getDriverPreferences(@Param('id', ParseUUIDStringPipe) id: string): Promise<DriverRidePreferencesEntity> {
+    return this.driverService.getDriverRidePreferences(id);
+  }
+
+  // @UseGuards(AccessTokenGuard)
+  @Post('driver/:id/preferences')
+  @ApiOkResponse({ type: DriverRidePreferencesEntity })
+  async upsertDriverPreferences(
+    @Param('id', ParseUUIDStringPipe) driverId: string,
+    @Body() data: UpsertDriverPreferencesDto,
+  ): Promise<DriverRidePreferencesEntity> {
+    return this.driverService.upsertDriverRidePreferences({
+      driverId,
+      data,
+    });
+  }
 }

@@ -10,7 +10,7 @@ import {
   RideRequestDto,
   RideUpdateDto,
 } from 'src/ride/dtos';
-import { RideEntity } from 'src/ride/entities';
+import { PassengerOnRideEntity, RideEntity } from 'src/ride/entities';
 import { RideCacheModel, RideForPassengersModel } from 'src/ride/models';
 import { RideService } from 'src/ride/services';
 
@@ -98,10 +98,17 @@ export class RideController {
   }
 
   @UseGuards(AccessTokenGuard)
-  @Post('ride/:rideId/complete')
+  @Get('ride/:rideId/complete')
   @ApiOkResponse({ type: Boolean })
   async completeRide(@Param('rideId', ParseUUIDStringPipe) rideId: string): Promise<Boolean> {
     return this.rideService.completeRide(rideId);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Post('ride/:rideId/end-passenger-ride')
+  @ApiOkResponse({ type: PassengerOnRideEntity })
+  async endPassengerRide(@Param('rideId', ParseUUIDStringPipe) rideId: string, @Body() data: { passengerId: string }) {
+    return this.rideService.completePassengerRide(rideId, data.passengerId);
   }
 
   @UseGuards(AccessTokenGuard)
@@ -110,5 +117,12 @@ export class RideController {
   async updatePassengerRideStatus(@Body() passengerRideStatusUpdate: PassengerRideStatusUpdateDto): Promise<Boolean> {
     const { rideId, passengerId, status } = passengerRideStatusUpdate;
     return this.rideService.updatePassengerRideStatus(rideId, passengerId, status);
+  }
+
+  // @UseGuards(AccessTokenGuard)
+  @Get('ride/:rideId/passengers')
+  @ApiOkResponse({ isArray: true, type: PassengerOnRideEntity })
+  async getPassengersOnRide(@Param('rideId', ParseUUIDStringPipe) rideId: string) {
+    return this.rideService.getPassengersOfRide(rideId);
   }
 }
