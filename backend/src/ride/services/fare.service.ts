@@ -170,7 +170,7 @@ export class FareService {
           : passengerSourceToCurrentPassengerDestinationDistance;
 
       const adjustedDistance = currentPassengerRideDistance - sharedSegment;
-      const adjustedFare = this.calculateFare(adjustedDistance);
+      const adjustedFare = this.appConfig.fare.baseFare + this.calculateFare(adjustedDistance);
 
       return {
         ...currentPassenger,
