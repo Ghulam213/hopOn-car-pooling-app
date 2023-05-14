@@ -1,6 +1,17 @@
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
-import { Device, Driver, PasengerRideStatusEnum, PassengersOnRide, Prisma, Ride, RideStatusEnum } from '@prisma/client';
+import {
+  Device,
+  Driver,
+  DriverRidePreferences,
+  PasengerRideStatusEnum,
+  PassengerRidePreferences,
+  PassengersOnRide,
+  Prisma,
+  Ride,
+  RideStatusEnum,
+  User,
+} from '@prisma/client';
 import { Cache } from 'cache-manager';
 import { applicationConfig } from 'src/config';
 import { DriverService } from 'src/driver/services';
@@ -271,6 +282,9 @@ export class RideService {
    */
   async calculateETAForPassenger(ride: Ride, passengerInfo: PassengerInfoModel) {
     const rideCache = await this.getRideCurrentLocationFromCache(ride.id);
+
+    if (!rideCache) return 0;
+
     const rideCurrentLocation = UtilityService.stringToCoordinates(rideCache.driver.currentLocation);
     const passengerSourceCoordinates = UtilityService.stringToCoordinates(passengerInfo.source);
 
@@ -280,10 +294,40 @@ export class RideService {
     return Math.ceil(time);
   }
 
+  async matchPreferences(
+    passengerPreferences: PassengerRidePreferences,
+    driverPreferences: DriverRidePreferences,
+    passengerDetails: User,
+    driverDetails: User,
+  ) {
+    const isPassengerPreferencesMatched = passengerPreferences
+      ? passengerPreferences.genderPreference === driverDetails.gender
+      : true;
+    const isDriverPreferencesMatched = driverPreferences
+      ? driverPreferences.genderPreference === passengerDetails.gender
+      : true;
+
+    return {
+      isPassengerPreferencesMatched,
+      isDriverPreferencesMatched,
+    };
+  }
+
+  checkForMaxPassengerCountReached = async (rideId: string, driverPreferences: DriverRidePreferences) => {
+    const alreadySeatedPassengerCount = await this.prisma.passengersOnRide.count({ where: { rideId } });
+    const isMaxPassengerCountReached = driverPreferences
+      ? alreadySeatedPassengerCount >= driverPreferences.maxNumberOfPassengers
+      : alreadySeatedPassengerCount >= this.appConfig.maxNumberOfPassengers;
+
+    return isMaxPassengerCountReached;
+  };
+
   async findRidesForPassenger(passengerData: FindRidesForPassengerDto): Promise<RideForPassengersModel[]> {
     const pasengerDestination = UtilityService.stringToCoordinates(passengerData.destination);
     const pasengerSource = UtilityService.stringToCoordinates(passengerData.source);
     const passengerPreferences = await this.passengerService.getPassengerRidePreferences(passengerData.passengerId);
+    const passengerDetails = await this.userService.findUserOfPassenger(passengerData.passengerId);
+
     const rides = await this.prisma.ride.findMany({
       where: {
         rideStatus: RideStatusEnum.ON_GOING,
@@ -304,13 +348,16 @@ export class RideService {
 
         const rideCurrentLocation = UtilityService.stringToCoordinates(rideCache.driver.currentLocation);
 
-        const driverDetails = await this.userService.findUser({
-          id: ride.driver.userId,
-        });
+        const driverDetails = await this.userService.findUserOfDriver(ride.driverId);
+        const driverPreferences = await this.driverService.getDriverRidePreferences(ride.driverId);
 
-        const isPassengerPreferencePassed = passengerPreferences
-          ? passengerPreferences.genderPreference === driverDetails.gender
-          : true;
+        const { isPassengerPreferencesMatched, isDriverPreferencesMatched } = await this.matchPreferences(
+          passengerPreferences,
+          driverPreferences,
+          passengerDetails,
+          driverDetails,
+        );
+        const isMaxPassengerCountReached = await this.checkForMaxPassengerCountReached(ride.id, driverPreferences);
 
         const isPassengerSourceOnDriverRoute = UtilityService.isPointOnRouteWithinThreshold(
           pasengerSource,
@@ -333,7 +380,9 @@ export class RideService {
           isPassengerSourceOnDriverRoute &&
           isPassengerDestinationOnDriverRoute &&
           isPassengerWithinThresholdOfDriver &&
-          isPassengerPreferencePassed
+          isPassengerPreferencesMatched &&
+          isDriverPreferencesMatched &&
+          !isMaxPassengerCountReached
         );
       }),
     );

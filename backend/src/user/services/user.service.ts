@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { User, Prisma, Device } from '@prisma/client';
+import { Device, Prisma, User } from '@prisma/client';
 import { UserAlreadyExistsException, UserNotFoundException } from 'src/library/exception';
 import { NotificationService } from 'src/library/services';
 import { PrismaService } from 'src/prisma/services';
@@ -126,5 +126,37 @@ export class UserService {
       console.log(error);
       throw error;
     }
+  }
+
+  async findUserOfPassenger(passengerId: string) {
+    const user = await this.prisma.passenger
+      .findUnique({
+        where: {
+          id: passengerId,
+        },
+      })
+      .user();
+
+    if (!user) {
+      throw new UserNotFoundException({ variables: { id: passengerId } });
+    }
+
+    return user;
+  }
+
+  async findUserOfDriver(driverId: string) {
+    const user = await this.prisma.driver
+      .findUnique({
+        where: {
+          id: driverId,
+        },
+      })
+      .user();
+
+    if (!user) {
+      throw new UserNotFoundException({ variables: { id: driverId } });
+    }
+
+    return user;
   }
 }
