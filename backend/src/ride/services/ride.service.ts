@@ -349,6 +349,72 @@ export class RideService {
     return ridesForPassenger;
   }
 
+  async completeRide(rideId: string) {
+    const ride = await this.findRide({ id: rideId }, { driver: true, passengersOnRide: true });
+
+    ride.passengersOnRide.forEach(async (passengerOnRide) => {
+      await this.prisma.passengersOnRide.update({
+        where: {
+          id: passengerOnRide.id,
+        },
+        data: {
+          rideStatus: PasengerRideStatusEnum.COMPLETED,
+        },
+      });
+    });
+
+    await this.updateRide({
+      where: {
+        id: rideId,
+      },
+      data: {
+        rideStatus: RideStatusEnum.COMPLETED,
+        rideEndedAt: new Date(),
+      },
+    });
+
+    const deviceArn = await this.findDeviceArnForDriver(ride.driverId);
+    await this.notificationService.publishMessageToDeviceArn(
+      {
+        subject: 'Ride Completed',
+        body: `Your ride has been completed`,
+        type: RideNotificationTypeEnum.RIDE_COMPLETED,
+        data: { rideId },
+      },
+      deviceArn.token,
+    );
+
+    return true;
+  }
+
+  async updatePassengerRideStatus(rideId: string, passengerId: string, rideStatus: PasengerRideStatusEnum) {
+    const passengerOnRide = await this.prisma.passengersOnRide.findFirst({
+      where: {
+        rideId,
+        passengerId,
+      },
+    });
+
+    if (!passengerOnRide) {
+      throw new PassengerNotFoundException({
+        variables: {
+          id: passengerId,
+        },
+      });
+    }
+
+    await this.prisma.passengersOnRide.update({
+      where: {
+        id: passengerOnRide.id,
+      },
+      data: {
+        rideStatus,
+      },
+    });
+
+    return true;
+  }
+
   async updateAndNotifyRideFareForPassengersOfRide(rideId: string) {
     const ride = await this.findRide({ id: rideId }, { passengersOnRide: true });
 
