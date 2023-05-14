@@ -42,4 +42,5 @@ export const applicationConfig = registerAs('application', () => ({
     perKmFare: parseFloat(process.env.FARE_PER_KM_FARE),
   },
   etaPerKm: parseFloat(process.env.ETA_PER_KM),
+  maxNumberOfPassengers: parseInt(process.env.MAX_NUMBER_OF_PASSENGERS, 10),
 }));
