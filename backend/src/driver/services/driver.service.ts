@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/services';
-import { Prisma } from '@prisma/client';
+import { DriverRidePreferences, Prisma } from '@prisma/client';
 import { DriverCreateDto } from 'src/driver/dtos';
-import { UserService } from 'src/user/services';
-import { DriverNotFoundException } from 'src/library/exception';
+import { UpsertDriverPreferencesDto } from 'src/driver/dtos/upsert-driver-preferences.dto';
 import { DriverEntity } from 'src/driver/entities/driver.entity';
-import { DriverPageModel } from 'src/driver/models';
 import { VehicleEntity } from 'src/driver/entities/vehicle.entity';
+import { DriverPageModel } from 'src/driver/models';
+import { DriverNotFoundException } from 'src/library/exception';
+import { PrismaService } from 'src/prisma/services';
+import { UserService } from 'src/user/services';
 
 @Injectable()
 export class DriverService {
@@ -118,6 +119,37 @@ export class DriverService {
     await this.findDriver({ id: driverId });
 
     return this.prisma.vehicle.create({
+      data: {
+        ...data,
+        driverId,
+      },
+    });
+  }
+
+  async getDriverRidePreferences(driverId: string) {
+    const driver = await this.findDriver({ id: driverId }, { preferences: true });
+
+    return driver.preferences;
+  }
+
+  async upsertDriverRidePreferences(params: {
+    driverId: string;
+    data: UpsertDriverPreferencesDto;
+  }): Promise<DriverRidePreferences> {
+    const { driverId, data } = params;
+
+    const preferences = await this.getDriverRidePreferences(driverId);
+
+    if (preferences.length) {
+      return this.prisma.driverRidePreferences.update({
+        where: {
+          id: preferences[0].id,
+        },
+        data,
+      });
+    }
+
+    return this.prisma.driverRidePreferences.create({
       data: {
         ...data,
         driverId,
