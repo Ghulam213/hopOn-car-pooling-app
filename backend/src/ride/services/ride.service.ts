@@ -53,7 +53,9 @@ export class RideService {
           return results.map((r) => ({ ...r, polygonPoints: JSON.parse(r.polygonPoints as string) }));
         } else if (params.action === 'findUnique' || params.action === 'findFirst') {
           const results: Ride = await next(params);
-          results.polygonPoints = JSON.parse(results.polygonPoints as string);
+          if (results) {
+            results.polygonPoints = JSON.parse(results.polygonPoints as string);
+          }
           return results;
         }
       }
@@ -150,7 +152,7 @@ export class RideService {
           currentLocation: '',
         },
         passengers: ride.passengersOnRide?.map((pr) => ({
-          id: pr.id,
+          id: pr.passengerId,
           currentLocation: '',
         })),
       };
@@ -163,9 +165,18 @@ export class RideService {
       case 'passenger': {
         const passengerIndex = updatedRideCache.passengers.findIndex((p) => p.id === locationUpdateDto.entityId);
         if (passengerIndex === -1) {
-          throw new PassengerNotFoundException({ variables: { id: locationUpdateDto.entityId } });
+          // either a new passenger or the passenger does not belong to the ride.
+          if (ride.passengersOnRide.map((pr) => pr.passengerId).includes(locationUpdateDto.entityId)) {
+            updatedRideCache.passengers.push({
+              id: locationUpdateDto.entityId,
+              currentLocation: locationUpdateDto.currentLocation,
+            });
+          } else {
+            throw new PassengerNotFoundException({ variables: { id: locationUpdateDto.entityId } });
+          }
+        } else {
+          updatedRideCache.passengers[passengerIndex].currentLocation = locationUpdateDto.currentLocation;
         }
-        updatedRideCache.passengers[passengerIndex].currentLocation = locationUpdateDto.currentLocation;
       }
     }
 

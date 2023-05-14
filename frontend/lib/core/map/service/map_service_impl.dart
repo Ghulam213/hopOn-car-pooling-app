@@ -32,25 +32,21 @@ class MapServiceImpl extends MapService {
       };
       logger("MapServiceImpl: findRides() Body: $body");
 
-      final Response response =
-          await dio.get('/ride-for-passenger', queryParameters: body);
+      final Response response = await dio.get('/ride-for-passenger', queryParameters: body);
 
       logger("MapServiceImpl: findRides() Response: ${response.data}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final RideForPassengerResponse driverResponse =
-            RideForPassengerResponse.fromJson(
-                response.data as Map<String, dynamic>);
+            RideForPassengerResponse.fromJson(response.data as Map<String, dynamic>);
         return driverResponse;
       } else {
-        throw AppErrors.processErrorJson(
-            response.data['data'] as Map<String, dynamic>);
+        throw AppErrors.processErrorJson(response.data['data'] as Map<String, dynamic>);
       }
     } catch (e) {
       if (e is DioError) {
         if (e.response != null) {
-          throw AppErrors.processErrorJson(
-              e.response?.data as Map<String, dynamic>);
+          throw AppErrors.processErrorJson(e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";
@@ -98,8 +94,7 @@ class MapServiceImpl extends MapService {
       logger("MapServiceImpl: requestRide() Response: ${response.data}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final RequestRideResponse driverResponse =
-            RequestRideResponse.fromJson(response.data as Map<String, dynamic>);
+        final RequestRideResponse driverResponse = RequestRideResponse.fromJson(response.data as Map<String, dynamic>);
         return driverResponse;
       } else {
         throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
@@ -107,8 +102,7 @@ class MapServiceImpl extends MapService {
     } catch (e) {
       if (e is DioError) {
         if (e.response != null) {
-          throw AppErrors.processErrorJson(
-              e.response?.data as Map<String, dynamic>);
+          throw AppErrors.processErrorJson(e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";
@@ -133,7 +127,7 @@ class MapServiceImpl extends MapService {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final String? city = prefs.getString("currentCity");
       final String? driverID = prefs.getString("driverID");
-           
+
       final body = {
         'driverId': driverID ?? '',
         "source": source!.trim(),
@@ -147,24 +141,21 @@ class MapServiceImpl extends MapService {
       logger("MapServiceImpl: createRide() Body: $body");
       final Response response = await dio.post(
         '/ride',
-        data: jsonEncode(body),
+        data: body,
       );
 
       logger("MapServiceImpl: createRide() Response: $response.data");
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final CreatedRideResponse driverResponse =
-            CreatedRideResponse.fromJson(response.data as Map<String, dynamic>);
+        final CreatedRideResponse driverResponse = CreatedRideResponse.fromJson(response.data as Map<String, dynamic>);
 
         return driverResponse;
       } else {
-        throw AppErrors.processErrorJson(
-            response.data['data'] as Map<String, dynamic>);
+        throw AppErrors.processErrorJson(response.data['data'] as Map<String, dynamic>);
       }
     } catch (e) {
       if (e is DioError) {
         if (e.response != null) {
-          throw AppErrors.processErrorJson(
-              e.response?.data as Map<String, dynamic>);
+          throw AppErrors.processErrorJson(e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";
@@ -188,8 +179,7 @@ class MapServiceImpl extends MapService {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     final String user = prefs.getString("user") ?? '';
-    final String pessengerId = prefs.getString("passengerID") ??
-        'fabc32ad-6adb-4213-a910-a584a19c3484';
+    final String pessengerId = prefs.getString("passengerID") ?? 'fabc32ad-6adb-4213-a910-a584a19c3484';
 
     final body = {
       "rideId": rideId,
@@ -212,8 +202,7 @@ class MapServiceImpl extends MapService {
       logger("MapServiceImpl: acceptRide() Response: $response.data");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final RequestRideResponse driverResponse =
-            RequestRideResponse.fromJson(response.data as Map<String, dynamic>);
+        final RequestRideResponse driverResponse = RequestRideResponse.fromJson(response.data as Map<String, dynamic>);
 
         return driverResponse;
       } else {
@@ -222,8 +211,7 @@ class MapServiceImpl extends MapService {
     } catch (e) {
       if (e is DioError) {
         if (e.response != null) {
-          throw AppErrors.processErrorJson(
-              e.response?.data as Map<String, dynamic>);
+          throw AppErrors.processErrorJson(e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";
@@ -270,8 +258,7 @@ class MapServiceImpl extends MapService {
 
       logger("MapServiceImpl: rejectRide() RAesponse: $response.data");
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final RequestRideResponse driverResponse =
-            RequestRideResponse.fromJson(response.data as Map<String, dynamic>);
+        final RequestRideResponse driverResponse = RequestRideResponse.fromJson(response.data as Map<String, dynamic>);
 
         return driverResponse;
       } else {
@@ -280,8 +267,7 @@ class MapServiceImpl extends MapService {
     } catch (e) {
       if (e is DioError) {
         if (e.response != null) {
-          throw AppErrors.processErrorJson(
-              e.response?.data as Map<String, dynamic>);
+          throw AppErrors.processErrorJson(e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";
@@ -300,13 +286,9 @@ class MapServiceImpl extends MapService {
   }) async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final String? driverID = prefs.getString("driverId");
+      final String? driverID = prefs.getString("driverID");
 
-      final body = {
-        "rideId": rideId ?? '62660ffb-abbd-4c36-b3d6-e0941587c291',
-        "entityId": driverID ?? 'e0d89a2b-f8da-441a-8182-bc4bb4f945e7',
-        "currentLocation": currentLocation
-      };
+      final body = {"rideId": rideId, "entityId": driverID, "currentLocation": currentLocation};
 
       logger("MapServiceImpl: updateDriverLoc() Body: $body");
       await dio.post(
@@ -318,8 +300,7 @@ class MapServiceImpl extends MapService {
     } catch (e) {
       if (e is DioError) {
         if (e.response != null) {
-          throw AppErrors.processErrorJson(
-              e.response?.data as Map<String, dynamic>);
+          throw AppErrors.processErrorJson(e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";
@@ -337,13 +318,9 @@ class MapServiceImpl extends MapService {
   }) async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final String? passengerId = prefs.getString("passengerId");
+      final String? passengerId = prefs.getString("passengerID");
 
-      final body = {
-        "rideId": rideId ?? '62660ffb-abbd-4c36-b3d6-e0941587c291',
-        "entityId": passengerId ?? '5ee04f51-0692-48bb-bcbf-de3d88b90dd7',
-        "currentLocation": currentLocation
-      };
+      final body = {"rideId": rideId, "entityId": passengerId, "currentLocation": currentLocation};
 
       logger("MapServiceImpl: updatePassengerLoc() Body: $body");
       await dio.post(
@@ -351,13 +328,11 @@ class MapServiceImpl extends MapService {
         data: jsonEncode(body),
       );
 
-
       logger("MapServiceImpl: updatePassengerLoc() Response");
     } catch (e) {
       if (e is DioError) {
         if (e.response != null) {
-          throw AppErrors.processErrorJson(
-              e.response?.data as Map<String, dynamic>);
+          throw AppErrors.processErrorJson(e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";
@@ -384,8 +359,7 @@ class MapServiceImpl extends MapService {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final GetRideResponse rideResponse =
-            GetRideResponse.fromJson(response.data as Map<String, dynamic>);
+        final GetRideResponse rideResponse = GetRideResponse.fromJson(response.data as Map<String, dynamic>);
 
         logger("MapServiceImpl: getRideLocation() Response:$response}");
 
@@ -396,8 +370,7 @@ class MapServiceImpl extends MapService {
     } catch (e) {
       if (e is DioError) {
         if (e.response != null) {
-          throw AppErrors.processErrorJson(
-              e.response?.data as Map<String, dynamic>);
+          throw AppErrors.processErrorJson(e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";

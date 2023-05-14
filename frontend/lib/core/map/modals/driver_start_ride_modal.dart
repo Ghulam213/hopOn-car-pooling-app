@@ -14,8 +14,7 @@ import '../viewmodel/map_view_model.dart';
 class StartRideModal extends StatefulWidget {
   final Function(String, String) onRideStarted;
 
-  const StartRideModal({Key? key, required this.onRideStarted})
-      : super(key: key);
+  const StartRideModal({Key? key, required this.onRideStarted}) : super(key: key);
 
   @override
   StartRideModalState createState() => StartRideModalState();
@@ -41,8 +40,9 @@ class StartRideModalState extends State<StartRideModal> {
       child: const LoginButton(
         text: "Start a Ride ?",
         isLoading: false,
-      ).ripple(() {
-        showModalBottomSheet(
+      ).ripple(
+        () {
+          showModalBottomSheet(
             isDismissible: true,
             isScrollControlled: true,
             elevation: 0,
@@ -70,8 +70,7 @@ class StartRideModalState extends State<StartRideModal> {
                             width: 80,
                             height: 2.875,
                             decoration: BoxDecoration(
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(80)),
+                              borderRadius: const BorderRadius.all(Radius.circular(80)),
                               color: AppColors.PRIMARY_500.withOpacity(0.5),
                             )),
                         const SizedBox(height: 40),
@@ -83,9 +82,7 @@ class StartRideModalState extends State<StartRideModal> {
                               Padding(
                                 padding: const EdgeInsets.only(top: 12.0),
                                 child: SvgPicture.asset(ImagesAsset.side,
-                                    colorFilter: const ColorFilter.mode(
-                                        AppColors.PRIMARY_500,
-                                        BlendMode.srcIn)),
+                                    colorFilter: const ColorFilter.mode(AppColors.PRIMARY_500, BlendMode.srcIn)),
                               ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -116,16 +113,28 @@ class StartRideModalState extends State<StartRideModal> {
                                         onPress: () async {
                                           var src = await Future.wait([
                                             autoCompleteSearch(
-                                                currentController.text),
+                                              currentController.text,
+                                            ),
                                             autoCompleteSearch(
-                                                destinationController.text)
+                                              destinationController.text,
+                                            ),
+                                            getCurrentLocation()
                                           ]);
+
+                                          if (src.isNotEmpty) {
+                                            await mapViewModel.createRide(
+                                              source: src[0] != null ? src[0].toString() : src[2].toString(),
+                                              destination: src[1].toString(),
+                                              currentLocation: src[2].toString(),
+                                              totalDistance: 30,
+                                              city: 'Islamabad',
+                                            );
+                                          }
 
                                           widget.onRideStarted(
                                             src[0].toString(),
                                             src[1].toString(),
                                           );
-                                        
                                         },
                                       ),
                                     ),
@@ -140,8 +149,10 @@ class StartRideModalState extends State<StartRideModal> {
                   ],
                 ),
               );
-            });
-      }),
+            },
+          );
+        },
+      ),
     );
   }
 }
