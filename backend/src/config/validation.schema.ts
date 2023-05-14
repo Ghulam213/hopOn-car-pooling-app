@@ -26,4 +26,5 @@ export const validationSchema = Joi.object({
   RIDE_CURRENT_LOCATION_BASE_CACHE_KEY: Joi.string().default('ride_current_location'),
   FARE_BASE_FARE: Joi.number().default(50),
   FARE_PER_KM_FARE: Joi.number().default(10),
+  ETA_PER_KM: Joi.number().default(2), // in minutes
 });

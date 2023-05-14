@@ -261,6 +261,20 @@ export class RideService {
     return fare;
   };
 
+  /*
+   * Returns an estimated time in minutes for the driver to reach the passenger.
+   */
+  async calculateETAForPassenger(ride: Ride, passengerInfo: PassengerInfoModel) {
+    const rideCache = await this.getRideCurrentLocationFromCache(ride.id);
+    const rideCurrentLocation = UtilityService.stringToCoordinates(rideCache.driver.currentLocation);
+    const passengerSourceCoordinates = UtilityService.stringToCoordinates(passengerInfo.source);
+
+    const distance = UtilityService.getKmDistanceBetweenTwoPoints(rideCurrentLocation, passengerSourceCoordinates);
+    const time = distance / this.appConfig.etaPerKm;
+
+    return Math.ceil(time);
+  }
+
   async findRidesForPassenger(passengerData: FindRidesForPassengerDto): Promise<RideForPassengersModel[]> {
     const pasengerDestination = UtilityService.stringToCoordinates(passengerData.destination);
     const pasengerSource = UtilityService.stringToCoordinates(passengerData.source);
@@ -310,11 +324,11 @@ export class RideService {
       filteredRides.map(async (ride) => {
         const alreadySeatedPassengerCount = await this.prisma.passengersOnRide.count({ where: { rideId: ride.id } });
         const fare = await this.calculateFareForPassegner(ride.id, passengerData);
+        const ETA = await this.calculateETAForPassenger(ride, passengerData);
         const driver = await this.prisma.driver.findUnique({
           where: { id: ride.driverId },
           include: { user: true, vehicles: true },
         });
-        // TODO: Calculate ETA.
         return {
           id: ride.id,
           driverId: ride.driverId,
@@ -325,7 +339,7 @@ export class RideService {
           vehicleName: `${driver?.vehicles[0].vehicleBrand} ${driver?.vehicles[0].vehicleModel}`,
           vehicleRegNo: driver?.vehicles[0].vehicleRegNo,
           fare,
-          ETA: 0,
+          ETA,
           source: ride.source,
           destination: ride.source,
         };

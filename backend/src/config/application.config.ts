@@ -41,4 +41,5 @@ export const applicationConfig = registerAs('application', () => ({
     baseFare: parseFloat(process.env.FARE_BASE_FARE),
     perKmFare: parseFloat(process.env.FARE_PER_KM_FARE),
   },
+  etaPerKm: parseFloat(process.env.ETA_PER_KM),
 }));
