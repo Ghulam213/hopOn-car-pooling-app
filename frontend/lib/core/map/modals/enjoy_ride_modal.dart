@@ -234,7 +234,7 @@ class EnjoyRideState extends State<EnjoyRide> {
                         const SizedBox(height: 5),
                         Text(
                           viewModel.availableRides[widget.index].source ??
-                              "Faizaabd, Islamabad",
+                              "Faizabad, Islamabad",
                           style: GoogleFonts.montserrat(
                             fontSize: 9.0,
                             fontWeight: FontWeight.w400,

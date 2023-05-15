@@ -9,6 +9,7 @@ import '../../../Utils/image_path.dart';
 import '../../../config/network/resources.dart';
 import '../../../config/sizeconfig/size_config.dart';
 import '../viewmodel/profile_viewmodel.dart';
+import '../widgets/dropdown_selector.dart';
 import '../widgets/rider_details.dart';
 import 'edit_rider_profile_screen.dart';
 
@@ -37,6 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final ProfileViewModel pViewModel = context.watch<ProfileViewModel>();
+
     return Scaffold(
       backgroundColor: AppColors.LM_BACKGROUND_BASIC,
       appBar: AppBar(
@@ -75,13 +77,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   height: 10,
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 12.0, bottom: 30),
+                  padding: const EdgeInsets.only(top: 12.0, bottom: 10),
+                  child: SizedBox(
+                    height: 80,
+                    width: 80,
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.all(Radius.circular(50)),
+                      child: Image.asset(
+                        ImagesAsset.driverpic,
+                        fit: BoxFit.fitWidth,
+                      ),
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
                   child: Container(
-                    height: 60,
-                    width: 60,
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                            image: AssetImage(ImagesAsset.driverpic))),
+                      margin: const EdgeInsets.all(10),
+                      child: const Text('Preferences',
+                          style: TextStyle(
+                              color: AppColors.PRIMARY_500,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700))),
+                ),
+                SizedBox(
+                  height: config.uiHeightPx * 0.08,
+                  width: config.uiWidthPx * 0.8,
+                  child: GenderSelector(
+                    selectedGender: pViewModel.passengerGenderPreference,
+                    onChanged: (val) {
+                      setState(() {
+                        pViewModel.passengerGenderPreference = val;
+                      });
+                      pViewModel.setPassengerPrefs(
+                          genderPreference: val.toUpperCase());
+                    },
                   ),
                 ),
                 Align(
@@ -91,7 +121,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: const Text('Personal Information',
                           style: TextStyle(
                               color: AppColors.PRIMARY_500,
-                              fontSize: 22,
+                              fontSize: 18,
                               fontWeight: FontWeight.w700))),
                 ),
                 if (isEditing)
@@ -115,7 +145,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Container(
                         decoration: const BoxDecoration(
                             // borderRadius: BorderRadius.circular(20),
-                        ),
+                            ),
                         padding: const EdgeInsets.only(
                           top: 8.0,
                           bottom: 12,
