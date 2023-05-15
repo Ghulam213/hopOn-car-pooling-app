@@ -195,8 +195,8 @@ class MapViewModel extends ChangeNotifier {
       notifyListeners();
 
       await getDirections(
-        source: source,
-        destination: destination,
+        source,
+        destination,
       );
 
       final CreatedRideResponse response = await _mapService.createRide(
@@ -374,12 +374,12 @@ class MapViewModel extends ChangeNotifier {
   }
 
   Future<void> getDirections(
-    String source,
-    String destination,
+    String? source,
+    String? destination,
   ) async {
     var currentLoc = await getCurrentLocation();
     try {
-      final direction = await getDirectionApi(source, destination);
+      final direction = await getDirectionApi(source!, destination!);
 
       final Directions directionResponse =
           Directions.fromJson(direction.data as Map<String, dynamic>);

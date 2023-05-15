@@ -62,7 +62,7 @@ class _MapScreenState extends State<MapScreen> {
 
   void drawRoute(
       String? source, String? destination, MapViewModel viewModel) async {
-    viewModel.getDirections(source: '$source', destination: '$destination');
+    viewModel.getDirections('$source', '$destination');
 
     updateMarker(source);
     _polyline.add(Polyline(
