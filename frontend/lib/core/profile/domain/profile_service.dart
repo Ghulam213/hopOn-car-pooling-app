@@ -1,4 +1,5 @@
 import '../models/user_info_response.dart';
+import '../models/user_preferences_response.dart';
 
 abstract class ProfileService {
   Future<UserInfoResponse> getProfile();
@@ -18,7 +19,7 @@ abstract class ProfileService {
     bool? verified,
   });
 
-  Future<UserInfoResponse> getPassengerPrefs();
+  Future<PassengerPrefsResponse> getPassengerPrefs();
   Future<UserInfoResponse> getDriverPrefs();
   Future<void> setDriverPrefs({
     String? genderPreference,

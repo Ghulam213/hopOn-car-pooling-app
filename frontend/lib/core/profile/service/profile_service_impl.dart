@@ -8,6 +8,7 @@ import '../../../Utils/helpers.dart';
 import '../../../config/network/network_config.dart';
 import '../domain/profile_service.dart';
 import '../models/user_info_response.dart';
+import '../models/user_preferences_response.dart';
 
 class ProfileServiceImpl extends ProfileService {
   final Dio dio = NetworkConfig().dio;
@@ -164,18 +165,21 @@ class ProfileServiceImpl extends ProfileService {
   }
 
   @override
-  Future<UserInfoResponse> getPassengerPrefs() async {
+  Future<PassengerPrefsResponse> getPassengerPrefs() async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final String? passengerId = prefs.getString("passengerID");
 
+
+      logger("ProfileServiceImpl: getPassengerPrefs() Body: $passengerId");
       final Response response = await dio.get(
-        '//passenger/$passengerId/preferences',
+        '/passenger/$passengerId/preferences',
         queryParameters: {'id': passengerId},
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final UserInfoResponse profileResponse =
-            UserInfoResponse.fromJson(response.data as Map<String, dynamic>);
+        final PassengerPrefsResponse profileResponse =
+            PassengerPrefsResponse.fromJson(
+                response.data as Map<String, dynamic>);
 
         return profileResponse;
       } else {
@@ -208,9 +212,11 @@ class ProfileServiceImpl extends ProfileService {
         "maxNumberOfPassengers": maxNumberOfPassengers
       };
 
+      logger("ProfileServiceImpl: setDriverPrefs() Body: $body");
+
       await dio.post(
         '/driver/$driverId/preferences',
-        queryParameters: {'id': driverId},
+        // queryParameters: {'id': driverId},
         data: body,
       );
     } catch (e) {
@@ -237,11 +243,16 @@ class ProfileServiceImpl extends ProfileService {
 
       final Map<String, dynamic> body = {"genderPreference": genderPreference};
 
-      await dio.post(
+      logger("ProfileServiceImpl: setPassengerPrefs() Body: $body");
+      final Response response = await dio.post(
         '/passenger/$passengerId/preferences',
-        queryParameters: {'id': passengerId},
+        // queryParameters: {'id': passengerId},
         data: body,
       );
+
+      logger("ProfileServiceImpl: setPassengerPrefs() Response: $response");
+
+      logger(response.data.toString());
     } catch (e) {
       if (e is DioError) {
         if (e.response != null) {

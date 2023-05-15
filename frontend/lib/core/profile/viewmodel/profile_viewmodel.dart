@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../config/network/resources.dart';
 import '../domain/profile_service.dart';
 import '../models/user_info_response.dart';
+import '../models/user_preferences_response.dart';
 import '../service/profile_service_impl.dart';
 
 class ProfileViewModel extends ChangeNotifier {
@@ -13,6 +15,13 @@ class ProfileViewModel extends ChangeNotifier {
 
     loadLocalDetails();
     getProfile();
+    loadUserPrefs();
+  }
+
+  Future<void> loadUserPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final bool isDriver = prefs.getString('userMode') == 'DRIVER';
+    isDriver ? getDriverPrefs() : getPassengerPrefs();
   }
 
   Resource<UserInfoResponse> getProfileResource = Resource.idle();
@@ -30,8 +39,11 @@ class ProfileViewModel extends ChangeNotifier {
   String profilePic = '';
   String currentMode = '';
 
+  String passengerGenderPreference = 'MALE';
+
   Future<void> loadLocalDetails() async {
-    final Map<String, String> details = await ProfileServiceImpl().getStoredProfile();
+    final Map<String, String> details =
+        await ProfileServiceImpl().getStoredProfile();
 
     // name = details["profileName"]!;
     // email = details["profileEmail"]!;
@@ -61,8 +73,10 @@ class ProfileViewModel extends ChangeNotifier {
       currentCity = getProfileResource.modelResponse!.data!.currentCity!;
       gender = getProfileResource.modelResponse!.data!.gender!.toString();
       birthDate = getProfileResource.modelResponse!.data!.birthDate.toString();
-      profilePic = getProfileResource.modelResponse!.data!.profilePic!.toString();
-      currentMode = getProfileResource.modelResponse!.data!.currentMode!.toString();
+      profilePic =
+          getProfileResource.modelResponse!.data!.profilePic!.toString();
+      currentMode =
+          getProfileResource.modelResponse!.data!.currentMode!.toString();
 
       notifyListeners();
     } catch (e) {
@@ -92,7 +106,6 @@ class ProfileViewModel extends ChangeNotifier {
       updateProfileResource = Resource.loading();
       notifyListeners();
 
-
       final UserInfoResponse response = await _profileService.updateUserProfile(
         birthDate: birthDate,
         currentCity: currentCity,
@@ -121,8 +134,10 @@ class ProfileViewModel extends ChangeNotifier {
       currentCity = getProfileResource.modelResponse!.data!.currentCity!;
       gender = getProfileResource.modelResponse!.data!.gender!.toString();
       birthDate = getProfileResource.modelResponse!.data!.birthDate.toString();
-      profilePic = getProfileResource.modelResponse!.data!.profilePic!.toString();
-      currentMode = getProfileResource.modelResponse!.data!.currentMode!.toString();
+      profilePic =
+          getProfileResource.modelResponse!.data!.profilePic!.toString();
+      currentMode =
+          getProfileResource.modelResponse!.data!.currentMode!.toString();
 
       notifyListeners();
     } catch (e) {
@@ -131,17 +146,19 @@ class ProfileViewModel extends ChangeNotifier {
     }
   }
 
-  Resource<UserInfoResponse> getPassengerPrefsResource = Resource.idle();
+  Resource<PassengerPrefsResponse> getPassengerPrefsResource = Resource.idle();
 
   Future<void> getPassengerPrefs() async {
     try {
       getPassengerPrefsResource = Resource.loading();
       notifyListeners();
 
-      final UserInfoResponse response =
+      final PassengerPrefsResponse response =
           await _profileService.getPassengerPrefs();
       getPassengerPrefsResource = Resource.success(response);
 
+      passengerGenderPreference =
+          getPassengerPrefsResource.modelResponse!.data!.genderPreference!;
       notifyListeners();
     } catch (e) {
       getPassengerPrefsResource = Resource.failed(e.toString());
