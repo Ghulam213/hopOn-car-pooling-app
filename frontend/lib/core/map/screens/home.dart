@@ -6,7 +6,9 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hop_on/Utils/colors.dart';
 import 'package:hop_on/core/map/modals/driver_start_ride_modal.dart';
+import 'package:hop_on/core/map/modals/end_ride_modal.dart';
 import 'package:hop_on/core/map/modals/search_rides_modal.dart';
+import 'package:hop_on/core/profile/viewmodel/profile_viewmodel.dart';
 import 'package:hop_on/core/registration/screens/registration_modal.dart';
 import 'package:provider/provider.dart';
 
@@ -77,6 +79,7 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     final MapViewModel mapViewModel = context.watch<MapViewModel>();
+    final bool hasRegisteredForDriver = context.select<ProfileViewModel, bool>((value) => value.hasRegisteredForDriver);
     final SizeConfig config = SizeConfig();
 
     return Consumer<LoginStore>(builder: (context, loginStore, _) {
@@ -87,40 +90,42 @@ class _MapScreenState extends State<MapScreen> {
             toolbarHeight: config.uiHeightPx * 0.06,
             actions: [
               !loginStore.isDriver
-                  ? Padding(
-                      padding: const EdgeInsets.all(3.0),
-                      child: TextButton(
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                AppColors.PRIMARY_500),
-                            shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
+                  ? hasRegisteredForDriver
+                      ? const SizedBox.shrink()
+                      : Padding(
+                          padding: const EdgeInsets.all(3.0),
+                          child: TextButton(
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(AppColors.PRIMARY_500),
+                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  side: const BorderSide(
-                                      color: AppColors.PRIMARY_500)),
+                                  side: const BorderSide(color: AppColors.PRIMARY_500),
+                                ),
+                              ),
+                            ),
+                            onPressed: () async {
+                              await showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                useRootNavigator: true,
+                                builder: (context) {
+                                  return const RegistrationModal();
+                                },
+                              );
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 10.0),
+                              child: Text(
+                                'Register as a Driver',
+                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w400),
+                              ),
                             ),
                           ),
-                          onPressed: () async {
-                            await showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              useRootNavigator: true,
-                              builder: (context) {
-                                return const RegistrationModal();
-                              },
-                            );
-                          },
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10.0),
-                            child: Text(
-                              'Register as a Driver',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                          )))
-                  : const SizedBox(height: 0),
+                        )
+                  : mapViewModel.createdRideId.isNotEmpty
+                      ? EndRideModal(onRideEnded: () {})
+                      : const SizedBox.shrink(),
             ],
           ),
           drawer: const AppDrawer(

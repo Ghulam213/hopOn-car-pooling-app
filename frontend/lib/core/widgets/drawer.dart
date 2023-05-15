@@ -31,11 +31,10 @@ class _AppDrawerState extends State<AppDrawer> {
   Widget build(BuildContext context) {
     final ProfileViewModel viewModel = context.watch<ProfileViewModel>();
 
-    var textStyle = Theme.of(context).textTheme.bodyMedium!.copyWith(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        height: 1.0,
-        color: AppColors.PRIMARY_500);
+    var textStyle = Theme.of(context)
+        .textTheme
+        .bodyMedium!
+        .copyWith(fontSize: 16, fontWeight: FontWeight.w600, height: 1.0, color: AppColors.PRIMARY_500);
 
     return Drawer(
       backgroundColor: Colors.white,
@@ -50,8 +49,7 @@ class _AppDrawerState extends State<AppDrawer> {
             children: <Widget>[
               const SizedBox(height: 40),
               ListTile(
-                leading: const Icon(Icons.person_rounded,
-                    size: 22, color: AppColors.PRIMARY_500),
+                leading: const Icon(Icons.person_rounded, size: 22, color: AppColors.PRIMARY_500),
                 title: Text('Profile', style: textStyle),
                 onTap: () => {
                   Navigator.of(context).push(
@@ -60,8 +58,7 @@ class _AppDrawerState extends State<AppDrawer> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.map,
-                    size: 22, color: AppColors.PRIMARY_500),
+                leading: const Icon(Icons.map, size: 22, color: AppColors.PRIMARY_500),
                 title: Text('Map', style: textStyle),
                 onTap: () => {
                   Navigator.of(context).push(
@@ -71,8 +68,6 @@ class _AppDrawerState extends State<AppDrawer> {
               ),
               const Spacer(),
               Consumer<LoginStore>(builder: (_, loginStore, __) {
-
-                
                 return Observer(
                   builder: (_) => ListTile(
                     title: Padding(
@@ -81,34 +76,32 @@ class _AppDrawerState extends State<AppDrawer> {
                         alignment: Alignment.centerLeft,
                         child: Column(
                           children: [
-                           
                             Center(
                               child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.PRIMARY_500),
+                                style: ElevatedButton.styleFrom(backgroundColor: AppColors.PRIMARY_500),
                                 child: FutureBuilder<String>(
                                   future: checkCurrentMode(),
                                   builder: (_, snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
+                                    if (snapshot.connectionState == ConnectionState.waiting) {
                                       return const CircularProgressIndicator();
                                     }
                                     return Text(
-                                        'Switch to ${snapshot.data.toString().toLowerCase()}',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium!
-                                            .copyWith(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                                height: 1.0,
-                                                color: AppColors
-                                                    .WHITE)); //👈 Your valid data here
+                                      'Switch to ${snapshot.data.toString().toLowerCase()}',
+                                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                            height: 1.0,
+                                            color: AppColors.WHITE,
+                                          ),
+                                    ); //👈 Your valid data here
                                   },
                                 ),
                                 onPressed: () async {
-                                  viewModel.updateProfile(
-                                      currentMode: 'DRIVER');
+                                  await viewModel.switchCurrentMode();
+                                  if (mounted) {
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pushReplacementNamed('/');
+                                  }
                                 },
                               ),
                             ),

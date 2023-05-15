@@ -165,6 +165,10 @@ class StartRideModalState extends State<StartRideModal> {
                                             src[0].toString(),
                                             src[1].toString(),
                                           );
+
+                                          if (context.mounted) {
+                                            Navigator.of(context, rootNavigator: true).pop();
+                                          }
                                         },
                                       ),
                                     ),

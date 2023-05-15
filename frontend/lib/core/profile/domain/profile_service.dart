@@ -28,4 +28,5 @@ abstract class ProfileService {
   Future<void> setPassengerPrefs({
     String? genderPreference,
   });
+  Future<bool> checkIfRegisteredForDriver();
 }

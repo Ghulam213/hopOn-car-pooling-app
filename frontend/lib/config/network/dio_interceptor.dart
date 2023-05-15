@@ -7,8 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class DioInterceptior extends Interceptor {
   @override
-  Future<void> onRequest(
-      RequestOptions options, RequestInterceptorHandler handler) async {
+  Future<void> onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
     super.onRequest(options, handler);
 
     final prefs = await SharedPreferences.getInstance();
@@ -32,12 +31,8 @@ class DioInterceptior extends Interceptor {
 
     if (err.response != null) {
       if (err.response!.data != null) {
-        if (err.response!.data!
-            .toString()
-            .contains("SocketException: Failed host lookup")) {
-          handler.reject(DioError(
-              requestOptions:
-                  RequestOptions(path: "", data: {"message": "no iNTERNET"})));
+        if (err.response!.data!.toString().contains("SocketException: Failed host lookup")) {
+          handler.reject(DioError(requestOptions: RequestOptions(path: "", data: {"message": "no iNTERNET"})));
         }
 
         if (err.response!.data.toString().contains("INVALID_TOKEN")) {

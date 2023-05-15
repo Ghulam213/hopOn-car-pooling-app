@@ -14,17 +14,13 @@ import '../widgets/rider_details.dart';
 import 'edit_rider_profile_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
-  // final Function onDrawerTapped;
-  // final Function onEditTapped;
-  // final Function onEditComplete;
-
   const ProfileScreen({Key? key}) : super(key: key);
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  ProfileScreenState createState() => ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class ProfileScreenState extends State<ProfileScreen> {
   final PageController pageController = PageController();
   final SizeConfig config = SizeConfig();
   bool isEditing = false;
@@ -155,33 +151,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             onEditTapped();
                           },
                           child: Card(
-                              color: pViewModel.updateProfileResource.ops ==
-                                      NetworkStatus.LOADING
-                                  ? AppColors.LM_BACKGROUND_BASIC
-                                  : AppColors.PRIMARY_500.withOpacity(0.90),
-                              child: SizedBox(
-                                  width: SizeConfig.screenWidthDp! * 0.65,
-                                  height: config.sh(40).toDouble(),
-                                  child: Row(
-                                    children: [
-                                      const Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 10),
-                                        child: Icon(
-                                          Icons.edit,
-                                          size: 14,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      Text(
-                                        easy.tr("Edit"),
-                                        style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 17,
-                                            fontWeight: FontWeight.w500),
-                                      ),
-                                    ],
-                                  ))),
+                            color: pViewModel.updateProfileResource.ops ==
+                                    NetworkStatus.LOADING
+                                ? AppColors.LM_BACKGROUND_BASIC
+                                : AppColors.PRIMARY_500.withOpacity(0.90),
+                            child: SizedBox(
+                              width: SizeConfig.screenWidthDp! * 0.65,
+                              height: config.sh(40).toDouble(),
+                              child: Row(
+                                children: [
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 10),
+                                    child: Icon(
+                                      Icons.edit,
+                                      size: 14,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  Text(
+                                    easy.tr("Edit"),
+                                    style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ],

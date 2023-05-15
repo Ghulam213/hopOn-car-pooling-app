@@ -1,4 +1,3 @@
-
 import 'package:easy_localization/easy_localization.dart' as easy;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -14,11 +13,7 @@ class EditProfileScreen extends StatefulWidget {
   final Function(String) onUpdateFailed;
   final String? countryCode;
 
-  const EditProfileScreen(
-      {Key? key,
-      required this.onUpdateFailed,
-      required this.onUpdateSuccess,
-      this.countryCode})
+  const EditProfileScreen({Key? key, required this.onUpdateFailed, required this.onUpdateSuccess, this.countryCode})
       : super(key: key);
 
   @override
@@ -31,11 +26,10 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController _fNameController = TextEditingController();
   final TextEditingController _lNameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _ageController = TextEditingController();
   final TextEditingController _genderController = TextEditingController();
-  
+  final TextEditingController _cityController = TextEditingController();
+  final TextEditingController _localeController = TextEditingController();
+
   String fullCode = '';
 
   final GlobalKey<FormState> _formKey = GlobalKey();
@@ -44,17 +38,16 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   void initState() {
     super.initState();
     final ProfileViewModel profileViewModel = context.read<ProfileViewModel>();
-    _emailController.text = profileViewModel.email;
     _fNameController.text = profileViewModel.firstName;
     _lNameController.text = profileViewModel.lastName;
     _phoneController.text = profileViewModel.phone;
-    _emailController.text = profileViewModel.email;
     _genderController.text = profileViewModel.gender;
+    _cityController.text = profileViewModel.currentCity;
+    _localeController.text = profileViewModel.locale;
   }
 
   @override
   Widget build(BuildContext context) {
-   
     return Container(
       width: SizeConfig.screenWidthDp,
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -133,7 +126,6 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                     SizedBox(
                       height: config.sh(5).toDouble(),
                     ),
-                 
                     EditProfileTextField(
                         textEditingController: _phoneController,
                         textDirection: TextDirection.ltr,
@@ -144,58 +136,8 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                           return null;
                         },
                         hintText: ''),
-           
-               
                     const SizedBox(
                       height: 10,
-                    ),
-                    Text(
-                      easy.tr("Email"),
-                      style: const TextStyle(
-                        color: AppColors.LM_FONT_BLOCKTEXT_GREY7,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 15,
-                      ),
-                    ),
-                    SizedBox(
-                      height: config.sh(5).toDouble(),
-                    ),
-                    EditProfileTextField(
-                        textEditingController: _emailController,
-                        textDirection: TextDirection.ltr,
-                        validator: (String? value) {
-                          if (value == null || value.isEmpty) {
-                            return easy.tr("Please input your email");
-                          }
-                          return null;
-                        },
-                        hintText: ''),
-                    SizedBox(
-                      height: config.sh(10).toDouble(),
-                    ),
-                    Text(
-                      easy.tr("Password"),
-                      style: const TextStyle(
-                        color: AppColors.LM_FONT_BLOCKTEXT_GREY7,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 15,
-                      ),
-                    ),
-                    SizedBox(
-                      height: config.sh(5).toDouble(),
-                    ),
-                    EditProfileTextField(
-                        textEditingController: _passwordController,
-                        textDirection: TextDirection.ltr,
-                        validator: (String? value) {
-                          if (value == null || value.isEmpty) {
-                            return easy.tr("Please input your passwrd");
-                          }
-                          return null;
-                        },
-                        hintText: ''),
-                    SizedBox(
-                      height: config.sh(10).toDouble(),
                     ),
                     Text(
                       easy.tr("Gender"),
@@ -222,7 +164,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                       height: config.sh(10).toDouble(),
                     ),
                     Text(
-                      easy.tr("Age"),
+                      easy.tr("City"),
                       style: const TextStyle(
                         color: AppColors.LM_FONT_BLOCKTEXT_GREY7,
                         fontWeight: FontWeight.w400,
@@ -233,16 +175,42 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                       height: config.sh(5).toDouble(),
                     ),
                     EditProfileTextField(
-                        textEditingController: _ageController,
+                        textEditingController: _cityController,
                         textDirection: TextDirection.ltr,
                         validator: (String? value) {
                           if (value == null || value.isEmpty) {
-                            return easy.tr("Please input your age");
+                            return easy.tr("Please input your city");
                           }
                           return null;
                         },
                         hintText: ''),
-                    SizedBox(height: config.sh(10).toDouble()),
+                    SizedBox(
+                      height: config.sh(10).toDouble(),
+                    ),
+                    Text(
+                      easy.tr("Locale"),
+                      style: const TextStyle(
+                        color: AppColors.LM_FONT_BLOCKTEXT_GREY7,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 15,
+                      ),
+                    ),
+                    SizedBox(
+                      height: config.sh(5).toDouble(),
+                    ),
+                    EditProfileTextField(
+                        textEditingController: _localeController,
+                        textDirection: TextDirection.ltr,
+                        validator: (String? value) {
+                          if (value == null || value.isEmpty) {
+                            return easy.tr("Please input your locale");
+                          }
+                          return null;
+                        },
+                        hintText: ''),
+                    SizedBox(
+                      height: config.sh(10).toDouble(),
+                    ),
                   ],
                 ),
               ),
@@ -291,34 +259,23 @@ class EditProfileScreenState extends State<EditProfileScreen> {
     final String fName = _fNameController.text;
     final String lName = _lNameController.text;
     final String phone = _phoneController.text;
-    final String email = _emailController.text;
-    final String password = _passwordController.text;
-    final String age = _ageController.text;
     final String gender = _genderController.text;
-
+    final String city = _cityController.text;
+    final String locale = _localeController.text;
 
     await profileViewModel.updateProfile(
-      birthDate: 'birthDate',
-      currentCity: 'currentCity',
-      currentMode: 'currentMode',
       firstName: fName,
       lastName: lName,
       gender: gender,
-      locale: 'locale',
       phone: phone,
-      profilePic: 'profilePic',
-      timezone: 'timezone',
-      optedInAt: true,
-      active: true,
-      verified: true,
+      currentCity: city,
+      locale: locale,
     );
 
-    if (profileViewModel.updateProfileResource.ops ==
-        NetworkStatus.SUCCESSFUL) {
+    if (profileViewModel.updateProfileResource.ops == NetworkStatus.SUCCESSFUL) {
       widget.onUpdateSuccess();
     } else {
-      widget
-          .onUpdateFailed(profileViewModel.updateProfileResource.networkError!);
+      widget.onUpdateFailed(profileViewModel.updateProfileResource.networkError!);
     }
   }
 }
