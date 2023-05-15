@@ -125,11 +125,14 @@ class SearchRidesModalState extends State<SearchRidesModal> {
                                             autoCompleteSearch(
                                                 destinationController.text)
                                           ]);
-
+                                          debugPrint(src[0].toString());
+                                          debugPrint(src[1].toString());
                                           if (src.isNotEmpty) {
                                             mapViewModel.findRides(
-                                                source: src[0].toString(),
-                                                destination: src[1].toString());
+                                                src[0].toString() ??
+                                                    '33.6600116,73.0833224',
+                                                src[1].toString() ??
+                                                    '33.6844202,73.04788479999999');
                                           }
                                           if (!context.mounted) return;
 
