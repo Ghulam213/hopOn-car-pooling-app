@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../Utils/colors.dart';
 import '../../config/sizeconfig/size_config.dart';
 
-class CustomPlaceTextWidget extends StatelessWidget {
+class CustomPlaceTextWidget extends StatefulWidget {
   final ValueChanged<String>? onSubmitted;
   final Widget? suffix;
   final Widget? prefix;
@@ -23,17 +23,22 @@ class CustomPlaceTextWidget extends StatelessWidget {
       : super(key: key);
 
   @override
+  State<CustomPlaceTextWidget> createState() => _CustomPlaceTextWidgetState();
+}
+
+class _CustomPlaceTextWidgetState extends State<CustomPlaceTextWidget> {
+  @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(left: 30),
       height: 55,
-      width: config.uiWidthPx - 60,
+      width: widget.config.uiWidthPx - 60,
       child: TextField(
         scrollPadding: const EdgeInsets.symmetric(vertical: 15),
-        onSubmitted: onSubmitted,
+        onSubmitted: widget.onSubmitted,
         readOnly: false,
         
-        controller: controller,
+        controller: widget.controller,
         cursorColor: AppColors.FONT_GRAY,
         keyboardType: TextInputType.streetAddress,
         autofillHints: const [AutofillHints.addressCity],
@@ -47,7 +52,7 @@ class CustomPlaceTextWidget extends StatelessWidget {
             horizontal: 15,
             vertical: 10,
           ),
-          prefixIcon: prefix ?? prefix,
+          prefixIcon: widget.prefix ?? widget.prefix,
           filled: true,
           fillColor: AppColors.PRIMARY_500.withOpacity(0.2),
           enabledBorder: OutlineInputBorder(
@@ -61,7 +66,7 @@ class CustomPlaceTextWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(9),
             borderSide: const BorderSide(color: AppColors.PRIMARY_500),
           ),
-          hintText: hintText,
+          hintText: widget.hintText,
           alignLabelWithHint: true,
           hintStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
                 fontSize: 13,

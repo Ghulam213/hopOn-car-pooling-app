@@ -9,6 +9,8 @@ abstract class MapService {
   Future<RideForPassengerResponse> findRides({
     String? source,
     String? destination,
+    num? distance
+
   });
 
   Future<RequestRideResponse> requestRide({

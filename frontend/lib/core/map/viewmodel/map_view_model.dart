@@ -60,7 +60,8 @@ class MapViewModel extends ChangeNotifier {
     // */1 * * * * means every minute
     cron.schedule(Schedule.parse('*/1 * * * *'), () async {
       updateDriverLoc(currentLocation: currentLoc, rideId: createdRideId);
-      logger('###  Driver Location CRON task called  with ID: $createdRideId ###');
+      logger(
+          '###  Driver Location CRON task called  with ID: $createdRideId ###');
     });
   }
 
@@ -69,7 +70,8 @@ class MapViewModel extends ChangeNotifier {
     // */1 * * * * means every minute
     cron.schedule(Schedule.parse('*/1 * * * *'), () async {
       updatePassengerLoc(rideId: rideId, currentLocation: currentLoc);
-      logger('###  Passenger Location CRON task called with ID: $createdRideId ###');
+      logger(
+          '###  Passenger Location CRON task called with ID: $createdRideId ###');
     });
   }
 
@@ -77,24 +79,32 @@ class MapViewModel extends ChangeNotifier {
     // */1 * * * * means every minute
     cron.schedule(Schedule.parse('*/1 * * * *'), () async {
       getRideLocation(createdRideId.isNotEmpty ? createdRideId : rideId);
-      logger('### Get Ride Location CRON task called with ID: $createdRideId ###');
+      logger(
+          '### Get Ride Location CRON task called with ID: $createdRideId ###');
     });
   }
 
   Resource<RideForPassengerResponse> findRidesResource = Resource.idle();
 
-  Future<void> findRides({
-    String? source,
-    String? destination,
-  }) async {
+  Future<void> findRides(
+    String source,
+    String destination,
+  ) async {
     try {
       findRidesResource = Resource.loading();
       notifyListeners();
 
+      var mapRes = await getDirectionApi(source, destination);
+
+      final Directions directionResponse =
+          Directions.fromJson(mapRes.data as Map<String, dynamic>);
+
+      var polylineArr = decodePolyline(
+          directionResponse.routes?[0].overviewPolyline?.points as String);
       final RideForPassengerResponse response = await _mapService.findRides(
-        source: source,
-        destination: destination,
-      );
+          source: source,
+          destination: destination,
+          distance: calculateDistance(polylineArr));
 
       findRidesResource = Resource.success(response);
 
@@ -113,13 +123,16 @@ class MapViewModel extends ChangeNotifier {
           {
             var src = await Future.wait([
               placemarkFromCoordinates(
-                  double.parse(datum.source!.split(',')[0]), double.parse(datum.source!.split(',')[1])),
+                  double.parse(datum.source!.split(',')[0]),
+                  double.parse(datum.source!.split(',')[1])),
               placemarkFromCoordinates(
-                  double.parse(datum.destination!.split(',')[0]), double.parse(datum.destination!.split(',')[1]))
+                  double.parse(datum.destination!.split(',')[0]),
+                  double.parse(datum.destination!.split(',')[1]))
             ]);
 
             datum.source = src[0].map((placemark) => placemark.name).toString();
-            datum.destination = src[1].map((placemark) => placemark.name).toString();
+            datum.destination =
+                src[1].map((placemark) => placemark.name).toString();
           }
         }
         debugPrint("Available Rides${_availableRides.toString()}");
@@ -182,8 +195,8 @@ class MapViewModel extends ChangeNotifier {
       notifyListeners();
 
       await getDirections(
-        source: source,
-        destination: destination,
+        source,
+        destination,
       );
 
       final CreatedRideResponse response = await _mapService.createRide(
@@ -201,7 +214,9 @@ class MapViewModel extends ChangeNotifier {
 
       cronUpdateDriverLoc();
       cronGetRideLoc();
-      rideDriver = Rider(id: createRideResource.modelResponse!.data!.driverId, currentLocation: source);
+      rideDriver = Rider(
+          id: createRideResource.modelResponse!.data!.driverId,
+          currentLocation: source);
       this.currentLocation = currentLocation ?? await getCurrentLocation();
 
       notifyListeners();
@@ -328,18 +343,18 @@ class MapViewModel extends ChangeNotifier {
       getRideLocationResource = Resource.loading();
       notifyListeners();
 
-      final GetRideResponse response = await _mapService.getRideLocation(rideId);
+      final GetRideResponse response =
+          await _mapService.getRideLocation(rideId);
 
       getRideLocationResource = Resource.success(response);
 
       rideDriver = getRideLocationResource.modelResponse?.data?.driver;
-      ridePassengers = getRideLocationResource.modelResponse?.data?.passengers ?? ridePassengers;
+      ridePassengers =
+          getRideLocationResource.modelResponse?.data?.passengers ??
+              ridePassengers;
       currentLocation = await getCurrentLocation();
 
-      // shall be giving live location of driver
-      // Done : Update the map marketr using updateMarker() func and polyline (drawRoute func) with live driver/passengers location
-      // Need a way to listen to rideDriver.currentLocation either via Consumer<MapViewModel> (see other places where used) or some other way
-
+      logger(rideDriver?.currentLocation.toString());
       notifyListeners();
     } catch (e) {
       getRideLocationResource = Resource.failed(e.toString());
@@ -347,20 +362,30 @@ class MapViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> getDirections({
+  Future<Response<dynamic>> getDirectionApi(String src, String dest) async {
+    Dio dio = Dio();
+    return await dio.post(
+        'https://maps.googleapis.com/maps/api/directions/json?',
+        queryParameters: {
+          'origin': src,
+          'destination': dest,
+          'key': googleMapApiToken
+        });
+  }
+
+  Future<void> getDirections(
     String? source,
     String? destination,
-  }) async {
+  ) async {
+    var currentLoc = await getCurrentLocation();
     try {
-      Dio dio = Dio();
-      final direction = await dio.post(
-        'https://maps.googleapis.com/maps/api/directions/json?',
-        queryParameters: {'origin': source, 'destination': destination, 'key': googleMapApiToken},
-      );
+      final direction = await getDirectionApi(source!, destination!);
 
-      final Directions directionResponse = Directions.fromJson(direction.data as Map<String, dynamic>);
+      final Directions directionResponse =
+          Directions.fromJson(direction.data as Map<String, dynamic>);
 
-      _polyLineArray = decodePolyline(directionResponse.routes?[0].overviewPolyline?.points as String);
+      _polyLineArray = decodePolyline(
+          directionResponse.routes?[0].overviewPolyline?.points as String);
 
       // final result = direction.data as Map<String, dynamic>;
       // List<LatLng> tempPolyLine = [];
@@ -396,7 +421,8 @@ class MapViewModel extends ChangeNotifier {
     }
   }
 
-  Resource<DriverGeneralResponse> changePassengerStatusResource = Resource.idle();
+  Resource<DriverGeneralResponse> changePassengerStatusResource =
+      Resource.idle();
 
   Future<void> changePassengerStatus({
     required rideId,
