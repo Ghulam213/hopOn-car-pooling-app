@@ -6,7 +6,8 @@ import 'package:hop_on/core/notifications/services/notification_service.dart';
 import 'package:hop_on/core/notifications/widgets/ride_notification_modal.dart';
 import 'package:provider/provider.dart';
 
-Map<String, Function(BuildContext, NotificationDataModel)> notificationsConfig = {
+Map<String, Function(BuildContext, NotificationDataModel)> notificationsConfig =
+    {
   'RIDE_REQUEST': (BuildContext context, NotificationDataModel notification) {
     showModalBottomSheet(
       context: context,
@@ -14,7 +15,8 @@ Map<String, Function(BuildContext, NotificationDataModel)> notificationsConfig =
     );
   },
   'RIDE_ACCEPTED': (BuildContext context, NotificationDataModel notification) {
-    final MapViewModel viewModel = Provider.of<MapViewModel>(context, listen: false);
+    final MapViewModel viewModel =
+        Provider.of<MapViewModel>(context, listen: false);
     // set the cron job to update passenger location
     viewModel.hasDriverAcceptedPassengerRideRequest = true;
     viewModel.rideId = notification.rideId!;
@@ -28,7 +30,8 @@ Map<String, Function(BuildContext, NotificationDataModel)> notificationsConfig =
 class WithNotifications extends StatefulWidget {
   final Widget child;
 
-  const WithNotifications({required Key key, required this.child}) : super(key: key);
+  const WithNotifications({required Key key, required this.child})
+      : super(key: key);
 
   @override
   WithNotificationsState createState() => WithNotificationsState();
@@ -39,8 +42,9 @@ class WithNotificationsState extends State<WithNotifications> {
   @override
   void initState() {
     super.initState();
-    if (mounted) {
-      notificationsModel = Provider.of<NotificationsModel>(context, listen: false);
+    if (context.mounted) {
+      notificationsModel =
+          Provider.of<NotificationsModel>(context, listen: false);
 
       NotificationService notificationService = NotificationService(
         onNotificationReceived: (NotificationDataModel notification) {
@@ -51,6 +55,11 @@ class WithNotificationsState extends State<WithNotifications> {
       );
       notificationService.registerNotification();
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override

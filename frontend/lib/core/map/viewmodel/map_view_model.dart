@@ -59,7 +59,8 @@ class MapViewModel extends ChangeNotifier {
     var currentLoc = await getCurrentLocation();
     // */1 * * * * means every minute
     cron.schedule(Schedule.parse('*/1 * * * *'), () async {
-      updateDriverLoc(currentLocation: currentLoc, rideId: createdRideId);
+      updateDriverLoc(
+          currentLocation: '33.6600116,73.0833224', rideId: createdRideId);
       logger(
           '###  Driver Location CRON task called  with ID: $createdRideId ###');
     });
@@ -69,7 +70,8 @@ class MapViewModel extends ChangeNotifier {
     var currentLoc = await getCurrentLocation();
     // */1 * * * * means every minute
     cron.schedule(Schedule.parse('*/1 * * * *'), () async {
-      updatePassengerLoc(rideId: rideId, currentLocation: currentLoc);
+      updatePassengerLoc(
+          rideId: rideId, currentLocation: '33.6600116,73.0833224');
       logger(
           '###  Passenger Location CRON task called with ID: $createdRideId ###');
     });
@@ -104,7 +106,7 @@ class MapViewModel extends ChangeNotifier {
       final RideForPassengerResponse response = await _mapService.findRides(
           source: source,
           destination: destination,
-          distance: calculateDistance(polylineArr));
+          distance: calculateDistance(polylineArr) / 1000);
 
       findRidesResource = Resource.success(response);
 
@@ -200,7 +202,7 @@ class MapViewModel extends ChangeNotifier {
       );
 
       final CreatedRideResponse response = await _mapService.createRide(
-        currentLocation: currentLocation,
+        currentLocation: '33.6600116,73.0833224',
         source: source,
         destination: destination,
         totalDistance: totalDistance,
@@ -217,7 +219,8 @@ class MapViewModel extends ChangeNotifier {
       rideDriver = Rider(
           id: createRideResource.modelResponse!.data!.driverId,
           currentLocation: source);
-      this.currentLocation = currentLocation ?? await getCurrentLocation();
+      this.currentLocation =
+          '33.6600116,73.0833224' ?? await getCurrentLocation();
 
       notifyListeners();
     } catch (e) {
@@ -302,7 +305,7 @@ class MapViewModel extends ChangeNotifier {
 
       await _mapService.updateDriverLoc(
         rideId: rideId,
-        currentLocation: currentLocation,
+        currentLocation: '33.6600116,73.0833224',
       );
 
       notifyListeners();
@@ -324,7 +327,7 @@ class MapViewModel extends ChangeNotifier {
 
       await _mapService.updatePassengerLoc(
         rideId: rideId,
-        currentLocation: currentLocation,
+        currentLocation: '33.6600116,73.0833224',
       );
 
       notifyListeners();

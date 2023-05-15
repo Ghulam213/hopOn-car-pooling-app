@@ -86,15 +86,9 @@ class ProfileServiceImpl extends ProfileService {
     final prefs = await SharedPreferences.getInstance();
     String? id = prefs.getString('userID') ?? '';
 
-   
-
     try {
-      final Map<String, dynamic> data = {
-        "id": id,
-     
-        "currentMode": 'DRIVER'
-      };
-  
+      final Map<String, dynamic> data = {"id": id, "currentMode": 'DRIVER'};
+
       logger('ProfileServiceImpl: updateUserProfile: Body  $data');
       final Response response = await dio.put(
         '/user/$id',
@@ -102,7 +96,7 @@ class ProfileServiceImpl extends ProfileService {
       );
       logger(
           'ProfileServiceImpl: updateUserProfile: Response ${response.data}');
-     
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         final UserInfoResponse updateOrderStatusResponse =
             UserInfoResponse.fromJson(response.data as Map<String, dynamic>);
@@ -132,6 +126,134 @@ class ProfileServiceImpl extends ProfileService {
         }
       }
       log("ProfileServiceImpl: updateUserProfile(). $e");
+      throw e.toString();
+    }
+  }
+
+  @override
+  Future<UserInfoResponse> getDriverPrefs() async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? driverId = prefs.getString("driverID");
+
+      final Response response = await dio.get(
+        '/driver/$driverId/preferences',
+        queryParameters: {'id': driverId},
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final UserInfoResponse profileResponse =
+            UserInfoResponse.fromJson(response.data as Map<String, dynamic>);
+
+        return profileResponse;
+      } else {
+        throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
+      }
+    } catch (e) {
+      if (e is DioError) {
+        if (e.response != null) {
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
+        } else {
+          if (e.message.contains("SocketException: Failed host lookup")) {
+            throw "No internet connection";
+          }
+        }
+      }
+      throw e.toString();
+    }
+  }
+
+  @override
+  Future<UserInfoResponse> getPassengerPrefs() async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? passengerId = prefs.getString("passengerID");
+
+      final Response response = await dio.get(
+        '//passenger/$passengerId/preferences',
+        queryParameters: {'id': passengerId},
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final UserInfoResponse profileResponse =
+            UserInfoResponse.fromJson(response.data as Map<String, dynamic>);
+
+        return profileResponse;
+      } else {
+        throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
+      }
+    } catch (e) {
+      if (e is DioError) {
+        if (e.response != null) {
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
+        } else {
+          if (e.message.contains("SocketException: Failed host lookup")) {
+            throw "No internet connection";
+          }
+        }
+      }
+      throw e.toString();
+    }
+  }
+
+  @override
+  Future<void> setDriverPrefs(
+      {String? genderPreference, num? maxNumberOfPassengers}) async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? driverId = prefs.getString("driverID");
+
+      final Map<String, dynamic> body = {
+        "genderPreference": genderPreference,
+        "maxNumberOfPassengers": maxNumberOfPassengers
+      };
+
+      await dio.post(
+        '/driver/$driverId/preferences',
+        queryParameters: {'id': driverId},
+        data: body,
+      );
+    } catch (e) {
+      if (e is DioError) {
+        if (e.response != null) {
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
+        } else {
+          if (e.message.contains("SocketException: Failed host lookup")) {
+            throw "No internet connection";
+          }
+        }
+      }
+
+      throw e.toString();
+    }
+  }
+
+  @override
+  Future<dynamic> setPassengerPrefs({String? genderPreference}) async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? passengerId = prefs.getString("passengerID");
+
+      final Map<String, dynamic> body = {"genderPreference": genderPreference};
+
+      await dio.post(
+        '/passenger/$passengerId/preferences',
+        queryParameters: {'id': passengerId},
+        data: body,
+      );
+    } catch (e) {
+      if (e is DioError) {
+        if (e.response != null) {
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
+        } else {
+          if (e.message.contains("SocketException: Failed host lookup")) {
+            throw "No internet connection";
+          }
+        }
+      }
+
       throw e.toString();
     }
   }

@@ -1,10 +1,8 @@
-
 import '../models/user_info_response.dart';
 
 abstract class ProfileService {
   Future<UserInfoResponse> getProfile();
   Future<UserInfoResponse> updateUserProfile({
-   
     String? firstName,
     String? lastName,
     String? phone,
@@ -18,5 +16,15 @@ abstract class ProfileService {
     bool? optedInAt,
     bool? active,
     bool? verified,
+  });
+
+  Future<UserInfoResponse> getPassengerPrefs();
+  Future<UserInfoResponse> getDriverPrefs();
+  Future<void> setDriverPrefs({
+    String? genderPreference,
+    num? maxNumberOfPassengers,
+  });
+  Future<void> setPassengerPrefs({
+    String? genderPreference,
   });
 }

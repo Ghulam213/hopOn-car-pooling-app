@@ -118,11 +118,10 @@ buildTripDetails(BuildContext context, String source, String destination,
                                               : 30, // TO DO : get from google map
                                           driverName: viewModel
                                               .availableRides[index].driverName,
-                                          passengerSource: viewModel
-                                              .availableRides[index].source,
-                                          passengerDestination: viewModel
-                                              .availableRides[index]
-                                              .destination,
+                                          passengerSource:
+                                              '33.6600116,73.0833224',
+                                          passengerDestination:
+                                              '33.6844202,73.04788479999999',
                                           fare: viewModel
                                               .availableRides[index].fare,
                                           ETA: viewModel

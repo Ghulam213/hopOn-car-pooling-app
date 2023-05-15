@@ -25,12 +25,14 @@ class MapServiceImpl extends MapService {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final String? city = prefs.getString("currentCity");
+      final String pessengerId = prefs.getString("passengerID") ?? '';
 
       final body = {
         "source": source,
         'destination': destination,
         "city": city ?? 'Islamabad',
-        "distance": distance
+        "distance": distance,
+        "passengerId": pessengerId,
       };
       logger("MapServiceImpl: findRides() Body: $body");
 

@@ -130,4 +130,74 @@ class ProfileViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Resource<UserInfoResponse> getPassengerPrefsResource = Resource.idle();
+
+  Future<void> getPassengerPrefs() async {
+    try {
+      getPassengerPrefsResource = Resource.loading();
+      notifyListeners();
+
+      final UserInfoResponse response =
+          await _profileService.getPassengerPrefs();
+      getPassengerPrefsResource = Resource.success(response);
+
+      notifyListeners();
+    } catch (e) {
+      getPassengerPrefsResource = Resource.failed(e.toString());
+      notifyListeners();
+    }
+  }
+
+  Resource<UserInfoResponse> setPassengerPrefsResource = Resource.idle();
+
+  Future<void> setPassengerPrefs({
+    String? genderPreference,
+  }) async {
+    try {
+      await _profileService.setPassengerPrefs(
+        genderPreference: genderPreference,
+      );
+
+      notifyListeners();
+    } catch (e) {
+      setPassengerPrefsResource = Resource.failed(e.toString());
+      notifyListeners();
+    }
+  }
+
+  Resource<UserInfoResponse> setDriverPrefsResource = Resource.idle();
+
+  Future<void> setDriverPrefs({
+    String? genderPreference,
+    num? maxNumberOfPassengers,
+  }) async {
+    try {
+      await _profileService.setDriverPrefs(
+        genderPreference: genderPreference,
+        maxNumberOfPassengers: maxNumberOfPassengers,
+      );
+    } catch (e) {
+      setDriverPrefsResource = Resource.failed(e.toString());
+      notifyListeners();
+    }
+  }
+
+  Resource<UserInfoResponse> getDriverPrefsResource = Resource.idle();
+
+  Future<void> getDriverPrefs() async {
+    try {
+      getDriverPrefsResource = Resource.loading();
+      notifyListeners();
+
+      final UserInfoResponse response = await _profileService.getDriverPrefs();
+
+      getDriverPrefsResource = Resource.success(response);
+
+      notifyListeners();
+    } catch (e) {
+      getDriverPrefsResource = Resource.failed(e.toString());
+      notifyListeners();
+    }
+  }
 }

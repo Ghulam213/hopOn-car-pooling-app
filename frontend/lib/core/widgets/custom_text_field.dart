@@ -6,6 +6,7 @@ import '../../config/sizeconfig/size_config.dart';
 
 class CustomPlaceTextWidget extends StatefulWidget {
   final ValueChanged<String>? onSubmitted;
+  final ValueChanged<String>? onChanged;
   final Widget? suffix;
   final Widget? prefix;
   final String hintText;
@@ -14,6 +15,7 @@ class CustomPlaceTextWidget extends StatefulWidget {
 
   const CustomPlaceTextWidget(
       {this.onSubmitted,
+      this.onChanged,
       this.suffix,
       this.prefix,
       required this.hintText,
@@ -74,7 +76,7 @@ class _CustomPlaceTextWidgetState extends State<CustomPlaceTextWidget> {
                 color: AppColors.PRIMARY_500.withOpacity(0.9),
               ),
         ),
-        onChanged: (value) {},
+        onChanged: widget.onChanged,
       ),
     );
   }

@@ -7,12 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hop_on/Utils/colors.dart';
-import 'package:hop_on/Utils/helpers.dart';
 import 'package:hop_on/config/network/network_config.dart';
-import 'package:hop_on/config/sizeconfig/size_config.dart';
 import 'package:hop_on/core/auth/provider/login_store.dart';
-import 'package:hop_on/core/auth/screens/auth_screen.dart';
-import 'package:hop_on/core/map/screens/home.dart';
 import 'package:hop_on/core/registration/viewmodel/registration_viewmodel.dart';
 import 'package:hop_on/firebase_options.dart';
 import 'package:location/location.dart' as loc;
@@ -22,7 +18,11 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Utils/device_info_service.dart';
+import 'Utils/helpers.dart';
 import 'Utils/styles.dart';
+import 'config/sizeconfig/size_config.dart';
+import 'core/auth/screens/auth_screen.dart';
+import 'core/map/screens/home.dart';
 import 'core/map/viewmodel/map_view_model.dart';
 import 'core/notifications/models/notifications_model.dart';
 import 'core/notifications/widgets/with_notificatons.dart';
@@ -54,7 +54,7 @@ Future<void> main() async {
 
 Future _getDeviceInfo() async {
   final prefs = await SharedPreferences.getInstance();
-  // prefs.clear(); // uncomment if need to login at each time
+  //prefs.clear(); // uncomment if need to login at each time
   final DeviceInformation? deviceInformation =
       await DeviceInfoService.getDeviceInfo();
   prefs.setString("deviceId", deviceInformation?.uUID.toString() ?? '');
@@ -116,42 +116,42 @@ class AppState extends State<App> with WidgetsBindingObserver {
         ChangeNotifierProvider<ProfileViewModel>(
           create: (_) => ProfileViewModel(),
         ),
-      ],
-      child: WithNotifications(
-        key: UniqueKey(),
+        ],
         child: Consumer<LoginStore>(
-          builder: (ctx, auth, _) => MaterialApp(
-            supportedLocales: const [
-              Locale('en', ''),
-              Locale('de', ''),
-            ],
-            key: GlobalVariable.scaffoldKey,
-            title: 'Hop On',
-            navigatorKey: Get.key,
-            debugShowCheckedModeBanner: false,
-            theme: Styles.lightTheme,
-            home: Builder(
-              builder: (context) {
-                final Size size = MediaQuery.of(context).size;
-                SizeConfig.init(
-                  context,
-                  height: size.height,
-                  width: size.width,
-                  allowFontScaling: true,
-                );
-                return !isAuthenticated
-                    ? AuthScreen()
-                    : Builder(
-                        builder: (context) {
-                          return MapScreen();
-                        },
-                      );
-              },
-            ),
-          ),
-        ),
-      ),
-    );
+          builder: (ctx, auth, _) {
+            auth.loadInitialDataFromSharedPreferences();
+            return MaterialApp(
+              supportedLocales: const [
+                Locale('en', ''),
+                Locale('de', ''),
+              ],
+              key: GlobalVariable.scaffoldKey,
+              title: 'Hop On',
+              navigatorKey: Get.key,
+              debugShowCheckedModeBanner: false,
+              theme: Styles.lightTheme,
+              home: Builder(
+                builder: (context) {
+                  final Size size = MediaQuery.of(context).size;
+                  SizeConfig.init(
+                    context,
+                    height: size.height,
+                    width: size.width,
+                    allowFontScaling: true,
+                  );
+                  return Builder(
+                    builder: (context) {
+                      return !isAuthenticated
+                          ? AuthScreen()
+                          : WithNotifications(
+                              key: UniqueKey(), child: MapScreen());
+                    },
+                  );
+                },
+              ),
+            );
+          },
+        ));
   }
 
   Future<void> checkAuthenticationStatus() async {

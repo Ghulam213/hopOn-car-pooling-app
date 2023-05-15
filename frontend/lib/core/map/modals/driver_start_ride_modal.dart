@@ -14,7 +14,8 @@ import '../viewmodel/map_view_model.dart';
 class StartRideModal extends StatefulWidget {
   final Function(String, String) onRideStarted;
 
-  const StartRideModal({Key? key, required this.onRideStarted}) : super(key: key);
+  const StartRideModal({Key? key, required this.onRideStarted})
+      : super(key: key);
 
   @override
   StartRideModalState createState() => StartRideModalState();
@@ -66,11 +67,13 @@ class StartRideModalState extends State<StartRideModal> {
                   children: [
                     Column(
                       children: [
+                        
                         Container(
                             width: 80,
                             height: 2.875,
                             decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.all(Radius.circular(80)),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(80)),
                               color: AppColors.PRIMARY_500.withOpacity(0.5),
                             )),
                         const SizedBox(height: 40),
@@ -82,24 +85,44 @@ class StartRideModalState extends State<StartRideModal> {
                               Padding(
                                 padding: const EdgeInsets.only(top: 12.0),
                                 child: SvgPicture.asset(ImagesAsset.side,
-                                    colorFilter: const ColorFilter.mode(AppColors.PRIMARY_500, BlendMode.srcIn)),
+                                    colorFilter: const ColorFilter.mode(
+                                        AppColors.PRIMARY_500,
+                                        BlendMode.srcIn)),
                               ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   CustomPlaceTextWidget(
                                     hintText: "Current location",
-                                    onSubmitted: (value) {},
+                                    onSubmitted: (value) {
+                                      // setState(() {
+                                      //   currentController.text = value;
+                                      // });
+                                    },
                                     controller: currentController,
                                     prefix: const PrefixIcon1(),
+                                    onChanged: (value) {
+                                      // setState(() {
+                                      //   currentController.text = value;
+                                      // });
+                                    },
                                     config: config,
                                   ),
                                   const SizedBox(height: 5.0),
                                   CustomPlaceTextWidget(
                                     hintText: "going where?",
-                                    onSubmitted: (value) {},
+                                    onSubmitted: (value) {
+                                      // setState(() {
+                                      //   destinationController.text = value;
+                                      // });
+                                    },
                                     controller: destinationController,
                                     prefix: const PrefixIcon2(),
+                                    onChanged: (value) {
+                                      // setState(() {
+                                      //     destinationController.text = value;
+                                      //   });
+                                    },
                                     config: config,
                                   ),
                                   const SizedBox(height: 20),
@@ -111,6 +134,8 @@ class StartRideModalState extends State<StartRideModal> {
                                       child: LoginButton(
                                         text: 'Start',
                                         onPress: () async {
+                                          logger(currentController.text);
+                                          logger(destinationController.text);
                                           var src = await Future.wait([
                                             autoCompleteSearch(
                                               currentController.text,
@@ -121,11 +146,16 @@ class StartRideModalState extends State<StartRideModal> {
                                             getCurrentLocation()
                                           ]);
 
+                                          logger(src[0]);
+                                          logger(src[1]);
                                           if (src.isNotEmpty) {
                                             await mapViewModel.createRide(
-                                              source: src[0] != null ? src[0].toString() : src[2].toString(),
+                                              source: src[0] != null
+                                                  ? src[0].toString()
+                                                  : src[2].toString(),
                                               destination: src[1].toString(),
-                                              currentLocation: src[2].toString(),
+                                              currentLocation:
+                                                  src[2].toString(),
                                               totalDistance: 30,
                                               city: 'Islamabad',
                                             );
