@@ -16,7 +16,7 @@ import { Cache } from 'cache-manager';
 import { applicationConfig } from 'src/config';
 import { DriverService } from 'src/driver/services';
 import { PassengerNotFoundException, RideNotAvailableException, RideNotFoundException } from 'src/library/exception';
-import { NotificationNotSentException } from 'src/library/exception/notificationNotSentException';
+import { NotificationNotSentException } from 'src/library/exception/NotificationNotSentException';
 import { UtilityService } from 'src/library/services';
 import { NotificationService } from 'src/library/services/notification.service';
 import { PassengerService } from 'src/passenger/services';

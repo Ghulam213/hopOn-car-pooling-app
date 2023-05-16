@@ -1,9 +1,9 @@
 import { ValidationPipe } from '@nestjs/common';
-import { SwaggerModule, SwaggerDocumentOptions, DocumentBuilder } from '@nestjs/swagger';
 import { NestFactory } from '@nestjs/core';
-import { PrismaService } from 'src/prisma/services/prisma.service';
+import { DocumentBuilder, SwaggerDocumentOptions, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from 'src/app.module';
 import { ResponseMappingInterceptor } from 'src/library/interceptors';
+import { PrismaService } from 'src/prisma/services/prisma.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -28,7 +28,7 @@ async function bootstrap() {
   SwaggerModule.setup('/doc/api', app, document);
 
   app.enableCors({ origin: true });
-  await app.listen(3001);
+  await app.listen(parseInt(process.env.PORT) || 3001);
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();

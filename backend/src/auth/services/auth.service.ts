@@ -1,22 +1,22 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
-import { applicationConfig } from 'src/config';
-import { UserService } from 'src/user/services';
-import * as bcrypt from 'bcrypt';
-import { ConfirmRegisterDto, LoginDto, RegisterDto, ResendOptDto } from 'src/auth/dto';
-import { CognitoIdentityServiceProvider } from 'aws-sdk';
-import { InjectAwsService } from 'nest-aws-sdk';
+import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { CurrentModeEnum, Driver, Passenger, User } from '@prisma/client';
+import { CognitoIdentityServiceProvider } from 'aws-sdk';
+import * as bcrypt from 'bcrypt';
+import { InjectAwsService } from 'nest-aws-sdk';
+import { ConfirmRegisterDto, LoginDto, RegisterDto, ResendOptDto } from 'src/auth/dto';
+import { SessionModel } from 'src/auth/models';
+import { applicationConfig } from 'src/config';
 import {
   UnauthorizedException,
   UserAlreadyExistsException,
   UserIncorrectLoginCredentialsException,
 } from 'src/library/exception';
-import { JwtService, JwtSignOptions } from '@nestjs/jwt';
-import { SessionModel } from 'src/auth/models';
-import { UserEntity } from 'src/user/entities';
-import { uuid } from 'uuidv4';
 import { PrismaService } from 'src/prisma/services';
+import { UserEntity } from 'src/user/entities';
+import { UserService } from 'src/user/services';
+import { uuid } from 'uuidv4';
 
 @Injectable()
 export class AuthService {
