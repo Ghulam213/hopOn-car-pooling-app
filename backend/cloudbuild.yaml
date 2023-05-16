@@ -4,7 +4,7 @@ steps:
     args:
       - -c
       - |
-        echo "$(node -p -e "require('./package.json').version")-$BRANCH_NAME-$(git rev-parse --short HEAD)" | sed 's/\//-/g' > _VERSION
+        echo "$(node -p -e "require('./backend/package.json').version")-$BRANCH_NAME-$(git rev-parse --short HEAD)" | sed 's/\//-/g' > _VERSION
         echo "Building version $(cat _VERSION)"
   # builds the container image
   - name: 'gcr.io/cloud-builders/docker'
@@ -13,14 +13,14 @@ steps:
       - -c
       - |
         tagLatest=()
-        [[ $BRANCH_NAME == 'main' ]] && tagLatest+=(-t gcr.io/${_PROJECT_ID}/${_IMAGE}:latest)
+        [[ $BRANCH_NAME == 'master' ]] && tagLatest+=(-t gcr.io/${_PROJECT_ID}/${_IMAGE}:latest)
         docker build -t gcr.io/${_PROJECT_ID}/${_IMAGE}:$(cat _VERSION) "${tagLatest[@]}" .
   - name: 'gcr.io/cloud-builders/docker'
     entrypoint: bash
     args:
       - -c
       - |
-        [[ $BRANCH_NAME == 'main' ]] && docker push gcr.io/${_PROJECT_ID}/${_IMAGE}:latest
+        [[ $BRANCH_NAME == 'master' ]] && docker push gcr.io/${_PROJECT_ID}/${_IMAGE}:latest
         docker push gcr.io/${_PROJECT_ID}/${_IMAGE}:$(cat _VERSION)
   # deploys the container image
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -40,3 +40,6 @@ substitutions:
   _SERVICE_NAME: 'hopon-be'
   _IMAGE: 'hopon-be'
   _ENV_VARS: ''
+
+options:
+  logging: CLOUD_LOGGING_ONLY
