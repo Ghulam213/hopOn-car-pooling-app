@@ -1,16 +1,10 @@
 steps:
-  - name: 'path'
-    entrypoint: bash
-    args:
-      - -c
-      - |
-        cd backend
   - name: 'node'
     entrypoint: bash
     args:
       - -c
       - |
-        echo "$(node -p -e "require('./package.json').version")-$BRANCH_NAME-$(git rev-parse --short HEAD)" | sed 's/\//-/g' > _VERSION
+        cd backend && echo "$(node -p -e "require('./package.json').version")-$BRANCH_NAME-$(git rev-parse --short HEAD)" | sed 's/\//-/g' > _VERSION
         echo "Building version $(cat _VERSION)"
   # builds the container image
   - name: 'gcr.io/cloud-builders/docker'
