@@ -1,7 +1,6 @@
 export { DriverNotFoundException } from 'src/library/exception/DriverNotFoundException';
 export { InvalidUUIDInputException } from 'src/library/exception/InvalidUUIDInputException';
 export { NotificationNotSentException } from 'src/library/exception/NotificationNotSentException';
-export { PassengerNotFoundException } from 'src/library/exception/PassengerNotFoundException';
 export { RideNotAvailableException } from 'src/library/exception/RideNotAvailableException';
 export { RideNotFoundException } from 'src/library/exception/RideNotFoundException';
 export { UnauthorizedException } from 'src/library/exception/UnauthorizedException';
