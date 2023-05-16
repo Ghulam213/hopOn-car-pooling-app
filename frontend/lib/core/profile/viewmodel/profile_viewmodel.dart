@@ -8,7 +8,6 @@ import '../models/user_info_response.dart';
 import '../models/user_preferences_response.dart';
 import '../service/profile_service_impl.dart';
 
-
 class ProfileViewModel extends ChangeNotifier {
   late ProfileService _profileService;
 
@@ -224,28 +223,29 @@ class ProfileViewModel extends ChangeNotifier {
     } catch (e) {
       getDriverPrefsResource = Resource.failed(e.toString());
       notifyListeners();
-      Future<void> switchCurrentMode() async {
-        try {
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          String newMode =
-              prefs.getString('userMode') == 'DRIVER' ? 'PASSENGER' : 'DRIVER';
-          logger('newMode: $newMode');
-          await updateProfile(currentMode: newMode);
-          prefs.clear();
-        } catch (e) {
-          logger(e.toString());
-        }
-      }
+    }
+  }
 
-      Future<void> checkIfRegisteredForDriver() async {
-        try {
-          hasRegisteredForDriver =
-              await _profileService.checkIfRegisteredForDriver();
-          notifyListeners();
-        } catch (e) {
-          logger(e.toString());
-        }
-      }
+  Future<void> switchCurrentMode() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String newMode =
+          prefs.getString('userMode') == 'DRIVER' ? 'PASSENGER' : 'DRIVER';
+      logger('newMode: $newMode');
+      await updateProfile(currentMode: newMode);
+      prefs.clear();
+    } catch (e) {
+      logger(e.toString());
+    }
+  }
+
+  Future<void> checkIfRegisteredForDriver() async {
+    try {
+      hasRegisteredForDriver =
+          await _profileService.checkIfRegisteredForDriver();
+      notifyListeners();
+    } catch (e) {
+      logger(e.toString());
     }
   }
 }
