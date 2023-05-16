@@ -1,16 +1,10 @@
 steps:
-  - name: 'cd'
-    entrypoint: /bin/sh
-    args:
-      - -c
-      - |
-        cd backend
   - name: 'node'
     entrypoint: bash
     args:
       - -c
       - |
-        echo "$(node -p -e "require('./package.json').version")-$BRANCH_NAME-$(git rev-parse --short HEAD)" | sed 's/\//-/g' > _VERSION
+        echo "$(node -p -e "require('./backend/package.json').version")-$BRANCH_NAME-$(git rev-parse --short HEAD)" | sed 's/\//-/g' > _VERSION
         echo "Building version $(cat _VERSION)"
   # builds the container image
   - name: 'gcr.io/cloud-builders/docker'
@@ -20,7 +14,7 @@ steps:
       - |
         tagLatest=()
         [[ $BRANCH_NAME == 'master' ]] && tagLatest+=(-t gcr.io/${_PROJECT_ID}/${_IMAGE}:latest)
-        docker build -t gcr.io/${_PROJECT_ID}/${_IMAGE}:$(cat _VERSION) "${tagLatest[@]}" .
+        docker build -f ./backend/Dockerfile -t gcr.io/${_PROJECT_ID}/${_IMAGE}:$(cat _VERSION) "${tagLatest[@]}" .
   - name: 'gcr.io/cloud-builders/docker'
     entrypoint: bash
     args:
