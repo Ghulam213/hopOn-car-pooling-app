@@ -1,12 +1,12 @@
 FROM node:16.14-alpine AS deps
 
 # Create directory for app
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+RUN mkdir -p /usr/app
+WORKDIR /usr/app
 
 #Copy package.json & build npm dependencies
-COPY package.json /usr/src/app/
-COPY package-lock.json /usr/src/app/
+COPY package.json /usr/app/
+COPY package-lock.json /usr/app/
 
 RUN npm ci
 
@@ -16,15 +16,15 @@ RUN npm ci
 FROM node:16.14-alpine AS binaries-deps
 RUN apk add --no-cache libc6-compat
 
-WORKDIR /usr/src/app
+WORKDIR /usr/app
 
 # Prisma client
-COPY --from=deps /usr/src/app/node_modules ./node_modules
+COPY --from=deps /usr/app/node_modules ./node_modules
 COPY prisma ./prisma
 RUN npx prisma generate --schema=./prisma/schema.prisma
 
 #Copy App Source & build
-COPY . /usr/src/app
+COPY . /usr/app
 
 RUN npm run build
 
