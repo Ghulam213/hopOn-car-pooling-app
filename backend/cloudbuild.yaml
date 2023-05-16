@@ -1,10 +1,16 @@
 steps:
+  - name: 'path'
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        cd backend
   - name: 'node'
     entrypoint: bash
     args:
       - -c
       - |
-        echo "$(node -p -e "require('./backend/package.json').version")-$BRANCH_NAME-$(git rev-parse --short HEAD)" | sed 's/\//-/g' > _VERSION
+        echo "$(node -p -e "require('./package.json').version")-$BRANCH_NAME-$(git rev-parse --short HEAD)" | sed 's/\//-/g' > _VERSION
         echo "Building version $(cat _VERSION)"
   # builds the container image
   - name: 'gcr.io/cloud-builders/docker'
@@ -40,6 +46,3 @@ substitutions:
   _SERVICE_NAME: 'hopon-be'
   _IMAGE: 'hopon-be'
   _ENV_VARS: ''
-
-options:
-  logging: CLOUD_LOGGING_ONLY
