@@ -11,6 +11,7 @@ const entityDependencies = {
   driver: ['user'],
   passenger: ['user'],
   ride: ['driver'],
+  passengerOnRide: ['ride', 'passenger'],
   vehicle: ['driver'],
 };
 
@@ -102,6 +103,7 @@ export class ImportService {
 
   private async removeEntities(entities: Record<string, unknown>[]): Promise<void> {
     const keys = Object.keys(entities).reverse();
+    console.log({ keys });
     for (const key of keys) {
       const entity = entities[key];
       console.log(`Removing ${entity}`);

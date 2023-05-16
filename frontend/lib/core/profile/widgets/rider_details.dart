@@ -11,13 +11,11 @@ class RiderDetailCard extends StatefulWidget {
   const RiderDetailCard({Key? key}) : super(key: key);
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  ProfileScreenState createState() => ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<RiderDetailCard> {
+class ProfileScreenState extends State<RiderDetailCard> {
   final SizeConfig config = SizeConfig();
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -28,27 +26,20 @@ class _ProfileScreenState extends State<RiderDetailCard> {
         physics: const AlwaysScrollableScrollPhysics(),
         child: Container(
             width: config.uiWidthPx * 0.96,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.grey.shade200,
-                boxShadow: [
-                  const BoxShadow(
-                    blurRadius: 10,
-                    offset: Offset.zero,
-                    color: Colors.white,
-                  ),
-                  BoxShadow(
-                      blurRadius: 6,
-                      offset: Offset.zero,
-                      color: Colors.grey.shade400)
-                ]),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.grey.shade200, boxShadow: [
+              const BoxShadow(
+                blurRadius: 10,
+                offset: Offset.zero,
+                color: Colors.white,
+              ),
+              BoxShadow(blurRadius: 6, offset: Offset.zero, color: Colors.grey.shade400)
+            ]),
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (pViewModel.getProfileResource.ops ==
-                      NetworkStatus.LOADING)
+                  if (pViewModel.getProfileResource.ops == NetworkStatus.LOADING)
                     Column(
                       children: [
                         Row(
@@ -235,10 +226,11 @@ class _ProfileScreenState extends State<RiderDetailCard> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 10),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      easy.tr("Age"),
+                      easy.tr("City"),
                       style: const TextStyle(
                         color: AppColors.LM_FONT_BLOCKTEXT_GREY7,
                         fontWeight: FontWeight.w400,
@@ -247,22 +239,64 @@ class _ProfileScreenState extends State<RiderDetailCard> {
                     ),
                   ),
                   Container(
+                    width: config.uiWidthPx * 0.9,
+                    height: config.sh(30).toDouble(),
                     decoration: BoxDecoration(
                       color: AppColors.LM_BACKGROUND_BASIC,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    width: config.uiWidthPx * 0.9,
-                    height: config.sh(30).toDouble(),
-                    child: const Padding(
-                      padding: EdgeInsets.only(left: 8),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 8),
                       child: Align(
                         alignment: Alignment.centerLeft,
-                        child: Text(
-                          '23',
-                          style: TextStyle(
-                            color: AppColors.FONT_GRAY,
-                            fontWeight: FontWeight.w400,
-                            fontSize: 13,
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            pViewModel.currentCity,
+                            textDirection: TextDirection.ltr,
+                            style: const TextStyle(
+                              color: AppColors.FONT_GRAY,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      easy.tr("Locale"),
+                      style: const TextStyle(
+                        color: AppColors.LM_FONT_BLOCKTEXT_GREY7,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: config.uiWidthPx * 0.9,
+                    height: config.sh(30).toDouble(),
+                    decoration: BoxDecoration(
+                      color: AppColors.LM_BACKGROUND_BASIC,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            pViewModel.locale,
+                            textDirection: TextDirection.ltr,
+                            style: const TextStyle(
+                              color: AppColors.FONT_GRAY,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 13,
+                            ),
                           ),
                         ),
                       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hop_on/Utils/helpers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../config/network/resources.dart';
@@ -22,6 +23,10 @@ class ProfileViewModel extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     final bool isDriver = prefs.getString('userMode') == 'DRIVER';
     isDriver ? getDriverPrefs() : getPassengerPrefs();
+    Future.delayed(const Duration(seconds: 1), () {
+      loadLocalDetails();
+      getProfile();
+    });
   }
 
   Resource<UserInfoResponse> getProfileResource = Resource.idle();
@@ -38,6 +43,7 @@ class ProfileViewModel extends ChangeNotifier {
   String birthDate = '';
   String profilePic = '';
   String currentMode = '';
+  bool hasRegisteredForDriver = true;
 
   String passengerGenderPreference = 'MALE';
 
@@ -77,6 +83,8 @@ class ProfileViewModel extends ChangeNotifier {
           getProfileResource.modelResponse!.data!.profilePic!.toString();
       currentMode =
           getProfileResource.modelResponse!.data!.currentMode!.toString();
+
+      checkIfRegisteredForDriver();
 
       notifyListeners();
     } catch (e) {
@@ -215,6 +223,29 @@ class ProfileViewModel extends ChangeNotifier {
     } catch (e) {
       getDriverPrefsResource = Resource.failed(e.toString());
       notifyListeners();
+    }
+  }
+
+  Future<void> switchCurrentMode() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String newMode =
+          prefs.getString('userMode') == 'DRIVER' ? 'PASSENGER' : 'DRIVER';
+      logger('newMode: $newMode');
+      await updateProfile(currentMode: newMode);
+      prefs.clear();
+    } catch (e) {
+      logger(e.toString());
+    }
+  }
+
+  Future<void> checkIfRegisteredForDriver() async {
+    try {
+      hasRegisteredForDriver =
+          await _profileService.checkIfRegisteredForDriver();
+      notifyListeners();
+    } catch (e) {
+      logger(e.toString());
     }
   }
 }

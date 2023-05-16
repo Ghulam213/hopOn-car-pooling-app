@@ -88,7 +88,24 @@ class ProfileServiceImpl extends ProfileService {
     String? id = prefs.getString('userID') ?? '';
 
     try {
-      final Map<String, dynamic> data = {"id": id, "currentMode": 'DRIVER'};
+      final Map<String, dynamic> data = {
+        "firstName": firstName,
+        "lastName": lastName,
+        "phone": phone,
+        "locale": locale,
+        "timezone": timezone,
+        "currentCity": currentCity,
+        "gender": gender,
+        "birthDate": birthDate,
+        "profilePic": profilePic,
+        "currentMode": currentMode,
+        "optedInAt": optedInAt,
+        "active": active,
+        "verified": verified,
+      };
+
+      // remove null values from data
+      data.removeWhere((key, value) => value == null);
 
       logger('ProfileServiceImpl: updateUserProfile: Body  $data');
       final Response response = await dio.put(
@@ -170,7 +187,6 @@ class ProfileServiceImpl extends ProfileService {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final String? passengerId = prefs.getString("passengerID");
 
-
       logger("ProfileServiceImpl: getPassengerPrefs() Body: $passengerId");
       final Response response = await dio.get(
         '/passenger/$passengerId/preferences',
@@ -182,6 +198,36 @@ class ProfileServiceImpl extends ProfileService {
                 response.data as Map<String, dynamic>);
 
         return profileResponse;
+      }
+      else {
+        throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
+      }
+    } catch (e) {
+      if (e is DioError) {
+        if (e.response != null) {
+       throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
+        } else {
+          if (e.message.contains("SocketException: Failed host lookup")) {
+            throw "No internet connection";
+          }
+        }
+      }
+      throw e.toString();
+    }
+  }
+
+  @override
+  Future<bool> checkIfRegisteredForDriver() async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? id = prefs.getString("userID");
+
+      final Response response = await dio.get('/driver?userId=$id');
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final bool registeredForDriver = response.data["data"]["id"] != null;
+        log('registeredForDriver: $registeredForDriver');
+        return registeredForDriver;
       } else {
         throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
       }
@@ -258,6 +304,7 @@ class ProfileServiceImpl extends ProfileService {
         if (e.response != null) {
           throw AppErrors.processErrorJson(
               e.response?.data as Map<String, dynamic>);
+          
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";
