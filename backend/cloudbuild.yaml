@@ -1,0 +1,42 @@
+steps:
+  - name: 'node'
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        echo "$(node -p -e "require('./package.json').version")-$BRANCH_NAME-$(git rev-parse --short HEAD)" | sed 's/\//-/g' > _VERSION
+        echo "Building version $(cat _VERSION)"
+  # builds the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        tagLatest=()
+        [[ $BRANCH_NAME == 'main' ]] && tagLatest+=(-t gcr.io/${_PROJECT_ID}/${_IMAGE}:latest)
+        docker build -t gcr.io/${_PROJECT_ID}/${_IMAGE}:$(cat _VERSION) "${tagLatest[@]}" .
+  - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        [[ $BRANCH_NAME == 'main' ]] && docker push gcr.io/${_PROJECT_ID}/${_IMAGE}:latest
+        docker push gcr.io/${_PROJECT_ID}/${_IMAGE}:$(cat _VERSION)
+  # deploys the container image
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: sh
+    args: [
+        '-c',
+        'gcloud run deploy ${_SERVICE_NAME} --project ${_PROJECT_ID} --image gcr.io/${_PROJECT_ID}/${_IMAGE}:$(cat _VERSION) --platform managed --allow-unauthenticated --region ${_REGION} --set-env-vars ${_ENV_VARS} --service-account ${_SERVICE_ACCOUNT} --quiet',
+      ]
+
+images:
+  - gcr.io/${_PROJECT_ID}/${_IMAGE}
+
+substitutions:
+  _REGION: 'europe-west1'
+  _PROJECT_ID: 'hopon-3f18b'
+  _SERVICE_ACCOUNT: 'hopon-be-deployment'
+  _SERVICE_NAME: 'hopon-be'
+  _IMAGE: 'hopon-be'
+  _ENV_VARS: ''

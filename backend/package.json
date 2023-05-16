@@ -23,7 +23,9 @@
     "test:e2e:cov": "jest --config ./test/jest-e2e.json --runInBand --coverage",
     "migration:dev": "npx prisma migrate dev --name init",
     "console:dev": "ts-node -r tsconfig-paths/register src/console.ts",
-    "import:dev": "npm run console:dev import-entities -- "
+    "import:dev": "npm run console:dev import-entities -- ",
+    "docker:build": "docker build -t backend .",
+    "docker:run": "docker run -p 3001:3001 backend"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
@@ -36,7 +38,7 @@
     "@prisma/client": "^4.6.1",
     "@types/aws-sdk": "^2.7.0",
     "aws-sdk": "^2.1304.0",
-    "bcrypt": "^5.1.0",
+    "bcrypt": "5.1.0",
     "cache-manager": "^5.2.0",
     "cache-manager-redis-store": "^3.0.1",
     "class-transformer": "^0.5.1",
