@@ -14,7 +14,6 @@ import { PrismaModule } from 'src/prisma';
 import { RideModule } from 'src/ride';
 import { UserModule } from 'src/user';
 
-const redisStore = require('cache-manager-redis-store').redisStore;
 @Module({
   imports: [
     ConfigModule.forRoot({
