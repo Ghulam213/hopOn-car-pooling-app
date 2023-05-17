@@ -32,8 +32,6 @@ class _AppDrawerState extends State<AppDrawer> {
     await prefs.clear();
     Navigator.of(context).pop();
     Navigator.of(context).pop();
-    Navigator.of(context).pop();
-    // Navigator.of(context).pushReplacementNamed('/authScreen');
   }
 
   @override

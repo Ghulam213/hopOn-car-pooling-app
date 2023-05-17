@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../Utils/error.dart';
@@ -36,6 +37,8 @@ class ProfileServiceImpl extends ProfileService {
         throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
       }
     } catch (e) {
+      await Sentry.captureMessage(
+          'ProfileServiceImpl: getProfile() ${e.toString()}');
       if (e is DioError) {
         if (e.response != null) {
           throw AppErrors.processErrorJson(
@@ -158,6 +161,8 @@ class ProfileServiceImpl extends ProfileService {
         '/driver/$driverId/preferences',
         queryParameters: {'id': driverId},
       );
+
+      logger('ProfileServiceImpl: getDriverPrefs()  Response $response');
       if (response.statusCode == 200 || response.statusCode == 201) {
         final UserInfoResponse profileResponse =
             UserInfoResponse.fromJson(response.data as Map<String, dynamic>);
@@ -167,6 +172,8 @@ class ProfileServiceImpl extends ProfileService {
         throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
       }
     } catch (e) {
+      await Sentry.captureMessage(
+          'ProfileServiceImpl: getDriverPrefs() ${e.toString()}');
       if (e is DioError) {
         if (e.response != null) {
           throw AppErrors.processErrorJson(
@@ -204,6 +211,8 @@ class ProfileServiceImpl extends ProfileService {
         throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
       }
     } catch (e) {
+      await Sentry.captureMessage(
+          'ProfileServiceImpl: getPassengerPrefs() ${e.toString()}');
       if (e is DioError) {
         if (e.response != null) {
           throw AppErrors.processErrorJson(
@@ -270,6 +279,8 @@ class ProfileServiceImpl extends ProfileService {
         data: body,
       );
     } catch (e) {
+      await Sentry.captureMessage(
+          'ProfileServiceImpl: setDriverPrefs() ${e.toString()}');
       if (e is DioError) {
         if (e.response != null) {
           throw AppErrors.processErrorJson(
@@ -300,6 +311,8 @@ class ProfileServiceImpl extends ProfileService {
 
       logger(response.data.toString());
     } catch (e) {
+      await Sentry.captureMessage(
+          'ProfileServiceImpl: setPassengerPrefs() ${e.toString()}');
       if (e is DioError) {
         if (e.response != null) {
           throw AppErrors.processErrorJson(
