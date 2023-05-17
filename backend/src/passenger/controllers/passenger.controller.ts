@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiHeader, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { AccessTokenGuard } from 'src/auth/guards';
 import { ParseUUIDStringPipe } from 'src/library/pipes';
 import { UpsertPassengerPreferencesDto } from 'src/passenger/dtos';
 import { PassengerRidePreferencesEntity } from 'src/passenger/entities/passenger-ride-preferences.entity';
@@ -21,7 +22,7 @@ export class PassengerController {
     return this.passengerService.getPassengerRidePreferences(id);
   }
 
-  // @UseGuards(AccessTokenGuard)
+  @UseGuards(AccessTokenGuard)
   @Post('passenger/:id/preferences')
   @ApiOkResponse({ type: PassengerRidePreferencesEntity })
   async upsertDriverPreferences(

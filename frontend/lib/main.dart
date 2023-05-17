@@ -18,6 +18,7 @@ import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'Utils/constants.dart';
 import 'Utils/device_info_service.dart';
 import 'Utils/helpers.dart';
 import 'Utils/styles.dart';
@@ -30,11 +31,6 @@ import 'core/notifications/widgets/with_notificatons.dart';
 import 'core/profile/viewmodel/profile_viewmodel.dart';
 
 late SharedPreferences sharedPreferences;
-
-const String _exampleDsn =
-    'https://e9bbc1b322a747a9b4dc957659785de1@o4505200969908224.ingest.sentry.io/4505200971874304';
-
-const _channel = MethodChannel('example.flutter.sentry.io');
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -59,28 +55,18 @@ Future<void> main() async {
               ),
             ),
           ),
-      _exampleDsn);
+      sentryDsn);
 }
-// runApp(
-//   EasyLocalization(
-//     supportedLocales: const [Locale('en', ''), Locale('de', '')],
-//     path:
-//         'assets/translations', // <-- change the path of the translation files
-//     fallbackLocale: const Locale('en', ''),
-//     child: const App(),
-//   ),
-// );
 
 Future<void> setupSentry(AppRunner appRunner, String dsn) async {
   await SentryFlutter.init((options) {
-    options.dsn = _exampleDsn;
+    options.dsn = sentryDsn;
     options.tracesSampleRate = 1.0;
     options.reportPackages = false;
     options.addInAppInclude('sentry_flutter_example');
     options.considerInAppFramesByDefault = false;
     options.attachThreads = true;
     options.enableWindowMetricBreadcrumbs = true;
-    // options.addIntegration(LoggingIntegration(minEventLevel: Level.INFO));
     options.sendDefaultPii = true;
     options.reportSilentFlutterErrors = true;
     options.attachScreenshot = true;
@@ -90,11 +76,9 @@ Future<void> setupSentry(AppRunner appRunner, String dsn) async {
     // going to log too much for your app, but can be useful when figuring out
     // configuration issues, e.g. finding out why your events are not uploaded.
     options.debug = true;
-
     options.maxRequestBodySize = MaxRequestBodySize.always;
     options.maxResponseBodySize = MaxResponseBodySize.always;
   },
-      // Init your App.
       appRunner: appRunner);
 }
 
