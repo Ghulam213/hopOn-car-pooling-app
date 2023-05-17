@@ -192,20 +192,21 @@ class ProfileServiceImpl extends ProfileService {
         '/passenger/$passengerId/preferences',
         queryParameters: {'id': passengerId},
       );
+
+      logger("ProfileServiceImpl: getPassengerPrefs() Response: $response");
       if (response.statusCode == 200 || response.statusCode == 201) {
         final PassengerPrefsResponse profileResponse =
             PassengerPrefsResponse.fromJson(
                 response.data as Map<String, dynamic>);
 
         return profileResponse;
-      }
-      else {
+      } else {
         throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
       }
     } catch (e) {
       if (e is DioError) {
         if (e.response != null) {
-       throw AppErrors.processErrorJson(
+          throw AppErrors.processErrorJson(
               e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
@@ -233,6 +234,10 @@ class ProfileServiceImpl extends ProfileService {
       }
     } catch (e) {
       if (e is DioError) {
+        if (e.response?.statusCode == 404) {
+          log('registeredForDriver: false');
+          return false;
+        }
         if (e.response != null) {
           throw AppErrors.processErrorJson(
               e.response?.data as Map<String, dynamic>);
@@ -262,7 +267,6 @@ class ProfileServiceImpl extends ProfileService {
 
       await dio.post(
         '/driver/$driverId/preferences',
-        // queryParameters: {'id': driverId},
         data: body,
       );
     } catch (e) {
@@ -287,13 +291,9 @@ class ProfileServiceImpl extends ProfileService {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final String? passengerId = prefs.getString("passengerID");
 
-      final Map<String, dynamic> body = {"genderPreference": genderPreference};
-
-      logger("ProfileServiceImpl: setPassengerPrefs() Body: $body");
       final Response response = await dio.post(
         '/passenger/$passengerId/preferences',
-        // queryParameters: {'id': passengerId},
-        data: body,
+        data: {"genderPreference": genderPreference},
       );
 
       logger("ProfileServiceImpl: setPassengerPrefs() Response: $response");
@@ -304,7 +304,6 @@ class ProfileServiceImpl extends ProfileService {
         if (e.response != null) {
           throw AppErrors.processErrorJson(
               e.response?.data as Map<String, dynamic>);
-          
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";

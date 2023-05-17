@@ -558,7 +558,7 @@ packages:
     source: hosted
     version: "2.2.5"
   google_maps_flutter_android:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: google_maps_flutter_android
       sha256: "640419bb8bf1353c6698c5ca0eb3773e58b08e820eb111e84a648e6de2b3f4a0"
@@ -574,7 +574,7 @@ packages:
     source: hosted
     version: "2.2.1"
   google_maps_flutter_platform_interface:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: google_maps_flutter_platform_interface
       sha256: a07811d2b82055815ede75e1fe4b7b76f71a0b4820b26f71bdaddd157d6a3e20
@@ -1041,18 +1041,18 @@ packages:
     dependency: transitive
     description:
       name: sentry
-      sha256: c64db3444237ff747c5a68f5214897bcb078de248785d0d816e3c55ab94dd71d
+      sha256: "01f8fc950b6a5f3daf8c2d2b0ae5c38812e63d703c19c56cb68524c0597660bc"
       url: "https://pub.dev"
     source: hosted
-    version: "6.19.0"
+    version: "7.6.1"
   sentry_flutter:
     dependency: "direct main"
     description:
       name: sentry_flutter
-      sha256: a76cf5180d571535fb8fc3bf10358ab385d78134fcf652d0e03ba7741525ab09
+      sha256: "9583ebcdbbba6907e555a8eeaf42380021baff57db1e399a3a31e80ce1f1cbe5"
       url: "https://pub.dev"
     source: hosted
-    version: "6.19.0"
+    version: "7.6.1"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -1323,5 +1323,5 @@ packages:
     source: hosted
     version: "3.1.1"
 sdks:
-  dart: ">=2.19.0-0 <3.0.0"
+  dart: ">=2.19.0-0 <4.0.0"
   flutter: ">=3.7.0"

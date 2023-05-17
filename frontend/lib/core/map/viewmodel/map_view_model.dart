@@ -15,6 +15,7 @@ import '../models/create_ride_response.dart';
 import '../models/direction.dart';
 import '../models/driver_response_general.dart';
 import '../models/get_ride_location_response.dart';
+import '../models/get_ride_passengers_response.dart';
 import '../models/request_ride_response.dart';
 import '../models/ride_for_passenger.dart';
 import '../models/ride_for_passenger_response.dart';
@@ -49,9 +50,13 @@ class MapViewModel extends ChangeNotifier {
   Rider? rideDriver = Rider();
   List<Rider?> ridePassengers = [];
 
+  final List<GetRidePassengers> _passengersOnCurrentRide = [];
+
   List<LatLng> _polyLineArray = [];
   final List<RideForPassenger> _availableRides = [];
 
+  List<GetRidePassengers> get passengersOnCurrentRide =>
+      _passengersOnCurrentRide;
   List<LatLng> get polyLineArray => _polyLineArray;
   List<RideForPassenger> get availableRides => _availableRides;
 
@@ -117,7 +122,6 @@ class MapViewModel extends ChangeNotifier {
 
         for (var datum in findRidesResource.modelResponse!.data!) {
           _availableRides.add(datum);
-
           log(datum.id.toString());
         }
 
@@ -210,9 +214,14 @@ class MapViewModel extends ChangeNotifier {
         polygonPoints: polyLineArray,
       );
 
-      createRideResource = Resource.success(response);
+      Future.delayed(const Duration(seconds: 1), () {
+        createRideResource = Resource.success(response);
+        notifyListeners();
+      });
+
 
       createdRideId = createRideResource.modelResponse!.data!.id.toString();
+     
 
       cronUpdateDriverLoc();
       cronGetRideLoc();
@@ -365,6 +374,33 @@ class MapViewModel extends ChangeNotifier {
     }
   }
 
+  Resource<GetRidePassengersResponse> getRidePassengersResource =
+      Resource.idle();
+
+  Future<void> getRidePassengers(
+    String rideId,
+  ) async {
+    try {
+      getRidePassengersResource = Resource.loading();
+      notifyListeners();
+
+      final GetRidePassengersResponse response =
+          await _mapService.getRidePassengers(rideId);
+
+      getRidePassengersResource = Resource.success(response);
+
+      for (var datum in getRidePassengersResource.modelResponse!.data!) {
+        _passengersOnCurrentRide.add(datum);
+      }
+
+      logger(_passengersOnCurrentRide.toString());
+      notifyListeners();
+    } catch (e) {
+      getRidePassengersResource = Resource.failed(e.toString());
+      notifyListeners();
+    }
+  }
+
   Future<Response<dynamic>> getDirectionApi(String src, String dest) async {
     Dio dio = Dio();
     return await dio.post(
@@ -429,6 +465,7 @@ class MapViewModel extends ChangeNotifier {
 
   Future<void> changePassengerStatus({
     required rideId,
+    passengerId,
     required status,
   }) async {
     try {
@@ -437,6 +474,7 @@ class MapViewModel extends ChangeNotifier {
 
       await _mapService.changePassengerStatus(
         rideId,
+        passengerId,
         status,
       );
 

@@ -124,7 +124,7 @@ class _MapScreenState extends State<MapScreen> {
                           ),
                         )
                   : mapViewModel.createdRideId.isNotEmpty
-                      ? EndRideModal(onRideEnded: () {})
+                      ? EndRidesModal(context)
                       : const SizedBox.shrink(),
             ],
           ),
@@ -201,7 +201,7 @@ class _MapScreenState extends State<MapScreen> {
                                   onRideStarted: (String curLoc, String dest) {
                                    
                                     drawRoute(curLoc, dest, viewModel);
-                                    Navigator.of(context).pop();
+                                    // Navigator.of(context).pop();
                                   },
                                 ),
                         ),

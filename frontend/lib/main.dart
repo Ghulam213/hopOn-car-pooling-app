@@ -130,24 +130,24 @@ class AppState extends State<App> with WidgetsBindingObserver {
               navigatorKey: Get.key,
               debugShowCheckedModeBanner: false,
               theme: Styles.lightTheme,
-              home: Builder(
-                builder: (context) {
-                  final Size size = MediaQuery.of(context).size;
-                  SizeConfig.init(
-                    context,
-                    height: size.height,
-                    width: size.width,
-                    allowFontScaling: true,
-                  );
-                  return Builder(
-                    builder: (context) {
-                      return !isAuthenticated
-                          ? AuthScreen()
-                          : WithNotifications(
-                              key: UniqueKey(), child: MapScreen());
-                    },
-                  );
-                },
+              home: WithNotifications(
+                key: UniqueKey(),
+                child: Builder(
+                  builder: (context) {
+                    final Size size = MediaQuery.of(context).size;
+                    SizeConfig.init(
+                      context,
+                      height: size.height,
+                      width: size.width,
+                      allowFontScaling: true,
+                    );
+                    return Builder(
+                      builder: (context) {
+                        return !isAuthenticated ? AuthScreen() : MapScreen();
+                      },
+                    );
+                  },
+                ),
               ),
             );
           },
