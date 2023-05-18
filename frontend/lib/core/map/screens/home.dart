@@ -27,16 +27,52 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   final Completer<GoogleMapController> _controller = Completer();
-
-  final Set<Marker> _markers = {};
-  final Set<Polyline> _polyline = {};
-
   final LatLng _center = getLatLngFromSharedPrefs();
+  // ignore: unused_field
   LatLng _lastMapPosition = const LatLng(33.64333419508494, 72.9914673283913);
+  BitmapDescriptor _currentUserIcon = BitmapDescriptor.defaultMarker;
+  BitmapDescriptor _driverIcon = BitmapDescriptor.defaultMarker;
+  BitmapDescriptor _passengerIcon = BitmapDescriptor.defaultMarker;
 
   @override
   void initState() {
     super.initState();
+    if (mounted) {
+      Future.delayed(const Duration(seconds: 3), () async {
+        ProfileViewModel pViewModel =
+            Provider.of<ProfileViewModel>(context, listen: false);
+        await pViewModel.getProfile();
+        await pViewModel.loadUserPrefs();
+      });
+      setMapIcons();
+    }
+  }
+
+  setMapIcons() async {
+    BitmapDescriptor currentUserIcon = await BitmapDescriptor.fromAssetImage(
+      const ImageConfiguration(
+        size: Size(22, 22),
+      ),
+      'assets/images/currentLocation.png',
+    );
+    BitmapDescriptor driverIcon = await BitmapDescriptor.fromAssetImage(
+      const ImageConfiguration(
+        size: Size(22, 22),
+      ),
+      'assets/images/car_ios.png',
+    );
+    BitmapDescriptor passengerIcon = await BitmapDescriptor.fromAssetImage(
+      const ImageConfiguration(
+        size: Size(22, 22),
+      ),
+      'assets/images/passenger.png',
+    );
+
+    setState(() {
+      _currentUserIcon = currentUserIcon;
+      _driverIcon = driverIcon;
+      _passengerIcon = passengerIcon;
+    });
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -47,33 +83,77 @@ class _MapScreenState extends State<MapScreen> {
     _lastMapPosition = position.target;
   }
 
-  void updateMarker(String? position) async {
-    LatLng pos = const LatLng(33.64333419508494, 72.9914673283913); // fallback
-
-    _markers.add(Marker(
-      markerId: MarkerId(_lastMapPosition.toString()),
-      position: convertStringToLatLng(position) ?? pos,
-      icon: await BitmapDescriptor.fromAssetImage(
-          const ImageConfiguration(size: Size(22, 22)),
-          'assets/images/car_ios.png'),
-      infoWindow: const InfoWindow(
-        title: "ride starting",
+  Set<Marker> updateMarker(MapViewModel viewModel, LoginStore loginStore) {
+    LatLng pos = const LatLng(33.66672, 73.07099); // fallback
+    final Set<Marker> markers = {};
+    // lets to the current User first.
+    logger('currentLocation: ${viewModel.currentLocation}');
+    markers.add(
+      Marker(
+        markerId: MarkerId(loginStore.userId.toString()),
+        position: convertStringToLatLng(viewModel.currentLocation) ?? pos,
+        icon: _currentUserIcon,
+        infoWindow: const InfoWindow(
+          title: "User's Location",
+        ),
       ),
-    ));
+    );
+
+    // if user is passenger add drivers marker
+    if (!loginStore.isDriver &&
+        viewModel.rideId.isNotEmpty &&
+        viewModel.rideDriver != null) {
+      markers.add(
+        Marker(
+          markerId: MarkerId(viewModel.rideDriver!.id.toString()),
+          position:
+              convertStringToLatLng(viewModel.rideDriver!.currentLocation!) ??
+                  pos,
+          icon: _driverIcon,
+          infoWindow: const InfoWindow(
+            title: "Driver's Location",
+          ),
+        ),
+      );
+    } else {
+      // if user is driver add passengers marker
+      for (var element in viewModel.ridePassengers) {
+        markers.add(
+          Marker(
+            markerId: MarkerId(element!.id!.toString()),
+            position: convertStringToLatLng(element.currentLocation!) ?? pos,
+            icon: _passengerIcon,
+            infoWindow: const InfoWindow(
+              title: "Passenger's Location",
+            ),
+          ),
+        );
+      }
+    }
+
+    return markers;
   }
 
-  void drawRoute(
-      String? source, String? destination, MapViewModel viewModel) async {
-    viewModel.getDirections('$source', '$destination');
+  Set<Polyline> drawRoute(MapViewModel viewModel) {
+    final Set<Polyline> polyline = {};
 
-    updateMarker(source);
-    _polyline.add(Polyline(
-      polylineId: PolylineId(source.toString()),
-      visible: true,
-      points: viewModel.polyLineArray,
-      width: 8,
-      color: AppColors.PRIMARY_500,
-    ));
+    polyline.add(
+      Polyline(
+        polylineId: PolylineId(viewModel.createdRideId.toString()),
+        visible: true,
+        points: viewModel.polyLineArray,
+        width: 8,
+        color: AppColors.PRIMARY_500,
+      ),
+    );
+    return polyline;
+  }
+
+  Future<List<Set<Object>>> updateMapLocations(
+      MapViewModel viewModel, LoginStore loginStore) async {
+    Set<Marker> markers = updateMarker(viewModel, loginStore);
+    Set<Polyline> polyline = drawRoute(viewModel);
+    return [markers, polyline];
   }
 
   @override
@@ -91,9 +171,7 @@ class _MapScreenState extends State<MapScreen> {
             toolbarHeight: config.uiHeightPx * 0.06,
             actions: [
               !loginStore.isDriver
-                  ? hasRegisteredForDriver
-                      ? const SizedBox.shrink()
-                      : Padding(
+                  ? Padding(
                           padding: const EdgeInsets.all(3.0),
                           child: TextButton(
                             style: ButtonStyle(
@@ -150,8 +228,8 @@ class _MapScreenState extends State<MapScreen> {
                       myLocationButtonEnabled: false,
                       zoomControlsEnabled: true,
                       zoomGesturesEnabled: true,
-                      markers: _markers,
-                      polylines: _polyline,
+                      markers: updateMarker(mapViewModel, loginStore),
+                      polylines: drawRoute(mapViewModel),
                       onCameraMove: _onCameraMove,
                       initialCameraPosition: CameraPosition(
                         target: _center,
@@ -208,10 +286,9 @@ class _MapScreenState extends State<MapScreen> {
                                   : StartRideModal(
                                       onRideStarted:
                                           (String curLoc, String dest) {
-                                    drawRoute(curLoc, dest, viewModel);
                                         Navigator.of(context).pop();
-                                  },
-                                ),
+                                      },
+                                    ),
                         ),
                       ],
                     ),
