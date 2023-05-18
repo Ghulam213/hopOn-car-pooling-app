@@ -253,12 +253,18 @@ class _CustomImageFormFieldState extends State<CustomImageFormField> {
   File? _pickedFile;
 
   bool isPicking = false;
-  Future<String> uploadImage(filename, url) async {
-    debugPrint(filename);
-    debugPrint(url);
+  Future<String> uploadImage(XFile? file) async {
+    if (file == null) {
+      return '';
+    }
+    debugPrint(file.name);
+    debugPrint(file.path);
     var request = http.MultipartRequest(
-        'POST', Uri.parse('http://192.168.100.228:3001/file'));
+      'POST',
+      Uri.parse('http://localhost:3001/file'),
+    );
 
+    request.files.add(await http.MultipartFile.fromPath('file', file.path));
     debugPrint('FILE');
     debugPrint(request.files.toString());
     debugPrint(request.fields.toString());
@@ -284,7 +290,8 @@ class _CustomImageFormFieldState extends State<CustomImageFormField> {
                   XFile? imageFile;
                   imageFile = await ImagePicker()
                       .pickImage(source: ImageSource.gallery);
-                  var res = await uploadImage(imageFile?.path, imageFile?.name);
+                  var res = await uploadImage(imageFile);
+                  if (res.isEmpty) return;
                   setState(() {
                     state = res;
                     print(res);
