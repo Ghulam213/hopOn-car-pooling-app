@@ -14,19 +14,17 @@ class ProfileViewModel extends ChangeNotifier {
   ProfileViewModel() {
     _profileService = ProfileServiceImpl();
 
-    loadLocalDetails();
-    getProfile();
-    loadUserPrefs();
+    Future.delayed(const Duration(seconds: 1), () {
+      loadLocalDetails();
+      getProfile();
+      loadUserPrefs();
+    });
   }
 
   Future<void> loadUserPrefs() async {
     final prefs = await SharedPreferences.getInstance();
     final bool isDriver = prefs.getString('userMode') == 'DRIVER';
     isDriver ? getDriverPrefs() : getPassengerPrefs();
-    Future.delayed(const Duration(seconds: 1), () {
-      loadLocalDetails();
-      getProfile();
-    });
   }
 
   Resource<UserInfoResponse> getProfileResource = Resource.idle();
@@ -92,7 +90,6 @@ class ProfileViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
-
   Resource<UserInfoResponse> updateProfileResource = Resource.idle();
 
   Future<void> updateProfile({

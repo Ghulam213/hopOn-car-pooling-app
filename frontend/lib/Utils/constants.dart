@@ -39,6 +39,9 @@ List<Map> restaurants = [
 
 enum CurrentModeEnum { driver, passenger }
 
+const String sentryDsn =
+    'https://e9bbc1b322a747a9b4dc957659785de1@o4505200969908224.ingest.sentry.io/4505200971874304';
+
 String googleMapApiToken =
     'AIzaSyDP192QwnB-tR8NfjGT3vZCrE-mnkmGFbo'; // TO DO: remove and move to .env
   // = const [

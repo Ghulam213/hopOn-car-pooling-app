@@ -15,8 +15,10 @@ import 'package:location/location.dart' as loc;
 import 'package:permission_handler/permission_handler.dart';
 // import 'package:location/location.dart';
 import 'package:provider/provider.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'Utils/constants.dart';
 import 'Utils/device_info_service.dart';
 import 'Utils/helpers.dart';
 import 'Utils/styles.dart';
@@ -41,15 +43,43 @@ Future<void> main() async {
   NetworkConfig().initNetworkConfig();
   await _initLocationService();
   await _getDeviceInfo();
-  runApp(
-    EasyLocalization(
-      supportedLocales: const [Locale('en', ''), Locale('de', '')],
-      path:
-          'assets/translations', // <-- change the path of the translation files
-      fallbackLocale: const Locale('en', ''),
-      child: const App(),
-    ),
-  );
+
+  setupSentry(
+      () => runApp(
+            SentryScreenshotWidget(
+              child: SentryUserInteractionWidget(
+                child: DefaultAssetBundle(
+                  bundle: SentryAssetBundle(),
+                  child: const App(),
+                ),
+              ),
+            ),
+          ),
+      sentryDsn);
+}
+
+Future<void> setupSentry(AppRunner appRunner, String dsn) async {
+  await SentryFlutter.init((options) {
+    options.dsn = sentryDsn;
+    options.tracesSampleRate = 1.0;
+    options.reportPackages = false;
+    options.addInAppInclude('sentry_flutter_example');
+    options.considerInAppFramesByDefault = false;
+    options.attachThreads = true;
+    options.enableWindowMetricBreadcrumbs = true;
+    options.sendDefaultPii = true;
+    options.reportSilentFlutterErrors = true;
+    options.attachScreenshot = true;
+    options.screenshotQuality = SentryScreenshotQuality.low;
+    options.attachViewHierarchy = true;
+    // We can enable Sentry debug logging during development. This is likely
+    // going to log too much for your app, but can be useful when figuring out
+    // configuration issues, e.g. finding out why your events are not uploaded.
+    options.debug = true;
+    options.maxRequestBodySize = MaxRequestBodySize.always;
+    options.maxResponseBodySize = MaxResponseBodySize.always;
+  },
+      appRunner: appRunner);
 }
 
 Future _getDeviceInfo() async {
@@ -130,24 +160,24 @@ class AppState extends State<App> with WidgetsBindingObserver {
               navigatorKey: Get.key,
               debugShowCheckedModeBanner: false,
               theme: Styles.lightTheme,
-              home: Builder(
-                builder: (context) {
-                  final Size size = MediaQuery.of(context).size;
-                  SizeConfig.init(
-                    context,
-                    height: size.height,
-                    width: size.width,
-                    allowFontScaling: true,
-                  );
-                  return Builder(
-                    builder: (context) {
-                      return !isAuthenticated
-                          ? AuthScreen()
-                          : WithNotifications(
-                              key: UniqueKey(), child: MapScreen());
-                    },
-                  );
-                },
+              home: WithNotifications(
+                key: UniqueKey(),
+                child: Builder(
+                  builder: (context) {
+                    final Size size = MediaQuery.of(context).size;
+                    SizeConfig.init(
+                      context,
+                      height: size.height,
+                      width: size.width,
+                      allowFontScaling: true,
+                    );
+                    return Builder(
+                      builder: (context) {
+                        return !isAuthenticated ? AuthScreen() : MapScreen();
+                      },
+                    );
+                  },
+                ),
               ),
             );
           },

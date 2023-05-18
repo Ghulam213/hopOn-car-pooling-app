@@ -5,6 +5,7 @@ import 'package:hop_on/Utils/helpers.dart';
 import 'package:hop_on/core/map/domain/map_service.dart';
 import 'package:hop_on/core/map/models/request_ride_response.dart';
 import 'package:hop_on/core/map/models/ride_for_passenger_response.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../Utils/error.dart';
@@ -12,6 +13,7 @@ import '../../../config/network/network_config.dart';
 import '../models/create_ride_response.dart';
 import '../models/driver_response_general.dart';
 import '../models/get_ride_location_response.dart';
+import '../models/get_ride_passengers_response.dart';
 
 class MapServiceImpl extends MapService {
   final Dio dio = NetworkConfig().dio;
@@ -36,21 +38,27 @@ class MapServiceImpl extends MapService {
       };
       logger("MapServiceImpl: findRides() Body: $body");
 
-      final Response response = await dio.get('/ride-for-passenger', queryParameters: body);
+      final Response response =
+          await dio.get('/ride-for-passenger', queryParameters: body);
 
       logger("MapServiceImpl: findRides() Response: ${response.data}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final RideForPassengerResponse driverResponse =
-            RideForPassengerResponse.fromJson(response.data as Map<String, dynamic>);
+            RideForPassengerResponse.fromJson(
+                response.data as Map<String, dynamic>);
         return driverResponse;
       } else {
-        throw AppErrors.processErrorJson(response.data['data'] as Map<String, dynamic>);
+        throw AppErrors.processErrorJson(
+            response.data['data'] as Map<String, dynamic>);
       }
     } catch (e) {
+      await Sentry.captureMessage(
+          'MapServiceImpl: findRides() ${e.toString()}');
       if (e is DioError) {
         if (e.response != null) {
-          throw AppErrors.processErrorJson(e.response?.data as Map<String, dynamic>);
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";
@@ -98,15 +106,19 @@ class MapServiceImpl extends MapService {
       logger("MapServiceImpl: requestRide() Response: ${response.data}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final RequestRideResponse driverResponse = RequestRideResponse.fromJson(response.data as Map<String, dynamic>);
+        final RequestRideResponse driverResponse =
+            RequestRideResponse.fromJson(response.data as Map<String, dynamic>);
         return driverResponse;
       } else {
         throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
       }
     } catch (e) {
+      await Sentry.captureMessage(
+          'MapServiceImpl: requestRide()  ${e.toString()}');
       if (e is DioError) {
         if (e.response != null) {
-          throw AppErrors.processErrorJson(e.response?.data as Map<String, dynamic>);
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";
@@ -150,16 +162,21 @@ class MapServiceImpl extends MapService {
 
       logger("MapServiceImpl: createRide() Response: $response.data");
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final CreatedRideResponse driverResponse = CreatedRideResponse.fromJson(response.data as Map<String, dynamic>);
+        final CreatedRideResponse driverResponse =
+            CreatedRideResponse.fromJson(response.data as Map<String, dynamic>);
 
         return driverResponse;
       } else {
-        throw AppErrors.processErrorJson(response.data['data'] as Map<String, dynamic>);
+        throw AppErrors.processErrorJson(
+            response.data['data'] as Map<String, dynamic>);
       }
     } catch (e) {
+      await Sentry.captureMessage(
+          'MapServiceImpl: createRide()  ${e.toString()}');
       if (e is DioError) {
         if (e.response != null) {
-          throw AppErrors.processErrorJson(e.response?.data as Map<String, dynamic>);
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";
@@ -183,7 +200,8 @@ class MapServiceImpl extends MapService {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     final String user = prefs.getString("user") ?? '';
-    final String pessengerId = prefs.getString("passengerID") ?? 'fabc32ad-6adb-4213-a910-a584a19c3484';
+    final String pessengerId = prefs.getString("passengerID") ??
+        'fabc32ad-6adb-4213-a910-a584a19c3484';
 
     final body = {
       "rideId": rideId,
@@ -206,16 +224,20 @@ class MapServiceImpl extends MapService {
       logger("MapServiceImpl: acceptRide() Response: $response.data");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final RequestRideResponse driverResponse = RequestRideResponse.fromJson(response.data as Map<String, dynamic>);
+        final RequestRideResponse driverResponse =
+            RequestRideResponse.fromJson(response.data as Map<String, dynamic>);
 
         return driverResponse;
       } else {
         throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
       }
     } catch (e) {
+      await Sentry.captureMessage(
+          'MapServiceImpl: acceptRide()  ${e.toString()}');
       if (e is DioError) {
         if (e.response != null) {
-          throw AppErrors.processErrorJson(e.response?.data as Map<String, dynamic>);
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";
@@ -262,16 +284,20 @@ class MapServiceImpl extends MapService {
 
       logger("MapServiceImpl: rejectRide() RAesponse: $response.data");
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final RequestRideResponse driverResponse = RequestRideResponse.fromJson(response.data as Map<String, dynamic>);
+        final RequestRideResponse driverResponse =
+            RequestRideResponse.fromJson(response.data as Map<String, dynamic>);
 
         return driverResponse;
       } else {
         throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
       }
     } catch (e) {
+      await Sentry.captureMessage(
+          'MapServiceImpl: rejectRide() ${e.toString()}');
       if (e is DioError) {
         if (e.response != null) {
-          throw AppErrors.processErrorJson(e.response?.data as Map<String, dynamic>);
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";
@@ -292,7 +318,11 @@ class MapServiceImpl extends MapService {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final String? driverID = prefs.getString("driverID");
 
-      final body = {"rideId": rideId, "entityId": driverID, "currentLocation": currentLocation};
+      final body = {
+        "rideId": rideId,
+        "entityId": driverID,
+        "currentLocation": currentLocation
+      };
 
       logger("MapServiceImpl: updateDriverLoc() Body: $body");
       await dio.post(
@@ -302,9 +332,12 @@ class MapServiceImpl extends MapService {
 
       logger("MapServiceImpl: updateDriverLoc() Response");
     } catch (e) {
+      await Sentry.captureMessage(
+          'MapServiceImpl: updateDriverLoc() ${e.toString()}');
       if (e is DioError) {
         if (e.response != null) {
-          throw AppErrors.processErrorJson(e.response?.data as Map<String, dynamic>);
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";
@@ -324,7 +357,11 @@ class MapServiceImpl extends MapService {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final String? passengerId = prefs.getString("passengerID");
 
-      final body = {"rideId": rideId, "entityId": passengerId, "currentLocation": currentLocation};
+      final body = {
+        "rideId": rideId,
+        "entityId": passengerId,
+        "currentLocation": currentLocation
+      };
 
       logger("MapServiceImpl: updatePassengerLoc() Body: $body");
       await dio.post(
@@ -334,9 +371,12 @@ class MapServiceImpl extends MapService {
 
       logger("MapServiceImpl: updatePassengerLoc() Response");
     } catch (e) {
+      await Sentry.captureMessage(
+          'MapServiceImpl: updatePassengerLoc() ${e.toString()}');
       if (e is DioError) {
         if (e.response != null) {
-          throw AppErrors.processErrorJson(e.response?.data as Map<String, dynamic>);
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";
@@ -363,7 +403,8 @@ class MapServiceImpl extends MapService {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final GetRideResponse rideResponse = GetRideResponse.fromJson(response.data as Map<String, dynamic>);
+        final GetRideResponse rideResponse =
+            GetRideResponse.fromJson(response.data as Map<String, dynamic>);
 
         logger("MapServiceImpl: getRideLocation() Response:$response}");
 
@@ -372,9 +413,12 @@ class MapServiceImpl extends MapService {
         throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
       }
     } catch (e) {
+      await Sentry.captureMessage(
+          'MapServiceImpl: getRideLocation() ${e.toString()}');
       if (e is DioError) {
         if (e.response != null) {
-          throw AppErrors.processErrorJson(e.response?.data as Map<String, dynamic>);
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
         } else {
           if (e.message.contains("SocketException: Failed host lookup")) {
             throw "No internet connection";
@@ -388,6 +432,7 @@ class MapServiceImpl extends MapService {
   @override
   Future<DriverGeneralResponse> changePassengerStatus(
     String rideId,
+    String? passengerId,
     String status,
   ) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -417,6 +462,8 @@ class MapServiceImpl extends MapService {
         throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
       }
     } catch (e) {
+      await Sentry.captureMessage(
+          'MapServiceImpl: changePassengerStatus() ${e.toString()}');
       if (e is DioError) {
         if (e.response != null) {
           throw AppErrors.processErrorJson(
@@ -452,6 +499,40 @@ class MapServiceImpl extends MapService {
                 response.data as Map<String, dynamic>);
 
         logger("MapServiceImpl: rideCompleted() Response:$response}");
+
+        return rideResponse;
+      } else {
+        throw AppErrors.processErrorJson(response.data as Map<String, dynamic>);
+      }
+    } catch (e) {
+      if (e is DioError) {
+        if (e.response != null) {
+          throw AppErrors.processErrorJson(
+              e.response?.data as Map<String, dynamic>);
+        } else {
+          if (e.message.contains("SocketException: Failed host lookup")) {
+            throw "No internet connection";
+          }
+        }
+      }
+      throw e.toString();
+    }
+  }
+
+  @override
+  Future<GetRidePassengersResponse> getRidePassengers(String rideId) async {
+    try {
+      logger("MapServiceImpl: getRidePassengers() id : $rideId");
+      final Response response = await dio.get(
+        '/ride/$rideId/passengers',
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final GetRidePassengersResponse rideResponse =
+            GetRidePassengersResponse.fromJson(
+                response.data as Map<String, dynamic>);
+
+        logger("MapServiceImpl: getRidePassengers() Response:$response}");
 
         return rideResponse;
       } else {

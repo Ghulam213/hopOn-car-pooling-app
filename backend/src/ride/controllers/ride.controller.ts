@@ -76,21 +76,21 @@ export class RideController {
     return this.rideService.requestRideReject(rideRequestData);
   }
 
-  // @UseGuards(AccessTokenGuard)
+  @UseGuards(AccessTokenGuard)
   @Post('ride/driver/current-location')
   @ApiOkResponse({ type: Boolean })
   async upsertDriverCurrentLocation(@Body() locationUpdateDto: LocationUpdateDto): Promise<Boolean> {
     return this.rideService.upsertRideLocationInCache(locationUpdateDto, 'driver');
   }
 
-  // @UseGuards(AccessTokenGuard)
+  @UseGuards(AccessTokenGuard)
   @Post('ride/passenger/current-location')
   @ApiOkResponse({ type: Boolean })
   async upsertPassengerCurrentLocation(@Body() locationUpdateDto: LocationUpdateDto): Promise<Boolean> {
     return this.rideService.upsertRideLocationInCache(locationUpdateDto, 'passenger');
   }
 
-  // @UseGuards(AccessTokenGuard)
+  @UseGuards(AccessTokenGuard)
   @Get('ride/:rideId/current-location')
   @ApiOkResponse({ type: RideCacheModel })
   async getRideCurrentLocation(@Param('rideId', ParseUUIDStringPipe) rideId: string): Promise<RideCacheModel | null> {
@@ -119,7 +119,7 @@ export class RideController {
     return this.rideService.updatePassengerRideStatus(rideId, passengerId, status);
   }
 
-  // @UseGuards(AccessTokenGuard)
+  @UseGuards(AccessTokenGuard)
   @Get('ride/:rideId/passengers')
   @ApiOkResponse({ isArray: true, type: PassengerOnRideEntity })
   async getPassengersOnRide(@Param('rideId', ParseUUIDStringPipe) rideId: string) {

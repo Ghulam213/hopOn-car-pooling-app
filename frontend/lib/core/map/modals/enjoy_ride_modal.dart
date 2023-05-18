@@ -166,7 +166,7 @@ class EnjoyRideState extends State<EnjoyRide> {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
-                                'Rs ${viewModel.availableRides[widget.index].fare}',
+                                'Rs ${double.parse(viewModel.availableRides[widget.index].fare!.toStringAsFixed(2))}',
                         
                                 style: GoogleFonts.montserrat(
                                   fontSize: 12.0,

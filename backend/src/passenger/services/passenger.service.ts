@@ -43,7 +43,7 @@ export class PassengerService {
     if (preferences) {
       return this.prisma.passengerRidePreferences.update({
         where: {
-          id: preferences[0].id,
+          id: preferences.id,
         },
         data,
       });
@@ -57,3 +57,4 @@ export class PassengerService {
     });
   }
 }
+3

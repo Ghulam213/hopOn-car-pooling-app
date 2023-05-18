@@ -62,7 +62,7 @@ dependencies:
   pinput: ^2.2.21
   provider: ^6.0.5
   shared_preferences: ^2.0.17
-  sentry_flutter: ^6.4.0
+  sentry_flutter: ^7.6.1
   cupertino_icons: ^1.0.2
   overlay_support: ^2.1.0
 
