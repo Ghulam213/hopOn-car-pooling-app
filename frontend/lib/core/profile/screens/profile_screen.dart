@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 
 import '../../../Utils/colors.dart';
 import '../../../Utils/image_path.dart';
-import '../../../config/network/resources.dart';
 import '../../../config/sizeconfig/size_config.dart';
 import '../viewmodel/profile_viewmodel.dart';
 import '../widgets/dropdown_selector.dart';
@@ -137,7 +136,9 @@ class ProfileScreenState extends State<ProfileScreen> {
                 else
                   Column(
                     children: [
-                      const RiderDetailCard(),
+                      SizedBox(
+                          height: SizeConfig.screenHeightDp! * 0.55,
+                          child: const RiderDetailCard()),
                       Container(
                         decoration: const BoxDecoration(
                             // borderRadius: BorderRadius.circular(20),
@@ -150,34 +151,27 @@ class ProfileScreenState extends State<ProfileScreen> {
                           onTap: () {
                             onEditTapped();
                           },
-                          child: Card(
-                            color: pViewModel.updateProfileResource.ops ==
-                                    NetworkStatus.LOADING
-                                ? AppColors.LM_BACKGROUND_BASIC
-                                : AppColors.PRIMARY_500.withOpacity(0.90),
-                            child: SizedBox(
-                              width: SizeConfig.screenWidthDp! * 0.65,
-                              height: config.sh(40).toDouble(),
-                              child: Row(
-                                children: [
-                                  const Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 10),
-                                    child: Icon(
-                                      Icons.edit,
-                                      size: 14,
+                          child: SizedBox(
+                            width: SizeConfig.screenWidthDp! * 0.65,
+                            // height: SizeConfig.screenHeightDp! * 0.10,
+                            child: Row(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  child: Icon(
+                                    Icons.edit,
+                                    size: 14,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Text(
+                                  easy.tr("Edit"),
+                                  style: const TextStyle(
                                       color: Colors.white,
-                                    ),
-                                  ),
-                                  Text(
-                                    easy.tr("Edit"),
-                                    style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                ],
-                              ),
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ],
                             ),
                           ),
                         ),

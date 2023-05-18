@@ -79,7 +79,8 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     final MapViewModel mapViewModel = context.watch<MapViewModel>();
-    final bool hasRegisteredForDriver = context.select<ProfileViewModel, bool>((value) => value.hasRegisteredForDriver);
+    final bool hasRegisteredForDriver = context.select<ProfileViewModel, bool>(
+        (value) => value.hasRegisteredForDriver);
     final SizeConfig config = SizeConfig();
 
     return Consumer<LoginStore>(builder: (context, loginStore, _) {
@@ -96,11 +97,14 @@ class _MapScreenState extends State<MapScreen> {
                           padding: const EdgeInsets.all(3.0),
                           child: TextButton(
                             style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(AppColors.PRIMARY_500),
-                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  AppColors.PRIMARY_500),
+                              shape: MaterialStateProperty.all<
+                                  RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  side: const BorderSide(color: AppColors.PRIMARY_500),
+                                  side: const BorderSide(
+                                      color: AppColors.PRIMARY_500),
                                 ),
                               ),
                             ),
@@ -118,7 +122,9 @@ class _MapScreenState extends State<MapScreen> {
                               padding: EdgeInsets.symmetric(horizontal: 10.0),
                               child: Text(
                                 'Register as a Driver',
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w400),
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w400),
                               ),
                             ),
                           ),
@@ -197,11 +203,13 @@ class _MapScreenState extends State<MapScreen> {
                               ? SearchRidesModal(
                                   onRideRequest: () {},
                                 )
-                              : StartRideModal(
-                                  onRideStarted: (String curLoc, String dest) {
-                                   
+                              : viewModel.createdRideId.isNotEmpty
+                                  ? const SizedBox.shrink()
+                                  : StartRideModal(
+                                      onRideStarted:
+                                          (String curLoc, String dest) {
                                     drawRoute(curLoc, dest, viewModel);
-                                    // Navigator.of(context).pop();
+                                        Navigator.of(context).pop();
                                   },
                                 ),
                         ),

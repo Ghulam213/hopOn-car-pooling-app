@@ -30,8 +30,10 @@ class StartRideModalState extends State<StartRideModal> {
     super.initState();
   }
 
-  final TextEditingController currentController = TextEditingController();
-  final TextEditingController destinationController = TextEditingController();
+  final TextEditingController currentController =
+      TextEditingController(text: '');
+  final TextEditingController destinationController =
+      TextEditingController(text: '');
 
   @override
   Widget build(BuildContext context) {
@@ -173,12 +175,6 @@ class StartRideModalState extends State<StartRideModal> {
                                                 src[0].toString(),
                                                 src[1].toString(),
                                               );
-
-                                              if (context.mounted) {
-                                                Navigator.of(context,
-                                                        rootNavigator: true)
-                                                    .pop();
-                                              }
                                             },
                                           ),
                                         ),
