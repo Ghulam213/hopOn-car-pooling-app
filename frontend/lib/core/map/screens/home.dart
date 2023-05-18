@@ -37,13 +37,14 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
+    Future.delayed(Duration.zero, () async {
+      ProfileViewModel pViewModel = Provider.of<ProfileViewModel>(context, listen: false);
+      MapViewModel mapViewModel = Provider.of<MapViewModel>(context, listen: false);
+      mapViewModel.currentLocation = await getCurrentLocation();
+      await pViewModel.getProfile();
+      await pViewModel.loadUserPrefs();
+    });
     if (mounted) {
-      Future.delayed(const Duration(seconds: 3), () async {
-        ProfileViewModel pViewModel =
-            Provider.of<ProfileViewModel>(context, listen: false);
-        await pViewModel.getProfile();
-        await pViewModel.loadUserPrefs();
-      });
       setMapIcons();
     }
   }
@@ -63,7 +64,7 @@ class _MapScreenState extends State<MapScreen> {
     );
     BitmapDescriptor passengerIcon = await BitmapDescriptor.fromAssetImage(
       const ImageConfiguration(
-        size: Size(22, 22),
+        size: Size(50, 50),
       ),
       'assets/images/passenger.png',
     );
@@ -84,7 +85,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Set<Marker> updateMarker(MapViewModel viewModel, LoginStore loginStore) {
-    LatLng pos = const LatLng(33.66672, 73.07099); // fallback
+    LatLng pos = const LatLng(33.6600116, 73.0833224); // fallback
     final Set<Marker> markers = {};
     // lets to the current User first.
     logger('currentLocation: ${viewModel.currentLocation}');
@@ -99,16 +100,16 @@ class _MapScreenState extends State<MapScreen> {
       ),
     );
 
-    // if user is passenger add drivers marker
+    // if user is passenger, add drivers marker
     if (!loginStore.isDriver &&
         viewModel.rideId.isNotEmpty &&
-        viewModel.rideDriver != null) {
+        viewModel.rideDriver != null &&
+        viewModel.rideDriver?.id != null &&
+        viewModel.rideDriver?.currentLocation != null) {
       markers.add(
         Marker(
           markerId: MarkerId(viewModel.rideDriver!.id.toString()),
-          position:
-              convertStringToLatLng(viewModel.rideDriver!.currentLocation!) ??
-                  pos,
+          position: convertStringToLatLng(viewModel.rideDriver!.currentLocation!) ?? pos,
           icon: _driverIcon,
           infoWindow: const InfoWindow(
             title: "Driver's Location",
@@ -149,8 +150,7 @@ class _MapScreenState extends State<MapScreen> {
     return polyline;
   }
 
-  Future<List<Set<Object>>> updateMapLocations(
-      MapViewModel viewModel, LoginStore loginStore) async {
+  Future<List<Set<Object>>> updateMapLocations(MapViewModel viewModel, LoginStore loginStore) async {
     Set<Marker> markers = updateMarker(viewModel, loginStore);
     Set<Polyline> polyline = drawRoute(viewModel);
     return [markers, polyline];
@@ -159,8 +159,7 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     final MapViewModel mapViewModel = context.watch<MapViewModel>();
-    final bool hasRegisteredForDriver = context.select<ProfileViewModel, bool>(
-        (value) => value.hasRegisteredForDriver);
+    final bool hasRegisteredForDriver = context.select<ProfileViewModel, bool>((value) => value.hasRegisteredForDriver);
     final SizeConfig config = SizeConfig();
 
     return Consumer<LoginStore>(builder: (context, loginStore, _) {
@@ -171,18 +170,17 @@ class _MapScreenState extends State<MapScreen> {
             toolbarHeight: config.uiHeightPx * 0.06,
             actions: [
               !loginStore.isDriver
-                  ? Padding(
+                  ? hasRegisteredForDriver
+                      ? const SizedBox.shrink()
+                      : Padding(
                           padding: const EdgeInsets.all(3.0),
                           child: TextButton(
                             style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  AppColors.PRIMARY_500),
-                              shape: MaterialStateProperty.all<
-                                  RoundedRectangleBorder>(
+                              backgroundColor: MaterialStateProperty.all<Color>(AppColors.PRIMARY_500),
+                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  side: const BorderSide(
-                                      color: AppColors.PRIMARY_500),
+                                  side: const BorderSide(color: AppColors.PRIMARY_500),
                                 ),
                               ),
                             ),
@@ -200,9 +198,7 @@ class _MapScreenState extends State<MapScreen> {
                               padding: EdgeInsets.symmetric(horizontal: 10.0),
                               child: Text(
                                 'Register as a Driver',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w400),
+                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w400),
                               ),
                             ),
                           ),
@@ -232,7 +228,7 @@ class _MapScreenState extends State<MapScreen> {
                       polylines: drawRoute(mapViewModel),
                       onCameraMove: _onCameraMove,
                       initialCameraPosition: CameraPosition(
-                        target: _center,
+                        target: convertStringToLatLng(mapViewModel.currentLocation) ?? _center,
                         zoom: 14.0,
                       ),
                     ),
@@ -247,8 +243,7 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  Widget showModals(
-      SizeConfig config, LoginStore loginStore, MapViewModel viewModel) {
+  Widget showModals(SizeConfig config, LoginStore loginStore, MapViewModel viewModel) {
     return Positioned(
       bottom: 0,
       child: Column(
@@ -284,8 +279,7 @@ class _MapScreenState extends State<MapScreen> {
                               : viewModel.createdRideId.isNotEmpty
                                   ? const SizedBox.shrink()
                                   : StartRideModal(
-                                      onRideStarted:
-                                          (String curLoc, String dest) {
+                                      onRideStarted: (String curLoc, String dest) {
                                         Navigator.of(context).pop();
                                       },
                                     ),

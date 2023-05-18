@@ -71,8 +71,7 @@ abstract class LoginStoreBase with Store {
 
   // PHONE SIGN IN
   @action
-  Future<void> phoneLogin(
-      BuildContext context, String phone, String pass) async {
+  Future<void> phoneLogin(BuildContext context, String phone, String pass) async {
     final body = {"phone": phone, "password": pass};
 
     if (phone != '') {
@@ -104,8 +103,7 @@ abstract class LoginStoreBase with Store {
           final String errorMsg = response.statusMessage as String;
 
           _showSnackBar(context, errorMsg);
-          AppErrors.processErrorJson(
-              response.data['data'] as Map<String, dynamic>);
+          AppErrors.processErrorJson(response.data['data'] as Map<String, dynamic>);
         }
       } on DioError catch (e) {
         debugPrint("phoneLogin. $e");
@@ -136,8 +134,7 @@ abstract class LoginStoreBase with Store {
 
   // OTP VERIFICATION
   @action
-  Future<void> validateOtpAndLogin(
-      BuildContext context, String smsCode, String phone) async {
+  Future<void> validateOtpAndLogin(BuildContext context, String smsCode, String phone) async {
     final body = {"phone": phone, "code": smsCode};
 
     try {
@@ -250,8 +247,7 @@ abstract class LoginStoreBase with Store {
     }
   }
 
-  Future<void> onOtpSuccessful(
-      BuildContext context, Map<String, dynamic> response) async {
+  Future<void> onOtpSuccessful(BuildContext context, Map<String, dynamic> response) async {
     isOtpDone = true;
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(
@@ -266,24 +262,43 @@ abstract class LoginStoreBase with Store {
     final prefs = await SharedPreferences.getInstance();
     final bool isDriver = prefs.getString('userMode') == 'DRIVER';
     this.isDriver = isDriver;
+
+    final String userId = prefs.getString('userID') ?? '';
+    final DeviceInformation? deviceInformation = await DeviceInfoService.getDeviceInfo();
+
+    String token = await NotificationService.getToken();
+
+    var body = {"userId": userId, "deviceType": deviceInformation?.toString() ?? '', "token": token};
+
+    try {
+      final response = await dio.post(
+        '/user/device',
+        data: jsonEncode(body),
+      );
+      debugPrint(response.data.toString());
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        log("Response After posting token: ${response.data}");
+      } else {
+        await Sentry.captureMessage("sendValuesToBackend(). Failed response from Backend");
+      }
+    } on DioError catch (e) {
+      log('Sending ddevice data $e');
+    }
   }
 
   // saving user to Shared preferences
   Future<void> _storeUserData(responseData) async {
     final prefs = await SharedPreferences.getInstance();
 
-    final DeviceInformation? deviceInformation =
-        await DeviceInfoService.getDeviceInfo();
+    final DeviceInformation? deviceInformation = await DeviceInfoService.getDeviceInfo();
 
     prefs.setString("deviceId", deviceInformation?.uUID.toString() ?? '');
     prefs.setString("deviceInfo", deviceInformation?.toJson().toString() ?? '');
 
-    NotificationService notificationService = NotificationService();
+    String token = await NotificationService.getToken();
 
-    String token = await notificationService.getToken();
-
-    final Map<String, dynamic> userAuth =
-        responseData['data'] as Map<String, dynamic>;
+    final Map<String, dynamic> userAuth = responseData['data'] as Map<String, dynamic>;
     debugPrint(userAuth['user'].toString());
 
     prefs.setString('accessToken', userAuth['accessToken'] as String);
@@ -311,8 +326,7 @@ abstract class LoginStoreBase with Store {
       ..setTag('user', jsonEncode(userAuth['user']))
       ..setContexts('deviceId', deviceInformation?.uUID.toString() ?? '')
       ..setContexts('fcm_t', token.toString())
-      ..setContexts(
-          'device Information', deviceInformation?.toJson().toString() ?? ''));
+      ..setContexts('device Information', deviceInformation?.toJson().toString() ?? ''));
 
     Sentry.addBreadcrumb(Breadcrumb(message: 'Authenticated user'));
 
@@ -333,8 +347,7 @@ abstract class LoginStoreBase with Store {
       if (response.statusCode == 200 || response.statusCode == 201) {
         log("Response After posting token: ${response.data}");
       } else {
-        await Sentry.captureMessage(
-            "sendValuesToBackend(). Failed response from Backend");
+        await Sentry.captureMessage("sendValuesToBackend(). Failed response from Backend");
       }
     } on DioError catch (e) {
       log('Sending ddevice data $e');
@@ -354,8 +367,7 @@ abstract class LoginStoreBase with Store {
       if (e.response != null) {
         _showSnackBar(context, "error while logging out");
 
-        throw AppErrors.processErrorJson(
-            e.response!.data as Map<String, dynamic>);
+        throw AppErrors.processErrorJson(e.response!.data as Map<String, dynamic>);
       }
       {
         // Something happened in setting up or sending the request that triggered an Error

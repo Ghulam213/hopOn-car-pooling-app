@@ -38,7 +38,7 @@ class _BookingComfirmState extends State<BookingComfirm> {
   @override
   void initState() {
     if (context.mounted) {
-      Future.delayed(const Duration(seconds: 5), () {
+      Future.delayed(const Duration(seconds: 15), () {
         buildBookingDetails(context, widget.index);
       });
     }

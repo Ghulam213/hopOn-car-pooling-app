@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:hop_on/Utils/helpers.dart';
 import 'package:hop_on/core/map/viewmodel/map_view_model.dart';
@@ -7,8 +9,7 @@ import 'package:hop_on/core/notifications/services/notification_service.dart';
 import 'package:hop_on/core/notifications/widgets/ride_notification_modal.dart';
 import 'package:provider/provider.dart';
 
-Map<String, Function(BuildContext, NotificationDataModel)> notificationsConfig =
-    {
+Map<String, Function(BuildContext, NotificationDataModel)> notificationsConfig = {
   'RIDE_REQUEST': (BuildContext context, NotificationDataModel notification) {
     logger('in Ride Request');
     showModalBottomSheet(
@@ -18,8 +19,7 @@ Map<String, Function(BuildContext, NotificationDataModel)> notificationsConfig =
     );
   },
   'RIDE_ACCEPTED': (BuildContext context, NotificationDataModel notification) {
-    final MapViewModel viewModel =
-        Provider.of<MapViewModel>(context, listen: false);
+    final MapViewModel viewModel = Provider.of<MapViewModel>(context, listen: false);
     // set the cron job to update passenger location
     viewModel.hasDriverAcceptedPassengerRideRequest = true;
     viewModel.rideId = notification.rideId!;
@@ -33,8 +33,7 @@ Map<String, Function(BuildContext, NotificationDataModel)> notificationsConfig =
 class WithNotifications extends StatefulWidget {
   final Widget child;
 
-  const WithNotifications({required Key key, required this.child})
-      : super(key: key);
+  const WithNotifications({required Key key, required this.child}) : super(key: key);
 
   @override
   WithNotificationsState createState() => WithNotificationsState();
@@ -46,11 +45,12 @@ class WithNotificationsState extends State<WithNotifications> {
   void initState() {
     super.initState();
     if (context.mounted) {
-      notificationsModel =
-          Provider.of<NotificationsModel>(context, listen: false);
+      notificationsModel = Provider.of<NotificationsModel>(context, listen: false);
 
       NotificationService notificationService = NotificationService(
         onNotificationReceived: (NotificationDataModel notification) {
+          log('notification.type: ${notification.type}');
+          log('notification.type: ${notificationsConfig[notification.type]}');
           notificationsConfig[notification.type]!(context, notification);
 
           notificationsModel.addNotification(notification);

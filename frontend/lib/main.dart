@@ -15,10 +15,8 @@ import 'package:location/location.dart' as loc;
 import 'package:permission_handler/permission_handler.dart';
 // import 'package:location/location.dart';
 import 'package:provider/provider.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'Utils/constants.dart';
 import 'Utils/device_info_service.dart';
 import 'Utils/helpers.dart';
 import 'Utils/styles.dart';
@@ -44,49 +42,53 @@ Future<void> main() async {
   await _initLocationService();
   await _getDeviceInfo();
 
-  setupSentry(
-      () => runApp(
-            SentryScreenshotWidget(
-              child: SentryUserInteractionWidget(
-                child: DefaultAssetBundle(
-                  bundle: SentryAssetBundle(),
-                  child: const App(),
-                ),
-              ),
-            ),
-          ),
-      sentryDsn);
+  // setupSentry(
+  //   () => runApp(
+  //     SentryScreenshotWidget(
+  //       child: SentryUserInteractionWidget(
+  //         child: DefaultAssetBundle(
+  //           bundle: SentryAssetBundle(),
+  //           child: const App(),
+  //         ),
+  //       ),
+  //     ),
+  //   ),
+  //   sentryDsn,
+  // );
+
+  runApp(App());
 }
 
-Future<void> setupSentry(AppRunner appRunner, String dsn) async {
-  await SentryFlutter.init((options) {
-    options.dsn = sentryDsn;
-    options.tracesSampleRate = 1.0;
-    options.reportPackages = false;
-    options.addInAppInclude('sentry_flutter_example');
-    options.considerInAppFramesByDefault = false;
-    options.attachThreads = true;
-    options.enableWindowMetricBreadcrumbs = true;
-    options.sendDefaultPii = true;
-    options.reportSilentFlutterErrors = true;
-    options.attachScreenshot = true;
-    options.screenshotQuality = SentryScreenshotQuality.low;
-    options.attachViewHierarchy = true;
-    // We can enable Sentry debug logging during development. This is likely
-    // going to log too much for your app, but can be useful when figuring out
-    // configuration issues, e.g. finding out why your events are not uploaded.
-    options.debug = true;
-    options.maxRequestBodySize = MaxRequestBodySize.always;
-    options.maxResponseBodySize = MaxResponseBodySize.always;
-  },
-      appRunner: appRunner);
-}
+// Future<void> setupSentry(AppRunner appRunner, String dsn) async {
+//   await SentryFlutter.init(
+//     (options) {
+//       options.dsn = sentryDsn;
+//       options.tracesSampleRate = 1.0;
+//       options.reportPackages = false;
+//       options.addInAppInclude('sentry_flutter_example');
+//       options.considerInAppFramesByDefault = false;
+//       options.attachThreads = true;
+//       options.enableWindowMetricBreadcrumbs = true;
+//       options.sendDefaultPii = true;
+//       options.reportSilentFlutterErrors = true;
+//       options.attachScreenshot = true;
+//       options.screenshotQuality = SentryScreenshotQuality.low;
+//       options.attachViewHierarchy = true;
+//       // We can enable Sentry debug logging during development. This is likely
+//       // going to log too much for your app, but can be useful when figuring out
+//       // configuration issues, e.g. finding out why your events are not uploaded.
+//       options.debug = false;
+//       options.maxRequestBodySize = MaxRequestBodySize.always;
+//       options.maxResponseBodySize = MaxResponseBodySize.always;
+//     },
+//     appRunner: appRunner,
+//   );
+// }
 
 Future _getDeviceInfo() async {
   final prefs = await SharedPreferences.getInstance();
   // prefs.clear(); // uncomment if need to login at each time
-  final DeviceInformation? deviceInformation =
-      await DeviceInfoService.getDeviceInfo();
+  final DeviceInformation? deviceInformation = await DeviceInfoService.getDeviceInfo();
   prefs.setString("deviceId", deviceInformation?.uUID.toString() ?? '');
   prefs.setString("deviceInfo", deviceInformation?.toJson().toString() ?? '');
 }
@@ -130,22 +132,22 @@ class AppState extends State<App> with WidgetsBindingObserver {
     );
 
     return MultiProvider(
-      providers: [
-        Provider<LoginStore>(
-          create: (_) => LoginStore(),
-        ),
-        ChangeNotifierProvider<MapViewModel>(
-          create: (_) => MapViewModel(),
-        ),
-        ChangeNotifierProvider<NotificationsModel>(
-          create: (_) => NotificationsModel(),
-        ),
-        ChangeNotifierProvider<RegistrationViewModel>(
-          create: (_) => RegistrationViewModel(),
-        ),
-        ChangeNotifierProvider<ProfileViewModel>(
-          create: (_) => ProfileViewModel(),
-        ),
+        providers: [
+          Provider<LoginStore>(
+            create: (_) => LoginStore(),
+          ),
+          ChangeNotifierProvider<MapViewModel>(
+            create: (_) => MapViewModel(),
+          ),
+          ChangeNotifierProvider<NotificationsModel>(
+            create: (_) => NotificationsModel(),
+          ),
+          ChangeNotifierProvider<RegistrationViewModel>(
+            create: (_) => RegistrationViewModel(),
+          ),
+          ChangeNotifierProvider<ProfileViewModel>(
+            create: (_) => ProfileViewModel(),
+          ),
         ],
         child: Consumer<LoginStore>(
           builder: (ctx, auth, _) {

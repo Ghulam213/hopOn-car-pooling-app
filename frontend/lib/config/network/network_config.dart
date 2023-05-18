@@ -22,11 +22,12 @@ class NetworkConfig {
 
     baseUrl = NetworkConfig._STAGING_URL;
 
-    dio = Dio(BaseOptions(
-      baseUrl: baseUrl,
-      connectTimeout: 10000,
-      receiveTimeout: 8000,
-    ))
-      ..interceptors.add(DioInterceptior());
+    dio = Dio(
+      BaseOptions(
+        baseUrl: baseUrl,
+        connectTimeout: 10000,
+        receiveTimeout: 8000,
+      ),
+    )..interceptors.add(DioInterceptior());
   }
 }

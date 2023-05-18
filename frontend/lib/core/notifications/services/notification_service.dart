@@ -13,10 +13,10 @@ Future<void> _backgroundMessageHandler(RemoteMessage message) async {
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  late Function(NotificationDataModel notification)? onNotificationReceived;
+  late Function(NotificationDataModel notification) onNotificationReceived;
   bool isNotificationRegistered = false;
 
-  factory NotificationService({onNotificationReceived}) {
+  factory NotificationService({required onNotificationReceived}) {
     _instance.onNotificationReceived = onNotificationReceived;
     return _instance;
   }
@@ -30,7 +30,7 @@ class NotificationService {
     try {
       isNotificationRegistered = true;
       await requestPermissions();
-      await getToken();
+      await NotificationService.getToken();
       await initNotificationPlugin();
       attachForegroundNotificationHandler();
       attachBackgroundNotificationHandler();
@@ -63,7 +63,7 @@ class NotificationService {
     );
   }
 
-  Future<String> getToken() async {
+  static Future<String> getToken() async {
     String token = await FirebaseMessaging.instance.getToken() ?? '';
     // TO DO: Make a request to the server to save the token
     debugPrint('Device Token: $token');
@@ -103,7 +103,7 @@ class NotificationService {
         );
 
         logger(NotificationDataModel.fromJson(message.data).toString());
-        onNotificationReceived?.call((NotificationDataModel.fromJson(message.data)));
+        onNotificationReceived.call((NotificationDataModel.fromJson(message.data)));
 
         BigTextStyleInformation bigTextStyleInformation = BigTextStyleInformation(
           message.notification!.body.toString(),

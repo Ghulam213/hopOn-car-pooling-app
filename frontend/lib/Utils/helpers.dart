@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as loc;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main.dart';
 
@@ -64,11 +65,55 @@ extension OnPressed on Widget {
       );
 }
 
+bool isCoordinateInIslamabad(String coordinate) {
+  double latitude, longitude;
+
+  // Split the coordinate string into latitude and longitude
+  List<String> parts = coordinate.split(',');
+
+  if (parts.length != 2) {
+    throw const FormatException('Invalid coordinate format. Expected "latitude,longitude".');
+  }
+
+  // Parse latitude and longitude values
+  try {
+    latitude = double.parse(parts[0]);
+    longitude = double.parse(parts[1]);
+  } catch (e) {
+    throw const FormatException('Invalid coordinate values. Latitude and longitude must be numeric.');
+  }
+
+  // Define the boundary coordinates for Islamabad
+  double islamabadMinLatitude = 33.5;
+  double islamabadMaxLatitude = 34.1;
+  double islamabadMinLongitude = 72.6;
+  double islamabadMaxLongitude = 73.4;
+
+  // Check if the coordinate is within Islamabad
+  if (latitude >= islamabadMinLatitude &&
+      latitude <= islamabadMaxLatitude &&
+      longitude >= islamabadMinLongitude &&
+      longitude <= islamabadMaxLongitude) {
+    return true;
+  }
+
+  return false;
+}
+
 Future<String> getCurrentLocation() async {
+  SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  bool isDriver = sharedPreferences.getString("userMode") == "DRIVER";
   var location = loc.Location();
   var locationService = await location.getLocation();
 
-  return "${locationService.latitude},${locationService.longitude}";
+  String currentLocationFromMob = "${locationService.latitude},${locationService.longitude}";
+
+  if (isCoordinateInIslamabad(currentLocationFromMob)) {
+    log('currentLocationFromMob: $currentLocationFromMob');
+    return currentLocationFromMob;
+  } else {
+    return isDriver ? '33.6600116,73.0833224' : '33.66085,73.08258';
+  }
 }
 
 void logger(String? message) {
