@@ -1,4 +1,5 @@
-import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import {
   Device,
@@ -51,6 +52,7 @@ export class RideService {
     private readonly passengerService: PassengerService,
     private readonly userService: UserService,
     private readonly fareService: FareService,
+    private readonly logger: Logger
   ) {
     this.prisma.addMiddleware(async (params, next) => {
       if (params.model === 'Ride') {
@@ -286,6 +288,7 @@ export class RideService {
   };
 
   async findRidesForPassenger(passengerData: FindRidesForPassengerDto): Promise<RideForPassengersModel[]> {
+    this.logger.log(`findRidesForPassenger called with: ${JSON.stringify(passengerData)}`);
     const pasengerDestination = UtilityService.stringToCoordinates(passengerData.destination);
     const pasengerSource = UtilityService.stringToCoordinates(passengerData.source);
     const passengerPreferences = await this.passengerService.getPassengerRidePreferences(passengerData.passengerId);
@@ -300,6 +303,8 @@ export class RideService {
         driver: true,
       },
     });
+
+    this.logger.log(`findRidesForPassenger found rides: ${rides.length}`);
 
     const promisesResults = await Promise.all(
       rides.map(async (ride) => {
@@ -338,6 +343,16 @@ export class RideService {
           rideCurrentLocation,
           this.appConfig.passengerDriverDistanceOverlapThreshold,
         );
+
+        this.logger.log(`findRidesForPassenger ride: ${JSON.stringify({
+          id: ride.id,
+          isPassengerSourceOnDriverRoute,
+          isPassengerDestinationOnDriverRoute,
+          isPassengerWithinThresholdOfDriver,
+          isPassengerPreferencesMatched,
+          isDriverPreferencesMatched,
+          isMaxPassengerCountReached
+        })}`);
 
         return (
           isPassengerSourceOnDriverRoute &&

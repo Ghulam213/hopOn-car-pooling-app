@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { DriverModule } from 'src/driver';
 import { LibraryModule } from 'src/library';
 import { PassengerModule } from 'src/passenger';
@@ -10,7 +10,7 @@ import { UserModule } from 'src/user';
 
 @Module({
   imports: [LibraryModule, PrismaModule, UserModule, DriverModule, PassengerModule],
-  providers: [RideService, FareService],
+  providers: [RideService, FareService, Logger],
   exports: [RideService, FareService],
   controllers: [RideController],
 })
