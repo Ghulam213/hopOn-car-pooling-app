@@ -1,6 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { ApiHeader, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { AccessTokenGuard } from 'src/auth/guards';
 import { ParseUUIDStringPipe } from 'src/library/pipes';
 import {
   FindRidesForPassengerDto,
@@ -97,21 +96,21 @@ export class RideController {
     return this.rideService.getRideCurrentLocationFromCache(rideId);
   }
 
-  @UseGuards(AccessTokenGuard)
+  // @UseGuards(AccessTokenGuard)
   @Get('ride/:rideId/complete')
   @ApiOkResponse({ type: Boolean })
   async completeRide(@Param('rideId', ParseUUIDStringPipe) rideId: string): Promise<Boolean> {
     return this.rideService.completeRide(rideId);
   }
 
-  @UseGuards(AccessTokenGuard)
+  // @UseGuards(AccessTokenGuard)
   @Post('ride/:rideId/end-passenger-ride')
   @ApiOkResponse({ type: PassengerOnRideEntity })
   async endPassengerRide(@Param('rideId', ParseUUIDStringPipe) rideId: string, @Body() data: { passengerId: string }) {
     return this.rideService.completePassengerRide(rideId, data.passengerId);
   }
 
-  @UseGuards(AccessTokenGuard)
+  // @UseGuards(AccessTokenGuard)
   @Post('ride/passenger/status')
   @ApiOkResponse({ type: Boolean })
   async updatePassengerRideStatus(@Body() passengerRideStatusUpdate: PassengerRideStatusUpdateDto): Promise<Boolean> {
@@ -119,7 +118,7 @@ export class RideController {
     return this.rideService.updatePassengerRideStatus(rideId, passengerId, status);
   }
 
-  @UseGuards(AccessTokenGuard)
+  // @UseGuards(AccessTokenGuard)
   @Get('ride/:rideId/passengers')
   @ApiOkResponse({ isArray: true, type: PassengerOnRideEntity })
   async getPassengersOnRide(@Param('rideId', ParseUUIDStringPipe) rideId: string) {

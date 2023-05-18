@@ -1,8 +1,6 @@
-import { Body, Controller, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiHeader, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { AccessTokenGuard } from 'src/auth/guards';
 import { FileCreateModel } from 'src/library/models';
 import { FileService } from 'src/library/services';
 import { uuid } from 'uuidv4';
@@ -16,7 +14,7 @@ import { uuid } from 'uuidv4';
 export class FileController {
   constructor(private readonly fileService: FileService) {}
 
-  @UseGuards(AccessTokenGuard)
+  // @UseGuards(AccessTokenGuard)
   @ApiOkResponse({ type: FileCreateModel })
   @Post('file')
   @UseInterceptors(FileInterceptor('file'))
