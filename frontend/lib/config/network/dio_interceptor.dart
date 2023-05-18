@@ -21,6 +21,7 @@ class DioInterceptior extends Interceptor {
       'accept': 'application/json',
     };
 
+    log('accessToken: $authToken');
     if (authToken != null) {
       options.headers = <String, String>{"Authorization": authToken};
     }

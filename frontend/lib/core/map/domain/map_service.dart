@@ -22,6 +22,7 @@ abstract class MapService {
 
   Future<void> acceptRide({
     required String? rideId,
+    required String? passengerId,
     required String? passengerSource,
     required String? passengerDestination,
     required String? driverName,
@@ -32,6 +33,7 @@ abstract class MapService {
 
   Future<void> rejectRide({
     required String? rideId,
+    required String? passengerId,
     required String? passengerSource,
     required String? passengerDestination,
     required String? driverName,

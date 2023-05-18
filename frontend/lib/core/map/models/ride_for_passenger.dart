@@ -13,6 +13,7 @@ class RideForPassenger {
   final num? fare;
   final num? ETA;
   final num? driverRating;
+  final String? distance;
 
   RideForPassenger({
     this.id,
@@ -24,6 +25,7 @@ class RideForPassenger {
     this.alreadySeatedPassengerCount,
     this.fare,
     this.source,
+    this.distance,
     this.destination,
     this.ETA,
     this.driverRating,
@@ -42,6 +44,7 @@ class RideForPassenger {
       alreadySeatedPassengerCount: json['alreadySeatedPassengerCount'] as num?,
       fare: json['fare'] as num?,
       ETA: json['ETA'] as num?,
+      distance: json['distance'] as String?,
       driverRating: json['driverRating'] as num?,
     );
   }

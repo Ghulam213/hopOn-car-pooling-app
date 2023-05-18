@@ -37,12 +37,11 @@ class BookingComfirm extends StatefulWidget {
 class _BookingComfirmState extends State<BookingComfirm> {
   @override
   void initState() {
-    setState(() {
-      Future.delayed(const Duration(seconds: 6), () {
-        Navigator.pop(context);
+    if (context.mounted) {
+      Future.delayed(const Duration(seconds: 5), () {
         buildBookingDetails(context, widget.index);
       });
-    });
+    }
     super.initState();
   }
 
@@ -72,7 +71,7 @@ class _BookingComfirmState extends State<BookingComfirm> {
               )),
           const SizedBox(height: 15),
           Text(
-            "Ride confimed",
+            "Ride confirmed",
             style: GoogleFonts.montserrat(
               fontSize: 22.0,
               fontWeight: FontWeight.w500,

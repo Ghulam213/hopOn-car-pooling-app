@@ -53,7 +53,7 @@ class MapViewModel extends ChangeNotifier {
   final List<GetRidePassengers> _passengersOnCurrentRide = [];
 
   List<LatLng> _polyLineArray = [];
-  final List<RideForPassenger> _availableRides = [];
+  List<RideForPassenger> _availableRides = [];
 
   List<GetRidePassengers> get passengersOnCurrentRide =>
       _passengersOnCurrentRide;
@@ -64,8 +64,7 @@ class MapViewModel extends ChangeNotifier {
     var currentLoc = await getCurrentLocation();
     // */1 * * * * means every minute
     cron.schedule(Schedule.parse('*/1 * * * *'), () async {
-      updateDriverLoc(
-          currentLocation: currentLoc, rideId: createdRideId);
+      updateDriverLoc(currentLocation: currentLoc, rideId: createdRideId);
       logger(
           '###  Driver Location CRON task called  with ID: $createdRideId ###');
     });
@@ -75,8 +74,7 @@ class MapViewModel extends ChangeNotifier {
     var currentLoc = await getCurrentLocation();
     // */1 * * * * means every minute
     cron.schedule(Schedule.parse('*/1 * * * *'), () async {
-      updatePassengerLoc(
-          rideId: rideId, currentLocation: currentLoc);
+      updatePassengerLoc(rideId: rideId, currentLocation: currentLoc);
       logger(
           '###  Passenger Location CRON task called with ID: $createdRideId ###');
     });
@@ -113,37 +111,34 @@ class MapViewModel extends ChangeNotifier {
           destination: destination,
           distance: calculateDistance(polylineArr) / 1000);
 
+      _availableRides = [];
       findRidesResource = Resource.success(response);
 
-      if (response.data != null) {
-        _availableRides.removeWhere((RideForPassenger datum) {
-          return _availableRides.contains(datum);
-        });
-
-        for (var datum in findRidesResource.modelResponse!.data!) {
-          _availableRides.add(datum);
-          log(datum.id.toString());
-        }
-
-        for (var datum in _availableRides) {
-          {
-            var src = await Future.wait([
-              placemarkFromCoordinates(
-                  double.parse(datum.source!.split(',')[0]),
-                  double.parse(datum.source!.split(',')[1])),
-              placemarkFromCoordinates(
-                  double.parse(datum.destination!.split(',')[0]),
-                  double.parse(datum.destination!.split(',')[1]))
-            ]);
-
-            datum.source = src[0].map((placemark) => placemark.name).toString();
-            datum.destination =
-                src[1].map((placemark) => placemark.name).toString();
-          }
-        }
-        debugPrint("Available Rides${_availableRides.toString()}");
-        notifyListeners();
+      for (var datum in findRidesResource.modelResponse!.data!) {
+        _availableRides.add(datum);
+        log('RideId: ${datum.id.toString()}');
       }
+
+      for (var datum in _availableRides) {
+        {
+          var src = await Future.wait([
+            placemarkFromCoordinates(double.parse(datum.source!.split(',')[0]),
+                double.parse(datum.source!.split(',')[1])),
+            placemarkFromCoordinates(
+                double.parse(datum.destination!.split(',')[0]),
+                double.parse(datum.destination!.split(',')[1]))
+          ]);
+
+          datum.source = src[0].map((placemark) => placemark.name).toString();
+          datum.destination =
+              src[1].map((placemark) => placemark.name).toString();
+
+          log('rideId: ${datum.id}, source: ${datum.source}, destination: ${datum.destination}');
+        }
+      }
+      debugPrint("Available Rides${_availableRides.toString()}");
+      findRidesResource = Resource.success(response);
+      notifyListeners();
       currentLocation = await getCurrentLocation();
     } catch (e) {
       findRidesResource = Resource.failed(e.toString());
@@ -213,17 +208,16 @@ class MapViewModel extends ChangeNotifier {
         city: city,
         polygonPoints: polyLineArray,
       );
-      
-      createRideResource = Resource.success(response);   
+
+      createRideResource = Resource.success(response);
       createdRideId = createRideResource.modelResponse!.data!.id.toString();
-     
+
       cronUpdateDriverLoc();
       cronGetRideLoc();
       rideDriver = Rider(
           id: createRideResource.modelResponse!.data!.driverId,
           currentLocation: source);
-      this.currentLocation =
-           await getCurrentLocation();
+      this.currentLocation = await getCurrentLocation();
 
       notifyListeners();
     } catch (e) {
@@ -236,6 +230,7 @@ class MapViewModel extends ChangeNotifier {
 
   Future<void> acceptRide({
     required String? rideId,
+    required String? passengerId,
     required String? passengerSource,
     required String? passengerDestination,
     required String? driverName,
@@ -249,6 +244,7 @@ class MapViewModel extends ChangeNotifier {
 
       await _mapService.acceptRide(
         rideId: rideId,
+        passengerId: passengerId,
         passengerSource: passengerSource,
         passengerDestination: passengerDestination,
         driverName: driverName,
@@ -268,6 +264,7 @@ class MapViewModel extends ChangeNotifier {
 
   Future<void> rejectRide({
     required String? rideId,
+    required String? passengerId,
     required String? passengerSource,
     required String? passengerDestination,
     required String? driverName,
@@ -279,8 +276,9 @@ class MapViewModel extends ChangeNotifier {
       rejectRideResource = Resource.loading();
       notifyListeners();
 
-      await _mapService.acceptRide(
+      await _mapService.rejectRide(
         rideId: rideId,
+        passengerId: passengerId,
         passengerSource: passengerSource,
         passengerDestination: passengerDestination,
         driverName: driverName,
@@ -347,8 +345,7 @@ class MapViewModel extends ChangeNotifier {
   ) async {
     try {
       getRideLocationResource = Resource.loading();
-      notifyListeners();
-
+      
       final GetRideResponse response =
           await _mapService.getRideLocation(rideId);
 

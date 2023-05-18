@@ -13,12 +13,6 @@ class ProfileViewModel extends ChangeNotifier {
 
   ProfileViewModel() {
     _profileService = ProfileServiceImpl();
-
-    Future.delayed(const Duration(seconds: 1), () {
-      loadLocalDetails();
-      getProfile();
-      loadUserPrefs();
-    });
   }
 
   Future<void> loadUserPrefs() async {
@@ -90,6 +84,7 @@ class ProfileViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
   Resource<UserInfoResponse> updateProfileResource = Resource.idle();
 
   Future<void> updateProfile({
@@ -240,6 +235,7 @@ class ProfileViewModel extends ChangeNotifier {
     try {
       hasRegisteredForDriver =
           await _profileService.checkIfRegisteredForDriver();
+      logger('hasRegisteredForDriver: $hasRegisteredForDriver');
       notifyListeners();
     } catch (e) {
       logger(e.toString());

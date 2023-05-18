@@ -159,7 +159,6 @@ class ProfileServiceImpl extends ProfileService {
 
       final Response response = await dio.get(
         '/driver/$driverId/preferences',
-        queryParameters: {'id': driverId},
       );
 
       logger('ProfileServiceImpl: getDriverPrefs()  Response $response');
@@ -197,7 +196,6 @@ class ProfileServiceImpl extends ProfileService {
       logger("ProfileServiceImpl: getPassengerPrefs() Body: $passengerId");
       final Response response = await dio.get(
         '/passenger/$passengerId/preferences',
-        queryParameters: {'id': passengerId},
       );
 
       logger("ProfileServiceImpl: getPassengerPrefs() Response: $response");

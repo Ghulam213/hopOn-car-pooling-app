@@ -261,7 +261,7 @@ class _CustomImageFormFieldState extends State<CustomImageFormField> {
     debugPrint(file.path);
     var request = http.MultipartRequest(
       'POST',
-      Uri.parse('http://localhost:3001/file'),
+      Uri.parse('https://hopon-be-g6jr7t55pq-ew.a.run.app/file'),
     );
 
     request.files.add(await http.MultipartFile.fromPath('file', file.path));

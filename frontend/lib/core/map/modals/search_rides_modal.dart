@@ -134,7 +134,7 @@ class SearchRidesModalState extends State<SearchRidesModal> {
                                                 src[1].toString() ??
                                                     '33.6844202,73.04788479999999');
                                           }
-                                          if (!context.mounted) return;
+                                          // if (!context.mounted) return;
                                           // mapViewModel.getRidePassengers(
                                           //     'fabc32ad-6adb-4213-a910-a584a19c3484');
                                           buildTripDetails(

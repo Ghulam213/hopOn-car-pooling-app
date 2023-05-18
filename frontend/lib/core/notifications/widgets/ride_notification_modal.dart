@@ -104,6 +104,7 @@ class RideNotificationModal extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () {
                     viewModel.acceptRide(
+                      passengerId: notification.passengerId,
                       rideId: notification.rideId,
                       distance: notification.distance,
                       driverName: notification.passengerName,
@@ -125,6 +126,7 @@ class RideNotificationModal extends StatelessWidget {
                   onPressed: () {
                     viewModel.rejectRide(
                       rideId: notification.rideId,
+                      passengerId: notification.passengerId,
                       distance: notification.distance,
                       driverName: notification.passengerName,
                       passengerSource: notification.passengerSource,
