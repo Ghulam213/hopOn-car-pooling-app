@@ -11,6 +11,7 @@ import '../../widgets/dot_widget.dart';
 import '../viewmodel/map_view_model.dart';
 
 buildBookingDetails(BuildContext context, int? index) {
+  Navigator.of(context).pop();
   showModalBottomSheet(
       isDismissible: false,
       isScrollControlled: true,

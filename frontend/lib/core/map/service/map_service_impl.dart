@@ -191,6 +191,7 @@ class MapServiceImpl extends MapService {
   Future<RequestRideResponse> acceptRide({
     String? rideId,
     String? passengerSource,
+    String? passengerId,
     String? passengerDestination,
     String? driverName,
     num? distance,
@@ -198,14 +199,11 @@ class MapServiceImpl extends MapService {
     num? ETA,
   }) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-
     final String user = prefs.getString("user") ?? '';
-    final String pessengerId = prefs.getString("passengerID") ??
-        'fabc32ad-6adb-4213-a910-a584a19c3484';
 
     final body = {
       "rideId": rideId,
-      "passengerId": pessengerId,
+      "passengerId": passengerId,
       "passengerName": jsonDecode(user)['firstName'],
       "driverName": driverName,
       "passengerSource": passengerSource,
@@ -252,6 +250,7 @@ class MapServiceImpl extends MapService {
   @override
   Future<RequestRideResponse> rejectRide({
     String? rideId,
+    required String? passengerId,
     String? passengerSource,
     String? passengerDestination,
     String? driverName,
@@ -260,13 +259,12 @@ class MapServiceImpl extends MapService {
     num? ETA,
   }) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-
     final String user = prefs.getString("user") ?? '';
-    final String pessengerId = prefs.getString("passengerID") ?? '';
+
 
     final body = {
       "rideId": rideId,
-      "passengerId": 'fabc32ad-6adb-4213-a910-a584a19c3484',
+      "passengerId": passengerId,
       "passengerName": jsonDecode(user)['firstName'],
       "driverName": driverName,
       "passengerSource": passengerSource,
@@ -392,14 +390,9 @@ class MapServiceImpl extends MapService {
     String rideId,
   ) async {
     try {
-      final body = {
-        "rideId": rideId,
-      };
 
-      logger("MapServiceImpl: getRideLocation() Body: $body");
       final Response response = await dio.get(
         '/ride/$rideId/current-location',
-        queryParameters: body,
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {

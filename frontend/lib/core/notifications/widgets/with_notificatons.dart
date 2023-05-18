@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hop_on/Utils/helpers.dart';
 import 'package:hop_on/core/map/viewmodel/map_view_model.dart';
 import 'package:hop_on/core/notifications/models/notification_datamodel.dart';
 import 'package:hop_on/core/notifications/models/notifications_model.dart';
@@ -9,8 +10,10 @@ import 'package:provider/provider.dart';
 Map<String, Function(BuildContext, NotificationDataModel)> notificationsConfig =
     {
   'RIDE_REQUEST': (BuildContext context, NotificationDataModel notification) {
+    logger('in Ride Request');
     showModalBottomSheet(
       context: context,
+      isDismissible: false,
       builder: (context) => RideNotificationModal(notification),
     );
   },

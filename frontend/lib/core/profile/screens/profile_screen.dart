@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart' as easy;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hop_on/core/map/screens/home.dart';
@@ -40,13 +39,14 @@ class ProfileScreenState extends State<ProfileScreen> {
         backgroundColor: AppColors.PRIMARY_500,
         elevation: 2,
         leadingWidth: config.sw(100).toDouble(),
-        leading: InkWell(
+        actions: [
+          InkWell(
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const MapScreen()),
             );
           },
-          child: const Padding(
+            child: const Padding(
             padding: EdgeInsets.only(left: 10, right: 10),
             child: Icon(
               Icons.arrow_back,
@@ -54,7 +54,24 @@ class ProfileScreenState extends State<ProfileScreen> {
               size: 26.0,
             ),
           ),
-        ),
+          ),
+          const Spacer(),
+          SizedBox(
+            child: IconButton(
+              onPressed: () {
+                onEditTapped();
+              },
+              iconSize: 20,
+              icon: const Icon(
+                Icons.edit,
+                size: 20.0,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+       
+    
       ),
       body: Stack(
         children: <Widget>[
@@ -69,8 +86,14 @@ class ProfileScreenState extends State<ProfileScreen> {
                   width: SizeConfig.screenWidthDp!,
                 ),
                 const SizedBox(
-                  height: 10,
+                  height: 5,
                 ),
+
+                
+                const SizedBox(
+                  height: 5,
+                ),
+
                 Padding(
                   padding: const EdgeInsets.only(top: 12.0, bottom: 10),
                   child: SizedBox(
@@ -139,43 +162,6 @@ class ProfileScreenState extends State<ProfileScreen> {
                       SizedBox(
                           height: SizeConfig.screenHeightDp! * 0.55,
                           child: const RiderDetailCard()),
-                      Container(
-                        decoration: const BoxDecoration(
-                            // borderRadius: BorderRadius.circular(20),
-                            ),
-                        padding: const EdgeInsets.only(
-                          top: 8.0,
-                          bottom: 12,
-                        ),
-                        child: InkWell(
-                          onTap: () {
-                            onEditTapped();
-                          },
-                          child: SizedBox(
-                            width: SizeConfig.screenWidthDp! * 0.65,
-                            // height: SizeConfig.screenHeightDp! * 0.10,
-                            child: Row(
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 10),
-                                  child: Icon(
-                                    Icons.edit,
-                                    size: 14,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                Text(
-                                  easy.tr("Edit"),
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
                     ],
                   ),
               ],

@@ -222,8 +222,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       } else {
                         loginStore.registerUser(context, password.text,
                             phone.text, email.text, fName.text, lName.text);
-
-                        
                       }
                     },
                     onStepCancel: () {
@@ -238,8 +236,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     onStepTapped: (int index) {
                       final isLastStep =
                           _activeStepIndex == stepList().length - 1;
-            
-                 
+
                       setState(() {
                         _activeStepIndex = index;
                       });
@@ -251,6 +248,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                       return StepControlBuilder(
                           details: details,
+                          loginStore: loginStore,
                           activeStepIndex: _activeStepIndex,
                           isLastStep: isLastStep);
                     },
@@ -268,14 +266,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
 class StepControlBuilder extends StatelessWidget {
   const StepControlBuilder({
     super.key,
-    required ControlsDetails details,
-    required int activeStepIndex,
+    required details,
+    required activeStepIndex,
+    required loginStore,
     required this.isLastStep,
   })  : _activeStepIndex = activeStepIndex,
-        _details = details;
+        _details = details,
+        _loginStore = loginStore;
 
   final int _activeStepIndex;
   final ControlsDetails _details;
+  final LoginStore _loginStore;
   final bool isLastStep;
 
   @override
@@ -303,12 +304,22 @@ class StepControlBuilder extends StatelessWidget {
             child: ElevatedButton(
               onPressed: _details.onStepContinue,
               child: (isLastStep)
-                  ? Text('Submit',
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w400,
-                          height: 1.0,
-                          color: AppColors.LM_BACKGROUND_BASIC))
+                  ? _loginStore.isOtpLoading
+                      ? SizedBox(
+                          height: 15,
+                          width: 15,
+                          child: CircularProgressIndicator(),
+                        )
+                      : Text('Submit',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w400,
+                                  height: 1.0,
+                                  color: AppColors.LM_BACKGROUND_BASIC))
+                      
                   : Text('Next',
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                           fontSize: 17,

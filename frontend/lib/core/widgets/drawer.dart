@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:hop_on/core/auth/screens/auth_screen.dart';
 import 'package:hop_on/core/map/screens/home.dart';
 import 'package:hop_on/core/profile/screens/profile_screen.dart';
 import 'package:hop_on/core/profile/viewmodel/profile_viewmodel.dart';
@@ -32,6 +33,13 @@ class _AppDrawerState extends State<AppDrawer> {
     await prefs.clear();
     Navigator.of(context).pop();
     Navigator.of(context).pop();
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return const AuthScreen();
+        },
+      ),
+    );
   }
 
   @override
@@ -76,7 +84,6 @@ class _AppDrawerState extends State<AppDrawer> {
                   )
                 },
               ),
-        
               ListTile(
                 leading: const Icon(Icons.logout_outlined,
                     size: 22, color: AppColors.PRIMARY_500),
@@ -88,7 +95,8 @@ class _AppDrawerState extends State<AppDrawer> {
               const Spacer(),
               Consumer<LoginStore>(builder: (_, loginStore, __) {
                 return Observer(
-                  builder: (_) => ListTile(
+                  builder: (_) => viewModel.hasRegisteredForDriver
+                      ? ListTile(
                     title: Padding(
                       padding: const EdgeInsets.only(left: 1.0),
                       child: Align(
@@ -124,8 +132,14 @@ class _AppDrawerState extends State<AppDrawer> {
                                   await viewModel.switchCurrentMode();
                                   if (mounted) {
                                     Navigator.of(context).pop();
-                                    Navigator.of(context)
-                                        .pushReplacementNamed('/');
+                                          Navigator.of(context).pop();
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (context) {
+                                                return const AuthScreen();
+                                              },
+                                            ),
+                                          );
                                   }
                                 },
                               ),
@@ -134,7 +148,8 @@ class _AppDrawerState extends State<AppDrawer> {
                         ),
                       ),
                     ),
-                  ),
+                        )
+                      : const SizedBox.shrink(),
                 );
               }),
               const SizedBox(height: 50),

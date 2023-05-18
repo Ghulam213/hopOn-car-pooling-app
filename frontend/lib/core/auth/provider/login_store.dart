@@ -53,6 +53,9 @@ abstract class LoginStoreBase with Store {
   bool isDriver = false;
 
   @observable
+  bool isRegistering = false;
+
+  @observable
   String? userId = '';
 
   @observable
@@ -158,9 +161,6 @@ abstract class LoginStoreBase with Store {
         await _storeUserData(response.data);
         isUserInfoLoading = false;
         onOtpSuccessful(context, result);
-
-        //NOTE: This line only allows branch users to enter the Accept App
-        // await limitEntry(response, context, result);
       } else {
         final String errorMsg = response.data['data']["message"] as String;
         _showSnackBar(context, errorMsg);
@@ -221,26 +221,16 @@ abstract class LoginStoreBase with Store {
       isOtpLoading = false;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint(response.data['data']['id']);
-        prefs.setString('userEmail', response.data['data']['email'] as String);
-        prefs.setString(
-            'currentMode', response.data['data']['currentMode'] as String);
-        prefs.setString('userID', response.data['data']['id'] as String);
-        prefs.setString(
-            'userPhoneNo', response.data['data']['phoneNo'] as String);
-
-        isUserInfoLoading = false;
-        Future.delayed(const Duration(milliseconds: 1), () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => OtpPage(
-                phoneNumber: phone,
-                otpmode: 'signup',
-              ),
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => OtpPage(
+              phoneNumber: phone,
+              otpmode: 'signup',
             ),
-          );
-        });
-        // onOtpSuccessful(context, result);
+          ),
+        );
+
+        await _storeUserData(response.data);
       } else {
         final String errorMsg = response.statusMessage as String;
         _showSnackBar(context, errorMsg);

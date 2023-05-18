@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:android_sms_retriever/android_sms_retriever.dart';
-import 'package:easy_localization/easy_localization.dart' as ez;
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:hop_on/Utils/colors.dart';
@@ -12,6 +11,8 @@ import 'package:hop_on/core/map/screens/home.dart';
 import 'package:lottie/lottie.dart';
 import 'package:numeric_keyboard/numeric_keyboard.dart';
 import 'package:provider/provider.dart';
+
+import '../../../Utils/helpers.dart';
 
 class OtpPage extends StatefulWidget {
   static const routeName = '/otp';
@@ -58,7 +59,7 @@ class _OtpPageState extends State<OtpPage> {
   @override
   void initState() {
     super.initState();
-
+logger("Otp page  :initState");
     if (Platform.isAndroid) {
       initSmsListener();
     }
@@ -115,7 +116,6 @@ class _OtpPageState extends State<OtpPage> {
 
     return Consumer<LoginStore>(builder: (_, loginStore, __) {
 
-      // loginStore.validateOtpAndLogin(context, _codeJoined, widget.phoneNumber!);
       return Observer(
         builder: (_) => Scaffold(
           backgroundColor: AppColors.LM_BACKGROUND_GREY1,
@@ -139,13 +139,11 @@ class _OtpPageState extends State<OtpPage> {
                       Padding(
                         padding: const EdgeInsets.only(top: 10, bottom: 12),
                         child: Align(
-                          alignment: context.locale.toString() == 'en'
-                              ? Alignment.centerLeft
-                              : Alignment.centerLeft,
+                          alignment: Alignment.centerLeft,
                           child: Padding(
                             padding: EdgeInsets.only(
                                 left: SizeConfig.screenWidthDp! * 0.03),
-                            child: Text(ez.tr("Enter OTP"),
+                            child: Text("Enter OTP",
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyLarge!
@@ -160,15 +158,13 @@ class _OtpPageState extends State<OtpPage> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 24),
                         child: Align(
-                          alignment: context.locale.toString() == 'en'
-                              ? Alignment.centerLeft
-                              : Alignment.centerLeft,
+                          alignment: Alignment.centerLeft,
                           child: Padding(
                             padding: EdgeInsets.only(
                                 left: SizeConfig.screenWidthDp! * 0.03),
                             child: Text(
-                                ez.tr(
-                                    'An 6 digit code hase been sent to ${widget.phoneNumber}'),
+                            
+                                'An 6 digit code hase been sent to ${widget.phoneNumber}',
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyMedium!
